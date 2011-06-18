@@ -1,6 +1,10 @@
 CLAP: A Kick-Ass .NET Command-Line Parser
+=========================================
 
-```C#
+Documentation by samples
+------------------------
+Basic: One verb. Some parameters.
+```
 class Program
 {
     public static void Main(string[] args)
@@ -8,4 +12,15 @@ class Program
         Parser<MyApp>.Run(args);
     }
 }
+
+class MyApp
+{
+    [Verb]
+    public static void Print(string name, int count)
+    {
+        //
+    }
+}
+
+>myexe print -name:adrian -count:10
 ```
