@@ -22,4 +22,6 @@ Basic: One verb. Some parameters.
         }
     }
 
+<pre>
 >myexe print -name:adrian -count:10
+</pre>
