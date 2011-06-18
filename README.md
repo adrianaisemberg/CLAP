@@ -5,50 +5,25 @@ Documentation by samples
 ------------------------
 Basic: One verb. Some parameters.
 
-    class Program
+```c#
+class Program
+{
+    public static void Main(string[] args)
     {
-        public static void Main(string[] args)
-        {
-            Parser<MyApp>.Run(args);
-        }
+        Parser<MyApp>.Run(args);
     }
+}
 
-    class MyApp
+class MyApp
+{
+    [Verb]
+    public static void Print(string name, int count)
     {
-        [Verb]
-        public static void Print(string name, int count)
-        {
-            //
-        }
+        //
     }
+}
+```
 
 <pre>
 >myexe print -name:adrian -count:10
 </pre>
-
-```c#
-class Another
-{
-    public void Foo(string n)
-    {
-    }
-}
-```
-
-```C#
-class Another
-{
-    public void Foo(string n)
-    {
-    }
-}
-```
-
-```cs
-class Another
-{
-    public void Foo(string n)
-    {
-    }
-}
-```
