@@ -26,7 +26,25 @@ Basic: One verb. Some parameters.
 >myexe print -name:adrian -count:10
 </pre>
 
+```c#
+class Another
+{
+    public void Foo(string n)
+    {
+    }
+}
 ```
+
+```C#
+class Another
+{
+    public void Foo(string n)
+    {
+    }
+}
+```
+
+```cs
 class Another
 {
     public void Foo(string n)
