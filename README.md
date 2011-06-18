@@ -25,5 +25,5 @@ class MyApp
 ```
 
 <pre>
-*>myexe print -name:adrian -count:10*
+>myexe print -name:adrian -count:10
 </pre>
