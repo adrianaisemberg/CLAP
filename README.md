@@ -1,10 +1,7 @@
 CLAP: A Kick-Ass .NET Command-Line Parser
 =========================================
-
-Documentation by samples
-------------------------
-Basic: One verb. Some parameters.
-
+Basic example: One verb, Some parameters
+----------------------------------------
 ```c#
 class Program
 {
@@ -17,13 +14,27 @@ class Program
 class MyApp
 {
     [Verb]
-    public static void Print(string name, int count)
+    public static void Print(string text, int count)
     {
-        //
+        for (int i = 0; i < count; i++)
+        {
+            Console.WriteLine(text);
+        }
     }
 }
 ```
 
 <pre>
->myexe print -name:adrian -count:10
+>myexe print -text:"Hello World" -count:10
+Hello World
+Hello World
+Hello World
+Hello World
+Hello World
+Hello World
+Hello World
+Hello World
+Hello World
+Hello World
 </pre>
+
