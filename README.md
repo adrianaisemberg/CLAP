@@ -113,3 +113,22 @@ verbose = True
 option = Option2
 array = [a,b,c,d]
 </pre>
+
+<pre>
+>myexe
+
+Print:
+ -text:  [String]
+ -count:  [Int32]
+
+Foo:
+ -text/t: A string parameter with an additional alias [String]
+ -number: An int parameter with a default [Int32, Default = 5]
+ -percent: A double parameter with validation and a default value [Double, Default = 42.3, More than 10, Less than 100]
+ -verbose: A bool parameter, which can be used as a switch [Boolean]
+ -option: An enum parameter [OptionEnum]
+ -array: An array of strings [String[]]
+
+Global parameters:
+ -Debug/d: Launch a debugger [Boolean]
+</pre>
