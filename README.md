@@ -114,7 +114,7 @@ option = Option2
 array = [a,b,c,d]
 </pre>
 
-*No arguments, help is printed:*
+**No arguments, help is printed:**
 <pre>
 >myexe
 
