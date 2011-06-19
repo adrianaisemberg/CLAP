@@ -26,6 +26,7 @@ class MyApp
 
 <pre>
 >myexe print -text:"Hello World" -count:10
+
 Hello World
 Hello World
 Hello World
@@ -104,6 +105,7 @@ class MyApp
 
 <pre>
 >myexe foo -t:hello -number:88 -percent:12.446 -verbose -option:Option2 -array:a,b,c,d
+
 text = hello
 number = 88
 percent = 12.446
