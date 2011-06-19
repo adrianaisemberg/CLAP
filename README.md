@@ -87,21 +87,27 @@ class MyApp
         bool verbose,
 
         [Parameter(Description = "An enum parameter")]
-        MyEnum option,
+        OptionEnum option,
 
         [Parameter(Description = "An array of strings")]
         string[] array)
     {
-        // text = "hello"
-        // number = 88
-        // percent = 12.446
-        // verbose = true
-        // option = MyEnumValue2
-        // array = { "a", "b", "c", "d" }
+        Console.WriteLine("text = {0}", text);
+        Console.WriteLine("number = {0}", number);
+        Console.WriteLine("percent = {0}", percent);
+        Console.WriteLine("verbose = {0}", verbose);
+        Console.WriteLine("option = {0}", option);
+        Console.WriteLine("array = [{0}]", string.Join(",", array));
     }
 }
 ```
 
 <pre>
->myexe foo -t:hello -number:88 -percent:12.446 -verbose -option:MyEnumValue2 -array:a,b,c,d
+>myexe foo -t:hello -number:88 -percent:12.446 -verbose -option:Option2 -array:a,b,c,d
+text = hello
+number = 88
+percent = 12.446
+verbose = True
+option = Option2
+array = [a,b,c,d]
 </pre>
