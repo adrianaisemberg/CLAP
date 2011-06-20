@@ -1,0 +1,7 @@
+*.docstates
+*.suo
+*.user
+bin
+obj
+UpgradeLog.XML
+_UpgradeReport_Files/
