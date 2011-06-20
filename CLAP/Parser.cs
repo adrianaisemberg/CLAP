@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Reflection;
 using System.Text;
 
@@ -413,7 +412,17 @@ namespace CLAP
             var name = globalAtt.Name ?? method.Name;
             sb.Append(name);
 
+            foreach (var alias in globalAtt.Aliases)
+            {
+                sb.AppendFormat("/{0}", alias);
+            }
+
             sb.Append(": ");
+
+            // description
+            //
+            sb.Append(globalAtt.Description);
+            sb.Append(" ");
 
             // type
             //

@@ -9,16 +9,10 @@ namespace CLAP
     [AttributeUsage(AttributeTargets.Class)]
     public sealed class DefaultVerbAttribute : Attribute
     {
-        #region Properties
-
         /// <summary>
         /// The verb
         /// </summary>
         public string Verb { get; private set; }
-
-        #endregion Properties
-
-        #region Constructors
 
         /// <summary>
         /// Constructor
@@ -28,7 +22,5 @@ namespace CLAP
         {
             Verb = verb;
         }
-
-        #endregion Constructors
     }
 }

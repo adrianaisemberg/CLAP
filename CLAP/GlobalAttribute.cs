@@ -7,6 +7,7 @@ namespace CLAP
     public sealed class GlobalAttribute : Attribute
     {
         public string Aliases { get; set; }
+        public string Description { get; set; }
         public string Name { get; private set; }
 
         public GlobalAttribute()

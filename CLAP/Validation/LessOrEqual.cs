@@ -11,7 +11,7 @@ namespace CLAP.Validation
         /// <summary>
         /// Constructor
         /// </summary>
-        public LessOrEqualToAttribute(int number)
+        public LessOrEqualToAttribute(double number)
             : base(new LessOrEqualToValidator(number))
         {
         }
@@ -32,7 +32,7 @@ namespace CLAP.Validation
             /// <summary>
             /// Constructor
             /// </summary>
-            public LessOrEqualToValidator(int number)
+            public LessOrEqualToValidator(double number)
                 : base(number)
             {
             }
@@ -42,7 +42,9 @@ namespace CLAP.Validation
             /// </summary>
             public override void Validate(object value)
             {
-                if ((int)value > Number)
+                var doubleValue = (double)Convert.ChangeType(value, typeof(double));
+
+                if (doubleValue > Number)
                 {
                     throw new ValidationException("{0} is not less or equal to {1}".FormatWith(value, Number));
                 }

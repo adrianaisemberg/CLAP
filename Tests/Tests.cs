@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Linq;
 using CLAP;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using NUnit.Framework;
 
 namespace Tests
 {
-    [TestClass]
+    [TestFixture]
     public class Tests
     {
         private void Execute<T>(T obj, String cmd)
@@ -14,7 +14,7 @@ namespace Tests
             Parser<T>.Run(cmd.Split(' '), obj);
         }
 
-        [TestMethod]
+        [Test]
         public void Execute_Verb()
         {
             var printer = new Printer();
@@ -26,7 +26,7 @@ namespace Tests
             Assert.IsTrue(printer.PrintedTexts.All(t => t.Equals("hello_test")));
         }
 
-        [TestMethod]
+        [Test]
         public void Execute_DefaultVerb()
         {
             var printer = new Printer();
@@ -38,7 +38,7 @@ namespace Tests
             Assert.IsTrue(printer.PrintedTexts.All(t => t.Equals("hello_test")));
         }
 
-        [TestMethod]
+        [Test]
         public void Execute_DefaultVerb_Switch()
         {
             var printer = new Printer();
@@ -50,7 +50,7 @@ namespace Tests
             Assert.IsTrue(printer.PrintedTexts.All(t => t.Equals("HELLO_TEST")));
         }
 
-        [TestMethod]
+        [Test]
         public void Execute_WithEnum()
         {
             var printer = new Printer();
@@ -62,7 +62,7 @@ namespace Tests
             Assert.IsTrue(printer.PrintedTexts.All(t => t.Equals("HELLO_TEST")));
         }
 
-        [TestMethod]
+        [Test]
         public void Execute_WithDefaultEnum()
         {
             var printer = new Printer();
@@ -74,7 +74,7 @@ namespace Tests
             Assert.IsTrue(printer.PrintedTexts.All(t => t.Equals("hello_test")));
         }
 
-        [TestMethod]
+        [Test]
         public void Execute_DuplicateParameterNames()
         {
             try
@@ -92,7 +92,7 @@ namespace Tests
             }
         }
 
-        [TestMethod]
+        [Test]
         public void Validation_MoreThan()
         {
             var sample = new ValidationSample_01();
@@ -109,7 +109,7 @@ namespace Tests
             }
         }
 
-        [TestMethod]
+        [Test]
         public void Validation_MoreOrEqualTo()
         {
             var sample = new ValidationSample_01();
@@ -127,7 +127,7 @@ namespace Tests
             }
         }
 
-        [TestMethod]
+        [Test]
         public void Validation_LessThan()
         {
             var sample = new ValidationSample_01();
@@ -144,7 +144,7 @@ namespace Tests
             }
         }
 
-        [TestMethod]
+        [Test]
         public void Validation_LessOrEqualTo()
         {
             var sample = new ValidationSample_01();
@@ -162,7 +162,7 @@ namespace Tests
             }
         }
 
-        [TestMethod]
+        [Test]
         public void Validation_RegexMatchesEmail()
         {
             var sample = new ValidationSample_01();
@@ -180,7 +180,7 @@ namespace Tests
             }
         }
 
-        [TestMethod]
+        [Test]
         public void Required()
         {
             var printer = new Printer();
@@ -192,7 +192,7 @@ namespace Tests
             Assert.AreEqual("HELLO", printer.PrintedTexts[0]);
         }
 
-        [TestMethod]
+        [Test]
         public void Required_Exception()
         {
             try
@@ -209,7 +209,7 @@ namespace Tests
             }
         }
 
-        [TestMethod]
+        [Test]
         public void Array_Strings()
         {
             var printer = new Printer();
@@ -223,7 +223,7 @@ namespace Tests
             Assert.AreEqual("test_c", printer.PrintedTexts[2]);
         }
 
-        [TestMethod]
+        [Test]
         public void Array_Strings_NoInput()
         {
             var printer = new Printer();
@@ -234,7 +234,7 @@ namespace Tests
             Assert.AreEqual(0, printer.PrintedTexts.Count);
         }
 
-        [TestMethod]
+        [Test]
         public void Array_Numbers()
         {
             var printer = new Printer();
@@ -248,7 +248,7 @@ namespace Tests
             Assert.AreEqual("test_3", printer.PrintedTexts[2]);
         }
 
-        [TestMethod]
+        [Test]
         public void Array_Numbers_NoInput()
         {
             var printer = new Printer();
@@ -259,7 +259,7 @@ namespace Tests
             Assert.AreEqual(0, printer.PrintedTexts.Count);
         }
 
-        [TestMethod]
+        [Test]
         public void Array_Enum()
         {
             var printer = new Printer();
@@ -272,7 +272,7 @@ namespace Tests
             Assert.AreEqual("test_Lower", printer.PrintedTexts[1]);
         }
 
-        [TestMethod]
+        [Test]
         public void Array_Enum_NoInput()
         {
             var printer = new Printer();
@@ -283,7 +283,7 @@ namespace Tests
             Assert.AreEqual(0, printer.PrintedTexts.Count);
         }
 
-        [TestMethod]
+        [Test]
         public void RegisterParameterHandler_CallsTheHandler_IgnoreTheValue()
         {
             var printer = new Printer();
@@ -299,7 +299,7 @@ namespace Tests
             Assert.AreEqual(1, x);
         }
 
-        [TestMethod]
+        [Test]
         public void RegisterParameterHandler_CallsTheHandler_UseTheValue()
         {
             var printer = new Printer();
@@ -315,14 +315,14 @@ namespace Tests
             Assert.AreEqual("true", debug);
         }
 
-        [TestMethod]
+        [Test]
         [ExpectedException(typeof(ArgumentNullException))]
         public void Parser_NullType_Exception()
         {
             var p = new Parser(null);
         }
 
-        [TestMethod]
+        [Test]
         public void Global_Defined_WithArg()
         {
             var mock = new Mock<IPrinter>();
@@ -335,7 +335,7 @@ namespace Tests
             mock.Verify(o => o.Print("blah"));
         }
 
-        [TestMethod]
+        [Test]
         [ExpectedException(typeof(NotSupportedException))]
         public void Global_Defined_MoreThanOneParameter_Exception()
         {
@@ -347,7 +347,7 @@ namespace Tests
             p.Run("print -foo".Split(' '), sample);
         }
 
-        [TestMethod]
+        [Test]
         public void Global_Defined_NoArgs()
         {
             var mock = new Mock<IPrinter>();
@@ -360,7 +360,7 @@ namespace Tests
             mock.Verify(o => o.Print("zoo"));
         }
 
-        [TestMethod]
+        [Test]
         public void Global_Defined_WithValidation()
         {
             var mock = new Mock<IPrinter>();
@@ -373,7 +373,7 @@ namespace Tests
             mock.Verify(o => o.Print("mesh"), Times.Exactly(5));
         }
 
-        [TestMethod]
+        [Test]
         [ExpectedException(typeof(TypeConvertionException))]
         public void Global_Defined_BadConvertion()
         {
@@ -385,7 +385,7 @@ namespace Tests
             p.Run("print -abra:cadabra".Split(' '), sample);
         }
 
-        [TestMethod]
+        [Test]
         public void Help_Defined()
         {
             var mock = new Mock<IPrinter>();
@@ -399,7 +399,7 @@ namespace Tests
             mock.Verify(o => o.Print("help"), Times.Exactly(2));
         }
 
-        [TestMethod]
+        [Test]
         public void Help_Registered()
         {
             var mock = new Mock<IPrinter>();
@@ -415,7 +415,7 @@ namespace Tests
             mock.Verify(o => o.Print("x"), Times.Exactly(2));
         }
 
-        [TestMethod]
+        [Test]
         public void EmptyHandler_NonStatic_CalledWhenNoArgs()
         {
             var mock = new Mock<IPrinter>();
@@ -428,7 +428,7 @@ namespace Tests
             mock.Verify(o => o.Print("a"));
         }
 
-        [TestMethod]
+        [Test]
         public void EmptyHandler_Static_CalledWhenNoArgs()
         {
             var mock = new Mock<IPrinter>();
@@ -446,7 +446,7 @@ namespace Tests
             Sample_16.StaticPrinter = null;
         }
 
-        [TestMethod]
+        [Test]
         [ExpectedException(typeof(ArgumentMismatchException))]
         public void EmptyDefined_WithParameters_Exception()
         {
@@ -458,7 +458,7 @@ namespace Tests
             p.Run(new string[] { }, sample);
         }
 
-        [TestMethod]
+        [Test]
         public void Empty_Registered()
         {
             var mock = new Mock<IPrinter>();
@@ -473,7 +473,7 @@ namespace Tests
             mock.Verify(o => o.Print("x"));
         }
 
-        [TestMethod]
+        [Test]
         [ExpectedException(typeof(MoreThanOneEmptyHandlerException))]
         public void Empty_MoreThanOne_Exception()
         {
@@ -485,7 +485,7 @@ namespace Tests
             p.Run(new string[] { }, sample);
         }
 
-        [TestMethod]
+        [Test]
         [ExpectedException(typeof(ParserExecutionTargetException))]
         public void Empty_Defined_Static_TargetNotNull_Exception()
         {
@@ -497,7 +497,7 @@ namespace Tests
             p.Run(new string[] { }, sample);
         }
 
-        [TestMethod]
+        [Test]
         [ExpectedException(typeof(ParserExecutionTargetException))]
         public void Empty_Defined_NotStatic_TargetNull_Exception()
         {
@@ -509,7 +509,7 @@ namespace Tests
             p.Run(new string[] { });
         }
 
-        [TestMethod]
+        [Test]
         public void EmptyHelp_Defined_Called()
         {
             var mock = new Mock<IPrinter>();
@@ -522,7 +522,7 @@ namespace Tests
             mock.Verify(o => o.Print("a"));
         }
 
-        [TestMethod]
+        [Test]
         [ExpectedException(typeof(ArgumentMismatchException))]
         public void EmptyHelp_Defined_IntParameter_Exception()
         {
@@ -534,7 +534,7 @@ namespace Tests
             p.Run(new string[] { }, sample);
         }
 
-        [TestMethod]
+        [Test]
         [ExpectedException(typeof(ArgumentMismatchException))]
         public void EmptyHelp_Defined_TwoParameters_Exception()
         {
@@ -546,7 +546,7 @@ namespace Tests
             p.Run(new string[] { }, sample);
         }
 
-        [TestMethod]
+        [Test]
         public void Help_WithAliases()
         {
             var mock = new Mock<IPrinter>();
@@ -564,7 +564,7 @@ namespace Tests
             mock.Verify(o => o.Print("help"), Times.Exactly(6));
         }
 
-        [TestMethod]
+        [Test]
         [ExpectedException(typeof(ParserExecutionTargetException))]
         public void Help_Static_CalledWithTarget_Exception()
         {
@@ -576,7 +576,7 @@ namespace Tests
             p.Run(new[] { "-?" }, sample);
         }
 
-        [TestMethod]
+        [Test]
         [ExpectedException(typeof(ParserExecutionTargetException))]
         public void Help_NonStatic_CalledWithNull_Exception()
         {
@@ -588,7 +588,7 @@ namespace Tests
             p.Run(new[] { "-?" });
         }
 
-        [TestMethod]
+        [Test]
         public void Help_Static()
         {
             var mock = new Mock<IPrinter>();
@@ -604,7 +604,7 @@ namespace Tests
             Sample_22.StaticPrinter = null;
         }
 
-        [TestMethod]
+        [Test]
         public void Help_NonStatic()
         {
             var mock = new Mock<IPrinter>();
@@ -617,7 +617,7 @@ namespace Tests
             mock.Verify(o => o.Print("help"));
         }
 
-        [TestMethod]
+        [Test]
         [ExpectedException(typeof(ArgumentMismatchException))]
         public void Help_MoreThanOneParameter_Exception()
         {
@@ -629,7 +629,7 @@ namespace Tests
             p.Run(new[] { "-?" }, sample);
         }
 
-        [TestMethod]
+        [Test]
         [ExpectedException(typeof(ArgumentMismatchException))]
         public void Help_IntParameter_Exception()
         {
@@ -641,7 +641,7 @@ namespace Tests
             p.Run(new[] { "-?" }, sample);
         }
 
-        [TestMethod]
+        [Test]
         [ExpectedException(typeof(MissingArgumentPrefixException))]
         public void MapArguments_InvalidPrefix_Exception()
         {
@@ -651,7 +651,7 @@ namespace Tests
             Execute(sample, "print *c=5 /msg=test /prefix=hello_");
         }
 
-        [TestMethod]
+        [Test]
         [ExpectedException(typeof(InvalidOperationException))]
         public void RegisterHelpHandler_MoreThanOnce_Exception()
         {
@@ -661,7 +661,7 @@ namespace Tests
             p.RegisterEmptyHandler(delegate { });
         }
 
-        [TestMethod]
+        [Test]
         [ExpectedException(typeof(InvalidOperationException))]
         public void RegisterEmptyHelpHandler_MoreThanOnce_Exception()
         {
@@ -671,7 +671,7 @@ namespace Tests
             p.RegisterEmptyHelpHandler(delegate { });
         }
 
-        [TestMethod]
+        [Test]
         [ExpectedException(typeof(InvalidOperationException))]
         public void RegisterHelpHandler_MoreThanOnce_SameKey_Exception()
         {
@@ -682,7 +682,7 @@ namespace Tests
             p.RegisterHelpHandler("a", delegate { });
         }
 
-        [TestMethod]
+        [Test]
         [ExpectedException(typeof(MissingVerbException))]
         public void Run_Verb_NoMatchingMethod_Exception()
         {
@@ -691,7 +691,7 @@ namespace Tests
             p.Run(new[] { "boo!" });
         }
 
-        [TestMethod]
+        [Test]
         [ExpectedException(typeof(MissingDefaultVerbException))]
         public void Run_NoVerb_NoDefaultVerb_Exception()
         {
@@ -700,7 +700,7 @@ namespace Tests
             p.Run(new string[] { "-x" });
         }
 
-        [TestMethod]
+        [Test]
         [ExpectedException(typeof(MissingVerbException))]
         public void Run_DefaultVerb_NoMatchingDefaultMethod_Exception()
         {
@@ -709,7 +709,7 @@ namespace Tests
             p.Run(new string[] { "-x" });
         }
 
-        [TestMethod]
+        [Test]
         public void GenericParser_Run()
         {
             var mock = new Mock<IPrinter>();

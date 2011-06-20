@@ -5,7 +5,7 @@ namespace CLAP.Validation
     [Serializable]
     public abstract class NumberValidationAttribute : ValidationAttribute
     {
-        protected int Number { get; private set; }
+        protected double Number { get; private set; }
 
         protected NumberValidationAttribute(NumberValidator validator)
             : base(validator)
@@ -22,12 +22,12 @@ namespace CLAP.Validation
         /// <summary>
         /// The number to validate with
         /// </summary>
-        public int Number { get; private set; }
+        public double Number { get; private set; }
 
         /// <summary>
         /// Constructor
         /// </summary>
-        protected NumberValidator(int number)
+        protected NumberValidator(double number)
         {
             Number = number;
         }
