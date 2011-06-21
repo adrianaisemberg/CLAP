@@ -1,4 +1,10 @@
-﻿using System;
+﻿//
+// Since downgrading from .NET 4.0 to 2.0,
+// All the Enumerable extension methods (LINQ) are no longer available (from System.Core).
+// All these methods are good enough to allow the fluent syntax, although not really LINQ.
+//
+
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -27,7 +33,12 @@ namespace CLAP
 
         public static T First<T>(this IEnumerable<T> collection)
         {
-            return First(collection, delegate { return true; });
+            foreach (var item in collection)
+            {
+                return item;
+            }
+
+            throw new InvalidOperationException("No elements in the collection that matches the predicate");
         }
 
         public static T First<T>(this IEnumerable<T> collection, Func<T, bool> predicate)
@@ -58,7 +69,12 @@ namespace CLAP
 
         public static bool Any<T>(this IEnumerable<T> collection)
         {
-            return Any(collection, delegate { return true; });
+            foreach (var item in collection)
+            {
+                return true;
+            }
+
+            return false;
         }
 
         public static bool Any<T>(this IEnumerable<T> collection, Func<T, bool> predicate)
@@ -76,7 +92,14 @@ namespace CLAP
 
         public static int Count<T>(this IEnumerable<T> collection)
         {
-            return Count(collection, delegate { return true; });
+            var c = 0;
+
+            foreach (var item in collection)
+            {
+                c++;
+            }
+
+            return c;
         }
 
         public static int Count<T>(this IEnumerable<T> collection, Func<T, bool> predicate)
@@ -184,7 +207,7 @@ namespace CLAP
         {
             foreach (var item in source)
             {
-                if (item.Equals(value))
+                if (object.Equals(item, value))
                 {
                     return true;
                 }

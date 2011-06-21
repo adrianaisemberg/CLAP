@@ -1,6 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿//
+// Since downgrading from .NET 4.0 to 2.0,
+// Action and Funct delegates are no longer available.
+// These are good enough.
+//
 
 namespace CLAP
 {
