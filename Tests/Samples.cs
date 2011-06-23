@@ -493,6 +493,12 @@ namespace Tests
         }
 
         [Verb]
+        public void Zoo([Parameter(Default = "5")] int n)
+        {
+            Printer.Print(n.ToString());
+        }
+
+        [Verb]
         public void Bar(
             string x,
             [Parameter(Default = "{2FBBAAAA-02AF-4F40-BADE-957F566B221E}")]

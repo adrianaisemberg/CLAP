@@ -770,5 +770,17 @@ namespace Tests
             //
             Parser<Sample_28>.Run(new string[0], sample);
         }
+
+        [Test]
+        public void Default_IntAsString()
+        {
+            var mock = new Mock<IPrinter>();
+
+            var sample = new Sample_28 { Printer = mock.Object };
+
+            Parser<Sample_28>.Run(new[] { "zoo" }, sample);
+
+            mock.Verify(o => o.Print("5"));
+        }
     }
 }
