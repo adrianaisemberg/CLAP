@@ -515,7 +515,7 @@ namespace CLAP
                 }
                 else if (type == typeof(Guid))
                 {
-                    return new Guid(value);
+                    return (String.IsNullOrEmpty(value) ? null : (Object)new Guid(value));
                 }
                 else
                 {
