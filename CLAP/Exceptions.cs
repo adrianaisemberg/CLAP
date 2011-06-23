@@ -131,7 +131,7 @@ namespace CLAP
         public Type Type { get; private set; }
 
         public TypeConvertionException(string value, Type type, Exception inner)
-            : base("'{0}' connot be converted to {1}".FormatWith(value, type), inner)
+            : base("'{0}' cannot be converted to {1}".FormatWith(value, type), inner)
         {
             Value = value;
             Type = type;
