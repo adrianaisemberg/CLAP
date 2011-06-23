@@ -484,6 +484,30 @@ namespace Tests
         }
     }
 
+    public class Sample_28 : BaseSample
+    {
+        [Verb]
+        public void Foo(string x, Guid g)
+        {
+            Printer.Print(x + g);
+        }
+
+        [Verb]
+        public void Bar(
+            string x,
+            [Parameter(Default = "{2FBBAAAA-02AF-4F40-BADE-957F566B221E}")]
+            Guid g)
+        {
+            Printer.Print(x + g);
+        }
+
+        [Empty, Help]
+        public void Help(string help)
+        {
+            Printer.Print(help);
+        }
+    }
+
     public enum Case
     {
         Upper,

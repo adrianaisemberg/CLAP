@@ -722,5 +722,53 @@ namespace Tests
 
             mock.Verify(o => o.Print("bar"));
         }
+
+        [Test]
+        public void Parse_GuidParameter()
+        {
+            var mock = new Mock<IPrinter>();
+
+            var sample = new Sample_28 { Printer = mock.Object };
+
+            Parser<Sample_28>.Run("foo -x:string -g:{0813A561-AC86-4C82-8EB1-0B6814637C7C}".Split(' '), sample);
+
+            mock.Verify(o => o.Print("string0813A561-AC86-4C82-8EB1-0B6814637C7C".ToLower()));
+        }
+
+        [Test]
+        public void Parse_GuidParameter_NoInput()
+        {
+            var mock = new Mock<IPrinter>();
+
+            var sample = new Sample_28 { Printer = mock.Object };
+
+            Parser<Sample_28>.Run("foo -x:string".Split(' '), sample);
+
+            mock.Verify(o => o.Print("string" + Guid.Empty));
+        }
+
+        [Test]
+        public void Parse_GuidParameter_WithDefault()
+        {
+            var mock = new Mock<IPrinter>();
+
+            var sample = new Sample_28 { Printer = mock.Object };
+
+            Parser<Sample_28>.Run("bar -x:string".Split(' '), sample);
+
+            mock.Verify(o => o.Print("string2FBBAAAA-02AF-4F40-BADE-957F566B221E".ToLower()));
+        }
+
+        [Test]
+        public void GetHelp_GuidParameter()
+        {
+            var mock = new Mock<IPrinter>();
+
+            var sample = new Sample_28 { Printer = mock.Object };
+
+            // should not fail. I don't care what the help string is
+            //
+            Parser<Sample_28>.Run(new string[0], sample);
+        }
     }
 }
