@@ -173,6 +173,13 @@ namespace CLAP
                     // the default is the value
                     //
                     value = parameter.Default;
+
+                    // convert the default value, if different from parameter's value (guid, for example)
+                    //
+                    if (value is string && !(p.ParameterType == typeof(string)))
+                    {
+                        value = GetValueForParameter(p.ParameterType, "{DEFAULT}", (string)value);
+                    }
                 }
                 else
                 {
@@ -515,7 +522,7 @@ namespace CLAP
                 }
                 else if (type == typeof(Guid))
                 {
-                    return (String.IsNullOrEmpty(value) ? null : (Object)new Guid(value));
+                    return string.IsNullOrEmpty(value) ? (object)null : new Guid(value);
                 }
                 else
                 {
@@ -545,7 +552,7 @@ namespace CLAP
             }
             if (p.Default != null)
             {
-                sb.AppendFormat(", Default = {0}".FormatWith(p.Default));
+                sb.AppendFormat(", Default = {0}", p.Default);
             }
 
             var validationAttributes = p.ParameterInfo.GetAttributes<ValidationAttribute>();
@@ -748,11 +755,14 @@ namespace CLAP
 
             Action<string> helpHandler = GetHelpHandler(arg);
 
-            var help = GetHelpString();
+            string help = null;
+
             var helpHandled = false;
 
             if (helpHandler != null)
             {
+                help = GetHelpString();
+
                 helpHandler(help);
 
                 helpHandled = true;
@@ -784,6 +794,11 @@ namespace CLAP
                         }
 
                         var obj = method.IsStatic ? null : target;
+
+                        if (help == null)
+                        {
+                            help = GetHelpString();
+                        }
 
                         method.Invoke(obj, new[] { help });
 
