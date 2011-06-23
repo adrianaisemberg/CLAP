@@ -513,6 +513,10 @@ namespace CLAP
                 {
                     return Enum.Parse(type, value);
                 }
+                else if (type == typeof(Guid))
+                {
+                    return (String.IsNullOrEmpty(value) ? null : (Object)new Guid(value));
+                }
                 else
                 {
                     return Convert.ChangeType(value, type);
