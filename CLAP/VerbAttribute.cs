@@ -15,7 +15,7 @@ namespace CLAP
         public string Aliases { get; set; }
 
         /// <summary>
-        /// The description
+        /// The description of the verb. Used to generate the help string
         /// </summary>
         public string Description { get; set; }
     }
