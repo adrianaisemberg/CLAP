@@ -277,7 +277,7 @@ namespace CLAP
             {
                 sb.AppendLine();
 
-                sb.AppendLine("{0}: {1}".FormatWith(verb.MethodInfo.Name, verb.Description));
+                sb.AppendLine("{0}: {1}".FormatWith(verb.Names.StringJoin("/"), verb.Description));
 
                 var parameters = GetParameters(verb.MethodInfo);
 

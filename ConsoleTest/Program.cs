@@ -43,7 +43,7 @@ namespace ConsoleTest
             }
         }
 
-        [Verb]
+        [Verb(Aliases = "f,fo,fooo")]
         public static void Foo(
             [Parameter(Aliases = "t", Description = "A string parameter with an additional alias")]
             string text,
