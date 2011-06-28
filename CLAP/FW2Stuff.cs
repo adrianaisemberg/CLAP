@@ -1,15 +1,21 @@
-﻿//
-// Since downgrading from .NET 4.0 to 2.0,
-// All the Enumerable extension methods (LINQ) are no longer available (from System.Core).
-// All these methods are good enough to allow the fluent syntax, although not really LINQ.
-//
+﻿#if FW2
 
-using System;
-using System.Collections;
 using System.Collections.Generic;
+using System.Collections;
+using System;
 
 namespace CLAP
 {
+    #region Delegates
+
+    public delegate void Action();
+
+    public delegate TResult Func<T, TResult>(T arg);
+
+    #endregion Delegates
+
+    #region Enumerable
+
     internal static class Enumerable
     {
         public static IEnumerable<T> Cast<T>(this IEnumerable collection)
@@ -216,4 +222,15 @@ namespace CLAP
             return false;
         }
     }
+
+    #endregion Enumerable
 }
+
+namespace System.Runtime.CompilerServices
+{
+    internal class ExtensionAttribute : Attribute
+    {
+    }
+}
+
+#endif

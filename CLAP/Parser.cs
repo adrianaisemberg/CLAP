@@ -4,6 +4,10 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Text;
 
+#if !FW2
+using System.Linq;
+#endif
+
 namespace CLAP
 {
     /// <summary>

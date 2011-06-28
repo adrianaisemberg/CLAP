@@ -2,6 +2,10 @@
 using System.Collections.Generic;
 using System.Reflection;
 
+#if !FW2
+using System.Linq;
+#endif
+
 namespace CLAP
 {
     internal static class Utils
