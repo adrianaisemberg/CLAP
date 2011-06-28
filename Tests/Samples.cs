@@ -68,6 +68,24 @@ namespace Tests
 
         [Verb]
         public void RegexMatchesEmail([RegexMatches(@"^([0-9a-zA-Z]([-.\w]*[0-9a-zA-Z])*@([0-9a-zA-Z][-\w]*[0-9a-zA-Z]\.)+[a-zA-Z]{2,9})$")] String text) { }
+
+        [Verb]
+        public void FileExists([FileExists] string path) { }
+
+        [Verb]
+        public void UriFileExists([FileExists] Uri path) { }
+
+        [Verb]
+        public void DirectoryExists([DirectoryExists] string path) { }
+
+        [Verb]
+        public void UriDirectoryExists([DirectoryExists] Uri path) { }
+
+        [Verb]
+        public void PathExists([PathExists] string path) { }
+
+        [Verb]
+        public void UriPathExists([PathExists] Uri path) { }
     }
 
     public class Sample_03 : BaseSample

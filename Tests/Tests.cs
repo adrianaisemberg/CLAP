@@ -104,7 +104,7 @@ namespace Tests
 
                 Assert.Fail();
             }
-            catch (CommandLineException)
+            catch (ValidationException)
             {
             }
         }
@@ -122,7 +122,7 @@ namespace Tests
 
                 Assert.Fail();
             }
-            catch (CommandLineException)
+            catch (ValidationException)
             {
             }
         }
@@ -139,7 +139,7 @@ namespace Tests
 
                 Assert.Fail();
             }
-            catch (CommandLineException)
+            catch (ValidationException)
             {
             }
         }
@@ -157,7 +157,7 @@ namespace Tests
 
                 Assert.Fail();
             }
-            catch (CommandLineException)
+            catch (ValidationException)
             {
             }
         }
@@ -175,7 +175,7 @@ namespace Tests
 
                 Assert.Fail();
             }
-            catch (CommandLineException)
+            catch (ValidationException)
             {
             }
         }
@@ -817,6 +817,103 @@ namespace Tests
             Parser<Sample_29>.Run("bar -x:string".Split(' '), sample);
 
             mock.Verify(o => o.Print("stringhttp://www.com/".ToLower()));
+        }
+
+        [Test]
+        public void Validation_FileExists()
+        {
+            var sample = new ValidationSample_01();
+            Execute(sample, @"fileexists /path=c:\windows\system32\cmd.exe");
+            Execute(sample, @"fileexists /path=%WINDIR%\system32\cmd.exe");
+
+            Execute(sample, @"urifileexists /path=c:\windows\system32\cmd.exe");
+            Execute(sample, @"urifileexists /path=%WINDIR%\system32\cmd.exe");
+
+            try
+            {
+                Execute(sample, @"fileexists /path=y:\{B2C97314-4C55-4EB9-9049-63BB65AC980A}.{6E8698D0-4CFA-4ACB-8AA3-26476F490228}");
+
+                Assert.Fail();
+            }
+            catch (ValidationException)
+            {
+            }
+
+            try
+            {
+                Execute(sample, @"urifileexists /path=y:\{B2C97314-4C55-4EB9-9049-63BB65AC980A}.{6E8698D0-4CFA-4ACB-8AA3-26476F490228}");
+
+                Assert.Fail();
+            }
+            catch (ValidationException)
+            {
+            }
+        }
+
+        [Test]
+        public void Validation_DirectoryExists()
+        {
+            var sample = new ValidationSample_01();
+            Execute(sample, @"directoryexists /path=c:\windows\system32");
+            Execute(sample, @"directoryexists /path=%WINDIR%\system32");
+
+            Execute(sample, @"uridirectoryexists /path=c:\windows\system32");
+            Execute(sample, @"uridirectoryexists /path=%WINDIR%\system32");
+
+            try
+            {
+                Execute(sample, @"directoryexists /path=y:\{B2C97314-4C55-4EB9-9049-63BB65AC980A}.{6E8698D0-4CFA-4ACB-8AA3-26476F490228}");
+
+                Assert.Fail();
+            }
+            catch (ValidationException)
+            {
+            }
+
+            try
+            {
+                Execute(sample, @"uridirectoryexists /path=y:\{B2C97314-4C55-4EB9-9049-63BB65AC980A}.{6E8698D0-4CFA-4ACB-8AA3-26476F490228}");
+
+                Assert.Fail();
+            }
+            catch (ValidationException)
+            {
+            }
+        }
+
+        [Test]
+        public void Validation_PathExists()
+        {
+            var sample = new ValidationSample_01();
+            Execute(sample, @"pathexists /path=c:\windows\system32");
+            Execute(sample, @"pathexists /path=%WINDIR%\system32");
+            Execute(sample, @"pathexists /path=c:\windows\system32\cmd.exe");
+            Execute(sample, @"pathexists /path=%WINDIR%\system32\cmd.exe");
+
+            Execute(sample, @"uripathexists /path=c:\windows\system32\cmd.exe");
+            Execute(sample, @"uripathexists /path=%WINDIR%\system32\cmd.exe");
+            Execute(sample, @"uripathexists /path=c:\windows\system32");
+            Execute(sample, @"uripathexists /path=%WINDIR%\system32");
+
+            try
+            {
+                Execute(sample, @"pathexists /path=y:\{B2C97314-4C55-4EB9-9049-63BB65AC980A}.{6E8698D0-4CFA-4ACB-8AA3-26476F490228}");
+
+                Assert.Fail();
+            }
+            catch (ValidationException)
+            {
+            }
+
+            try
+            {
+                Execute(sample, @"uripathexists /path=y:\{B2C97314-4C55-4EB9-9049-63BB65AC980A}.{6E8698D0-4CFA-4ACB-8AA3-26476F490228}");
+
+                Assert.Fail();
+            }
+            catch (ValidationException)
+            {
+            }
         }
     }
 }

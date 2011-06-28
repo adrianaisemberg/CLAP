@@ -67,6 +67,9 @@
     <Compile Include="Utils.cs" />
     <Compile Include="ValidationAttribute.cs" />
     <Compile Include="HelpAttribute.cs" />
+    <Compile Include="Validation\PathExistsAttribute.cs" />
+    <Compile Include="Validation\DirectoryExistsAttribute.cs" />
+    <Compile Include="Validation\FileExistsAttribute.cs" />
     <Compile Include="Validation\Less.cs" />
     <Compile Include="Validation\LessOrEqual.cs" />
     <Compile Include="Validation\More.cs" />

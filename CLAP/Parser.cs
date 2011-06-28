@@ -526,7 +526,7 @@ namespace CLAP
                 }
                 else if (type == typeof(Uri))
                 {
-                    return string.IsNullOrEmpty(value) ? (object)null : new Uri(value);
+                    return string.IsNullOrEmpty(value) ? (object)null : new Uri(Environment.ExpandEnvironmentVariables(value));
                 }
                 else
                 {
