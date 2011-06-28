@@ -782,5 +782,41 @@ namespace Tests
 
             mock.Verify(o => o.Print("5"));
         }
+
+        [Test]
+        public void Parse_UriParameter()
+        {
+            var mock = new Mock<IPrinter>();
+
+            var sample = new Sample_29 { Printer = mock.Object };
+
+            Parser<Sample_29>.Run("foo -x:string -u:http://www.com".Split(' '), sample);
+
+            mock.Verify(o => o.Print("stringhttp://www.com/".ToLower()));
+        }
+
+        [Test]
+        public void Parse_UriParameter_NoInput()
+        {
+            var mock = new Mock<IPrinter>();
+
+            var sample = new Sample_29 { Printer = mock.Object };
+
+            Parser<Sample_29>.Run("foo -x:string".Split(' '), sample);
+
+            mock.Verify(o => o.Print("string"));
+        }
+
+        [Test]
+        public void Parse_UriParameter_WithDefault()
+        {
+            var mock = new Mock<IPrinter>();
+
+            var sample = new Sample_29 { Printer = mock.Object };
+
+            Parser<Sample_29>.Run("bar -x:string".Split(' '), sample);
+
+            mock.Verify(o => o.Print("stringhttp://www.com/".ToLower()));
+        }
     }
 }

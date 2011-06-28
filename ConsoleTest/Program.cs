@@ -35,11 +35,11 @@ namespace ConsoleTest
         }
 
         [Verb]
-        public static void Print(string text, int count)
+        public static void Print(Uri address, int count)
         {
             for (int i = 0; i < count; i++)
             {
-                Console.WriteLine(text);
+                Console.WriteLine(address);
             }
         }
 
@@ -50,6 +50,9 @@ namespace ConsoleTest
 
             [Parameter(Default = 5, Description = "An int parameter with a default")]
             int number,
+
+            [Parameter(Default = "http://www.com")]
+            Uri address,
 
             [MoreThan(10)]
             [LessThan(100)]

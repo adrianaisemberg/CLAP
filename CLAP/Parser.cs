@@ -524,6 +524,10 @@ namespace CLAP
                 {
                     return string.IsNullOrEmpty(value) ? (object)null : new Guid(value);
                 }
+                else if (type == typeof(Uri))
+                {
+                    return string.IsNullOrEmpty(value) ? (object)null : new Uri(value);
+                }
                 else
                 {
                     return Convert.ChangeType(value, type);

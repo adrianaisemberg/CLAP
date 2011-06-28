@@ -514,6 +514,24 @@ namespace Tests
         }
     }
 
+    public class Sample_29 : BaseSample
+    {
+        [Verb]
+        public void Foo(string x, Uri u)
+        {
+            Printer.Print(x + u);
+        }
+
+        [Verb]
+        public void Bar(
+            string x,
+            [Parameter(Default = "http://www.com")]
+            Uri u)
+        {
+            Printer.Print(x + u);
+        }
+    }
+
     public enum Case
     {
         Upper,
