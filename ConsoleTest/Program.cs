@@ -10,7 +10,28 @@ namespace ConsoleTest
     {
         static void Main(string[] args)
         {
-            Parser<MyApp>.Run(args);
+            Parser<MyAppp>.Run(args, new MyAppp());
+        }
+    }
+
+    class MyAppp
+    {
+        [Empty, Help]
+        public static void Help(string h)
+        {
+            Console.WriteLine(h);
+        }
+
+        [Verb]
+        public static void Foo(string n)
+        {
+            Console.WriteLine(n);
+        }
+
+        [Verb]
+        public void Bar(string m)
+        {
+            Console.WriteLine(m);
         }
     }
 
