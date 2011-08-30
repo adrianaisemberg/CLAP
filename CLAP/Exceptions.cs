@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace CLAP
 {
@@ -179,6 +180,23 @@ namespace CLAP
         public ParserExecutionTargetException(string message) : base(message) { }
         public ParserExecutionTargetException(string message, Exception inner) : base(message, inner) { }
         protected ParserExecutionTargetException(
+          System.Runtime.Serialization.SerializationInfo info,
+          System.Runtime.Serialization.StreamingContext context)
+            : base(info, context) { }
+    }
+
+    [Serializable]
+    public class UnhandledParametersException : CommandLineException
+    {
+        public Dictionary<string, string> UnhandledParameters { get; private set; }
+
+        public UnhandledParametersException(Dictionary<string, string> unhandledParameters)
+            : base("Unhandled parameters: '{0}'".FormatWith(unhandledParameters.Keys.StringJoin(", ")))
+        {
+            UnhandledParameters = unhandledParameters;
+        }
+
+        protected UnhandledParametersException(
           System.Runtime.Serialization.SerializationInfo info,
           System.Runtime.Serialization.StreamingContext context)
             : base(info, context) { }

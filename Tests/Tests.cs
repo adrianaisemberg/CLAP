@@ -915,5 +915,66 @@ namespace Tests
             {
             }
         }
+
+        [Test]
+        public void Unhandled_Exception_One()
+        {
+            var mock = new Mock<IPrinter>();
+            var sample = new Sample_02 { Printer = mock.Object };
+
+            var p = Parser.Create<Sample_02>();
+
+            try
+            {
+                p.Run(new[]
+                {
+                    "-count:1",
+                    "-message:a",
+                    "-prefix:p",
+                    "-upper",
+                    "-what:x"
+                }, sample);
+
+                Assert.Fail();
+            }
+            catch (UnhandledParametersException ex)
+            {
+                Assert.AreEqual(1, ex.UnhandledParameters.Count());
+                Assert.AreEqual("what", ex.UnhandledParameters.First().Key);
+                Assert.AreEqual("x", ex.UnhandledParameters.First().Value);
+            }
+        }
+
+        [Test]
+        public void Unhandled_Exception_Some()
+        {
+            var mock = new Mock<IPrinter>();
+            var sample = new Sample_02 { Printer = mock.Object };
+
+            var p = Parser.Create<Sample_02>();
+
+            try
+            {
+                p.Run(new[]
+                {
+                    "-count:1",
+                    "-who:me",
+                    "-foo:bar",
+                    "-message:a",
+                    "-prefix:p",
+                    "-upper",
+                    "-what:x"
+                }, sample);
+
+                Assert.Fail();
+            }
+            catch (UnhandledParametersException ex)
+            {
+                Assert.AreEqual(3, ex.UnhandledParameters.Count());
+                Assert.IsTrue(ex.UnhandledParameters.Keys.Contains("who"));
+                Assert.IsTrue(ex.UnhandledParameters.Keys.Contains("foo"));
+                Assert.IsTrue(ex.UnhandledParameters.Keys.Contains("what"));
+            }
+        }
     }
 }

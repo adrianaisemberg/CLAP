@@ -188,6 +188,10 @@ namespace CLAP
                 else
                 {
                     stringValue = inputArgs[inputKey];
+
+                    // remove it so later we'll see which ones were not handled
+                    //
+                    inputArgs.Remove(inputKey);
                 }
 
                 if (value == null && inputKey != null)
@@ -213,6 +217,12 @@ namespace CLAP
                 //
                 parameters.Add(value);
             }
+
+            if (inputArgs.Any())
+            {
+                throw new UnhandledParametersException(inputArgs);
+            }
+
 
             // invoke the method with the list of parameters
             //
@@ -671,6 +681,8 @@ namespace CLAP
         /// </summary>
         private void HandleRegisteredGlobals(Dictionary<string, string> args)
         {
+            var handled = new List<string>();
+
             foreach (var kvp in args)
             {
                 GlobalParameterHandler handler = null;
@@ -678,7 +690,15 @@ namespace CLAP
                 if (m_globalRegisteredHandlers.TryGetValue(kvp.Key, out handler))
                 {
                     handler.Handler(kvp.Value);
+                    handled.Add(kvp.Key);
                 }
+            }
+
+            // remove them so later we'll see which ones were not handled
+            //
+            foreach (var h in handled)
+            {
+                args.Remove(h);
             }
         }
 
@@ -748,6 +768,10 @@ namespace CLAP
                         throw new NotSupportedException(
                             "Method {0} has more than one parameter and cannot be handled as a global handler".FormatWith(method.Name));
                     }
+
+                    // remove it so later we'll see which ones were not handled
+                    //
+                    args.Remove(key);
                 }
             }
         }
