@@ -171,7 +171,7 @@ namespace CLAP
                 {
                     if (parameter.Required)
                     {
-                        throw new MissingRequiredArgumentException(p.Name);
+                        throw new MissingRequiredArgumentException(verb, p.Name);
                     }
 
                     // the default is the value

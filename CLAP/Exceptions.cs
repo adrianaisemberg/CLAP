@@ -63,10 +63,12 @@ namespace CLAP
     public class MissingRequiredArgumentException : CommandLineException
     {
         public string ParameterName { get; private set; }
+        public string Verb { get; private set; }
 
-        public MissingRequiredArgumentException(string parameter)
+        public MissingRequiredArgumentException(string verb, string parameter)
             : base("Missing argument for required parameter '{0}'".FormatWith(parameter))
         {
+            Verb = verb;
             ParameterName = parameter;
         }
 
