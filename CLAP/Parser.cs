@@ -862,14 +862,17 @@ namespace CLAP
             }
 
             var definedEmptyHandlers = m_type.GetMethodsWith<EmptyAttribute>();
+            var definedEmptyHandlersCount = definedEmptyHandlers.Count();
 
-            if (definedEmptyHandlers.Count() > 1)
+            if (definedEmptyHandlersCount > 1)
             {
                 throw new MoreThanOneEmptyHandlerException();
             }
 
-            foreach (var method in definedEmptyHandlers)
+            if (definedEmptyHandlersCount == 1)
             {
+                var method = definedEmptyHandlers.First();
+
                 if (!method.IsStatic && target == null)
                 {
                     throw new ParserExecutionTargetException(
@@ -919,6 +922,15 @@ namespace CLAP
                             ex);
                     }
                 }
+            }
+
+            if (m_type.HasAttribute<DefaultVerbAttribute>())
+            {
+                var verb = m_type.GetAttribute<DefaultVerbAttribute>().Verb;
+
+                var method = GetMethod(m_type, verb);
+
+                method.MethodInfo.Invoke(target, null);
             }
         }
 

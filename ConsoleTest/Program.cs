@@ -10,7 +10,21 @@ namespace ConsoleTest
     {
         static void Main(string[] args)
         {
-            Parser<MyAppp>.Run(args, new MyAppp());
+            Parser<AnotherApp>.Run(args);
+        }
+    }
+
+    [DefaultVerb("test")]
+    class AnotherApp
+    {
+        [Verb]
+        public static void Test()
+        {
+        }
+
+        [Empty]
+        public static void Empty()
+        {
         }
     }
 
