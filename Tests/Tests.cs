@@ -987,5 +987,16 @@ namespace Tests
 
             mock.Verify(o => o.Print("works!"));
         }
+
+        [Test]
+        public void Execute_DefaultVerb_NoInput_MethodWithParameters()
+        {
+            var mock = new Mock<IPrinter>();
+            var sample = new Sample_31 { Printer = mock.Object };
+
+            Parser<Sample_31>.Run(new string[] { }, sample);
+
+            mock.Verify(o => o.Print("works!"));
+        }
     }
 }

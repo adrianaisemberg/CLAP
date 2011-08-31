@@ -18,7 +18,7 @@ namespace ConsoleTest
     class AnotherApp
     {
         [Verb]
-        public static void Test()
+        public static void Test(string x, int y)
         {
         }
 

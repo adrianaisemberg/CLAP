@@ -560,6 +560,16 @@ namespace Tests
         }
     }
 
+    [DefaultVerb("foo")]
+    public class Sample_31 : BaseSample
+    {
+        [Verb]
+        public void Foo(string x, int y)
+        {
+            Printer.Print("works!");
+        }
+    }
+
     public enum Case
     {
         Upper,

@@ -924,13 +924,19 @@ namespace CLAP
                 }
             }
 
+            // if there is a default verb - execute it
+            //
             if (m_type.HasAttribute<DefaultVerbAttribute>())
             {
                 var verb = m_type.GetAttribute<DefaultVerbAttribute>().Verb;
 
                 var method = GetMethod(m_type, verb);
 
-                method.MethodInfo.Invoke(target, null);
+                // create an array of (null) arguments that matches the method
+                //
+                var parameters = method.MethodInfo.GetParameters().Select(p => (object)null).ToArray();
+
+                method.MethodInfo.Invoke(target, parameters);
             }
         }
 
