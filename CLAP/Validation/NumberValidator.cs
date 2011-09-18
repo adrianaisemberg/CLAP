@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 
 namespace CLAP.Validation
 {
@@ -35,7 +36,6 @@ namespace CLAP.Validation
         /// <summary>
         /// Validate
         /// </summary>
-        /// <param name="value"></param>
-        public abstract void Validate(object value);
+        public abstract void Validate(ParameterInfo parameter, object value);
     }
 }

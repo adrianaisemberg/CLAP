@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Threading;
+using System.Reflection;
 using CLAP;
 using CLAP.Validation;
 
@@ -10,7 +10,7 @@ namespace ConsoleTest
     {
         static void Main(string[] args)
         {
-            Parser<AnotherApp>.Run(args);
+            Parser<MyApp>.Run(args);
         }
     }
 
@@ -210,7 +210,7 @@ namespace ConsoleTest
                 Length = length;
             }
 
-            public void Validate(object value)
+            public void Validate(ParameterInfo parameter, object value)
             {
                 var str = (string)value;
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 
 namespace CLAP.Validation
 {
@@ -40,13 +41,16 @@ namespace CLAP.Validation
             /// <summary>
             /// Validate
             /// </summary>
-            public override void Validate(object value)
+            public override void Validate(ParameterInfo parameter, object value)
             {
                 var doubleValue = (double)Convert.ChangeType(value, typeof(double));
 
                 if (doubleValue > Number)
                 {
-                    throw new ValidationException("{0} is not less or equal to {1}".FormatWith(value, Number));
+                    throw new ValidationException("{0}: {1} is not less or equal to {2}".FormatWith(
+                        parameter.Name,
+                        value,
+                        Number));
                 }
             }
         }

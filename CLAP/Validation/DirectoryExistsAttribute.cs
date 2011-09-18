@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.IO;
+using System.Reflection;
 
 namespace CLAP.Validation
 {
@@ -27,7 +26,7 @@ namespace CLAP.Validation
 
         private class DirectoryExistsValidator : IParameterValidator
         {
-            public void Validate(object value)
+            public void Validate(ParameterInfo parameter, object value)
             {
                 string path = string.Empty;
 
@@ -42,7 +41,9 @@ namespace CLAP.Validation
 
                 if (!Directory.Exists(path))
                 {
-                    throw new ValidationException("'{0}' is not an existing directory".FormatWith(path));
+                    throw new ValidationException("{0}: '{1}' is not an existing directory".FormatWith(
+                        parameter.Name,
+                        path));
                 }
             }
         }

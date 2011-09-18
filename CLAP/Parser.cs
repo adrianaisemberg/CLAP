@@ -209,7 +209,7 @@ namespace CLAP
                     //
                     foreach (var validator in validators)
                     {
-                        validator.Validate(value);
+                        validator.Validate(p, value);
                     }
                 }
 
@@ -756,7 +756,7 @@ namespace CLAP
                                 //
                                 foreach (var validator in validators)
                                 {
-                                    validator.Validate(value);
+                                    validator.Validate(p, value);
                                 }
                             }
 

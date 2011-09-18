@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 
 namespace CLAP
 {
@@ -40,6 +41,6 @@ namespace CLAP
         /// <summary>
         /// Validate the value
         /// </summary>
-        void Validate(object value);
+        void Validate(ParameterInfo parameter, object value);
     }
 }

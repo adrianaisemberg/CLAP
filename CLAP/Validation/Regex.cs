@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 using System.Text.RegularExpressions;
 
 namespace CLAP.Validation
@@ -51,12 +52,14 @@ namespace CLAP.Validation
             /// <summary>
             /// Validate
             /// </summary>
-            /// <param name="value"></param>
-            public void Validate(object value)
+            public void Validate(ParameterInfo parameter, object value)
             {
                 if (!Regex.IsMatch(value.ToString(), Pattern))
                 {
-                    throw new ValidationException("'{0}' does not match regex '{1}'".FormatWith(value, Pattern));
+                    throw new ValidationException("{0}: '{1}' does not match regex '{2}'".FormatWith(
+                        parameter.Name,
+                        value,
+                        Pattern));
                 }
             }
         }
