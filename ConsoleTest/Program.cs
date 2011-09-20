@@ -60,6 +60,16 @@ namespace ConsoleTest
             Debugger.Launch();
         }
 
+        [Error]
+        public static void Error(Exception ex)
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+
+            Console.WriteLine(ex.Message);
+
+            Console.ResetColor();
+        }
+
         [Empty, Help]
         public static void Help(string help)
         {

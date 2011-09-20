@@ -29,6 +29,8 @@ namespace CLAP
 
         private Dictionary<string, Action<string>> m_registeredHelpHandlers;
         private Action m_registeredEmptyHandler;
+        private Action<Exception> m_registeredErrorHandler;
+        private bool m_registeredErrorHandlerRethrow;
 
         #endregion Fields
 
@@ -71,162 +73,176 @@ namespace CLAP
         /// </summary>
         public void Run(string[] args, object obj)
         {
-            // no args
-            //
-            if (args.None())
+            ValidateDefinedErrorHandlers();
+
+            try
             {
-                HandleEmptyArguments(obj);
-
-                return;
-            }
-
-            // the first arg should be the verb, unless there is no verb and a default is used
-            //
-            var firstArg = args[0];
-
-            if (HandleHelp(firstArg, obj))
-            {
-                return;
-            }
-
-            var verb = firstArg;
-
-            // a flag, in case there is no verb
-            //
-            var noVerb = false;
-
-            // find the method by the given verb
-            //
-            var method = GetMethod(m_type, verb);
-
-            // if no method is found - a default has to exist
-            //
-            if (method == null)
-            {
-                // if there is a verb input but no method was found - throw
-                if (verb != null && !s_prefixes.Any(p => p.Equals(verb[0].ToString())))
-                {
-                    throw new MissingVerbException(verb);
-                }
-
-                // no default - error
+                // no args
                 //
-                if (!m_type.HasAttribute<DefaultVerbAttribute>())
+                if (args.None())
                 {
-                    throw new MissingDefaultVerbException();
+                    HandleEmptyArguments(obj);
+
+                    return;
                 }
 
-                verb = m_type.GetAttribute<DefaultVerbAttribute>().Verb;
+                // the first arg should be the verb, unless there is no verb and a default is used
+                //
+                var firstArg = args[0];
 
-                method = GetMethod(m_type, verb);
+                if (HandleHelp(firstArg, obj))
+                {
+                    return;
+                }
 
-                // there is a verb, but no method matches it
+                var verb = firstArg;
+
+                // a flag, in case there is no verb
+                //
+                var noVerb = false;
+
+                // find the method by the given verb
+                //
+                var method = GetMethod(m_type, verb);
+
+                // if no method is found - a default has to exist
                 //
                 if (method == null)
                 {
-                    throw new MissingVerbException(verb);
+                    // if there is a verb input but no method was found - throw
+                    if (verb != null && !s_prefixes.Any(p => p.Equals(verb[0].ToString())))
+                    {
+                        throw new MissingVerbException(verb);
+                    }
+
+                    // no default - error
+                    //
+                    if (!m_type.HasAttribute<DefaultVerbAttribute>())
+                    {
+                        throw new MissingDefaultVerbException();
+                    }
+
+                    verb = m_type.GetAttribute<DefaultVerbAttribute>().Verb;
+
+                    method = GetMethod(m_type, verb);
+
+                    // there is a verb, but no method matches it
+                    //
+                    if (method == null)
+                    {
+                        throw new MissingVerbException(verb);
+                    }
+
+                    noVerb = true;
                 }
 
-                noVerb = true;
+                // if there is a verb - skip the first arg
+                //
+                var inputArgs = MapArguments(noVerb ? args : args.Skip(1));
+
+                HandleGlobals(inputArgs, obj);
+
+                // a list of the available parameters
+                //
+                var list = GetParameters(method.MethodInfo);
+
+                // the actual refelcted parameters
+                //
+                var methodParameters = method.MethodInfo.GetParameters();
+
+                // a list of values, used when invoking the method
+                //
+                var parameters = new List<object>();
+
+                foreach (var p in methodParameters)
+                {
+                    var parameter = list.First(param => param.ParameterInfo == p);
+                    var names = parameter.Names;
+
+                    // according to the parameter names, try to find a match from the input
+                    //
+                    var inputKey = names.FirstOrDefault(n => inputArgs.ContainsKey(n));
+
+                    // the input value
+                    //
+                    string stringValue = null;
+
+                    // the actual value, converted to the relevant parameter type
+                    //
+                    object value = null;
+
+                    // if no input was found that matches this parameter
+                    //
+                    if (inputKey == null)
+                    {
+                        if (parameter.Required)
+                        {
+                            throw new MissingRequiredArgumentException(verb, p.Name);
+                        }
+
+                        // the default is the value
+                        //
+                        value = parameter.Default;
+
+                        // convert the default value, if different from parameter's value (guid, for example)
+                        //
+                        if (value is string && !(p.ParameterType == typeof(string)))
+                        {
+                            value = GetValueForParameter(p.ParameterType, "{DEFAULT}", (string)value);
+                        }
+                    }
+                    else
+                    {
+                        stringValue = inputArgs[inputKey];
+
+                        // remove it so later we'll see which ones were not handled
+                        //
+                        inputArgs.Remove(inputKey);
+                    }
+
+                    if (value == null && inputKey != null)
+                    {
+                        value = GetValueForParameter(p.ParameterType, inputKey, stringValue);
+                    }
+
+                    // validation
+                    //
+                    if (value != null && Attribute.IsDefined(p, typeof(ValidationAttribute)))
+                    {
+                        var validators = p.GetAttributes<ValidationAttribute>().Select(a => a.Validator);
+
+                        // all validators must pass
+                        //
+                        foreach (var validator in validators)
+                        {
+                            validator.Validate(p, value);
+                        }
+                    }
+
+                    // we have a valid value - add it to the list of parameters
+                    //
+                    parameters.Add(value);
+                }
+
+                if (inputArgs.Any())
+                {
+                    throw new UnhandledParametersException(inputArgs);
+                }
+
+
+                // invoke the method with the list of parameters
+                //
+                method.MethodInfo.Invoke(obj, parameters.ToArray());
             }
-
-            // if there is a verb - skip the first arg
-            //
-            var inputArgs = MapArguments(noVerb ? args : args.Skip(1));
-
-            HandleGlobals(inputArgs, obj);
-
-            // a list of the available parameters
-            //
-            var list = GetParameters(method.MethodInfo);
-
-            // the actual refelcted parameters
-            //
-            var methodParameters = method.MethodInfo.GetParameters();
-
-            // a list of values, used when invoking the method
-            //
-            var parameters = new List<object>();
-
-            foreach (var p in methodParameters)
+            catch (Exception ex)
             {
-                var parameter = list.First(param => param.ParameterInfo == p);
-                var names = parameter.Names;
+                var rethrow = HandleError(ex, obj);
 
-                // according to the parameter names, try to find a match from the input
-                //
-                var inputKey = names.FirstOrDefault(n => inputArgs.ContainsKey(n));
-
-                // the input value
-                //
-                string stringValue = null;
-
-                // the actual value, converted to the relevant parameter type
-                //
-                object value = null;
-
-                // if no input was found that matches this parameter
-                //
-                if (inputKey == null)
+                if (rethrow)
                 {
-                    if (parameter.Required)
-                    {
-                        throw new MissingRequiredArgumentException(verb, p.Name);
-                    }
-
-                    // the default is the value
-                    //
-                    value = parameter.Default;
-
-                    // convert the default value, if different from parameter's value (guid, for example)
-                    //
-                    if (value is string && !(p.ParameterType == typeof(string)))
-                    {
-                        value = GetValueForParameter(p.ParameterType, "{DEFAULT}", (string)value);
-                    }
+                    throw;
                 }
-                else
-                {
-                    stringValue = inputArgs[inputKey];
-
-                    // remove it so later we'll see which ones were not handled
-                    //
-                    inputArgs.Remove(inputKey);
-                }
-
-                if (value == null && inputKey != null)
-                {
-                    value = GetValueForParameter(p.ParameterType, inputKey, stringValue);
-                }
-
-                // validation
-                //
-                if (value != null && Attribute.IsDefined(p, typeof(ValidationAttribute)))
-                {
-                    var validators = p.GetAttributes<ValidationAttribute>().Select(a => a.Validator);
-
-                    // all validators must pass
-                    //
-                    foreach (var validator in validators)
-                    {
-                        validator.Validate(p, value);
-                    }
-                }
-
-                // we have a valid value - add it to the list of parameters
-                //
-                parameters.Add(value);
             }
-
-            if (inputArgs.Any())
-            {
-                throw new UnhandledParametersException(inputArgs);
-            }
-
-
-            // invoke the method with the list of parameters
-            //
-            method.MethodInfo.Invoke(obj, parameters.ToArray());
         }
 
         /// <summary>
@@ -301,7 +317,9 @@ namespace CLAP
                 }
             }
 
-            if (m_globalRegisteredHandlers.Any() || GetDefinedGlobals().Any())
+            var definedGlobals = GetDefinedGlobals();
+
+            if (m_globalRegisteredHandlers.Any() || definedGlobals.Any())
             {
                 sb.AppendLine();
                 sb.AppendLine("Global parameters:");
@@ -310,8 +328,6 @@ namespace CLAP
                 {
                     sb.AppendLine(" -{0}: {1} [{2}]".FormatWith(handler.Name, handler.Desription, handler.Type.Name));
                 }
-
-                var definedGlobals = GetDefinedGlobals();
 
                 foreach (var handler in definedGlobals)
                 {
@@ -355,6 +371,22 @@ namespace CLAP
             }
 
             m_registeredEmptyHandler = handler;
+        }
+
+        public void RegisterErrorHandler(Action<Exception> handler)
+        {
+            RegisterErrorHandler(handler, false);
+        }
+
+        public void RegisterErrorHandler(Action<Exception> handler, bool rethrow)
+        {
+            if (m_registeredErrorHandler != null)
+            {
+                throw new InvalidOperationException("Error handler is already registered");
+            }
+
+            m_registeredErrorHandler = handler;
+            m_registeredErrorHandlerRethrow = rethrow;
         }
 
         #endregion Public Methods
@@ -709,6 +741,17 @@ namespace CLAP
             return globals;
         }
 
+        private IEnumerable<ErrorHandler> GetDefinedErrorHandlers()
+        {
+            var errorHandlers = m_type.GetMethodsWith<ErrorAttribute>();
+
+            return errorHandlers.Select(m => new ErrorHandler
+            {
+                Method = m,
+                ReThrow = m.GetAttribute<ErrorAttribute>().ReThrow,
+            });
+        }
+
         /// <summary>
         /// Handles any defined global parameter that has any input
         /// </summary>
@@ -940,6 +983,96 @@ namespace CLAP
             }
         }
 
+        private bool HandleError(Exception ex, object target)
+        {
+            if (m_registeredErrorHandler != null)
+            {
+                m_registeredErrorHandler(ex);
+
+                return m_registeredErrorHandlerRethrow;
+            }
+            else
+            {
+                var definedErrorHandlers = GetDefinedErrorHandlers();
+
+                Debug.Assert(definedErrorHandlers.Count() <= 1);
+
+                var handler = definedErrorHandlers.FirstOrDefault();
+
+                if (handler != null)
+                {
+                    var parameters = handler.Method.GetParameters();
+
+                    if (parameters.None())
+                    {
+                        handler.Method.Invoke(target, null);
+                    }
+                    else
+                    {
+                        Debug.Assert(parameters.Length == 1);
+                        Debug.Assert(parameters[0].ParameterType == typeof(Exception));
+
+                        handler.Method.Invoke(target, new[] { ex });
+                    }
+
+                    return handler.ReThrow;
+                }
+
+                // no handler - rethrow
+                //
+                return true;
+            }
+        }
+
+        private void ValidateDefinedErrorHandlers()
+        {
+            // check for too many defined global error handlers
+            //
+            var definedErrorHandlers = GetDefinedErrorHandlers();
+
+            var count = definedErrorHandlers.Count();
+
+            // good
+            //
+            if (count == 0)
+            {
+                return;
+            }
+
+            if (count > 1)
+            {
+                throw new MoreThanOneErrorHandlerException();
+            }
+
+            // there is only one defined handler
+            //
+            var method = definedErrorHandlers.First().Method;
+
+            var parameters = method.GetParameters();
+
+            // no parameters - good
+            //
+            if (parameters.None())
+            {
+                return;
+            }
+            else if (parameters.Length > 1)
+            {
+                throw new ArgumentMismatchException(
+                    "Method '{0}' is marked as [Error] so it should have a single Exception parameter or none".FormatWith(method));
+            }
+            else
+            {
+                var parameter = parameters.First();
+
+                if (parameter.ParameterType != typeof(Exception))
+                {
+                    throw new ArgumentMismatchException(
+                        "Method '{0}' is marked as [Error] so it should have a single Exception parameter or none".FormatWith(method));
+                }
+            }
+        }
+
         #endregion Private Methods
 
         #region Types
@@ -950,6 +1083,12 @@ namespace CLAP
             internal Action<string> Handler { get; set; }
             internal string Desription { get; set; }
             internal Type Type { get; set; }
+        }
+
+        internal class ErrorHandler
+        {
+            internal MethodInfo Method { get; set; }
+            internal bool ReThrow { get; set; }
         }
 
         #endregion Types

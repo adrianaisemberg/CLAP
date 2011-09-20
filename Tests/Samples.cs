@@ -570,6 +570,69 @@ namespace Tests
         }
     }
 
+    public class Sample_32 : BaseSample
+    {
+        [Error]
+        public void Error1()
+        {
+        }
+
+        [Error]
+        public void Error2()
+        {
+        }
+    }
+
+    public class Sample_33 : BaseSample
+    {
+        public Exception Ex { get; set; }
+
+        [Error(ReThrow = true)]
+        public void Error(Exception ex)
+        {
+            Ex = ex;
+        }
+
+        [Verb]
+        public void Foo()
+        {
+            throw new Exception("blah");
+        }
+    }
+
+    public class Sample_34 : BaseSample
+    {
+        public bool Handled { get; set; }
+
+        [Error(ReThrow = true)]
+        public void Error()
+        {
+            Handled = true;
+        }
+
+        [Verb]
+        public void Foo()
+        {
+            throw new Exception("blah");
+        }
+    }
+
+    public class Sample_35 : BaseSample
+    {
+        [Error]
+        public void Error(int x)
+        {
+        }
+    }
+
+    public class Sample_36 : BaseSample
+    {
+        [Error]
+        public void Error(TargetInvocationException ex)
+        {
+        }
+    }
+
     public enum Case
     {
         Upper,

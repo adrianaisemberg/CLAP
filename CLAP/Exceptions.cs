@@ -162,6 +162,21 @@ namespace CLAP
     }
 
     [Serializable]
+    public class MoreThanOneErrorHandlerException : CommandLineException
+    {
+        public MoreThanOneErrorHandlerException()
+            : this("More than one error handler was defined. Only a single method can be marked with [Error] in a type.")
+        {
+        }
+        public MoreThanOneErrorHandlerException(string message) : base(message) { }
+        public MoreThanOneErrorHandlerException(string message, Exception inner) : base(message, inner) { }
+        protected MoreThanOneErrorHandlerException(
+          System.Runtime.Serialization.SerializationInfo info,
+          System.Runtime.Serialization.StreamingContext context)
+            : base(info, context) { }
+    }
+
+    [Serializable]
     public class ArgumentMismatchException : CommandLineException
     {
         public ArgumentMismatchException() { }

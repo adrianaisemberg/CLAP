@@ -998,5 +998,199 @@ namespace Tests
 
             mock.Verify(o => o.Print("works!"));
         }
+
+        [Test]
+        public void Execute_HandleError_Registered_NoRethrow()
+        {
+            var mock = new Mock<IPrinter>();
+            var sample = new Sample_13 { Printer = mock.Object };
+
+            var p = Parser.Create<Sample_13>();
+            var handled = false;
+
+            p.RegisterErrorHandler(ex =>
+            {
+                handled = true;
+            }, false);
+
+            p.Run(new string[] { }, sample);
+
+            Assert.IsTrue(handled);
+        }
+
+        [Test]
+        public void Execute_HandleError_Registered_DefaultNoRethrow()
+        {
+            var mock = new Mock<IPrinter>();
+            var sample = new Sample_13 { Printer = mock.Object };
+
+            var p = Parser.Create<Sample_13>();
+            var handled = false;
+
+            p.RegisterErrorHandler(ex =>
+            {
+                handled = true;
+            });
+
+            p.Run(new string[] { }, sample);
+
+            Assert.IsTrue(handled);
+        }
+
+        [Test]
+        public void Execute_HandleError_Registered_Rethrow()
+        {
+            var mock = new Mock<IPrinter>();
+            var sample = new Sample_13 { Printer = mock.Object };
+
+            var p = Parser.Create<Sample_13>();
+            var handled = false;
+
+            p.RegisterErrorHandler(ex =>
+            {
+                handled = true;
+            }, true);
+
+            try
+            {
+                p.Run(new string[] { }, sample);
+
+                Assert.Fail();
+            }
+            catch (MoreThanOneEmptyHandlerException)
+            {
+                Assert.IsTrue(handled);
+            }
+        }
+
+        [Test]
+        public void Execute_HandleError_Registered_UnhandledParameters()
+        {
+            var mock = new Mock<IPrinter>();
+            var sample = new Sample_02 { Printer = mock.Object };
+
+            var p = Parser.Create<Sample_02>();
+
+            var handled = false;
+
+            p.RegisterErrorHandler(ex =>
+            {
+                handled = true;
+            }, false);
+
+            p.Run(new[]
+            {
+                "-count:1",
+                "-message:a",
+                "-prefix:p",
+                "-upper",
+                "-what:x"
+            }, sample);
+
+            Assert.IsTrue(handled);
+        }
+
+        [Test]
+        public void Execute_HandleError_Registered_ValidationError()
+        {
+            var sample = new ValidationSample_01();
+
+            var p = Parser.Create<ValidationSample_01>();
+            var handled = false;
+
+            p.RegisterErrorHandler(ex =>
+            {
+                handled = true;
+            }, false);
+
+            p.Run(new[] { "morethan5", "/n=1" }, sample);
+
+            Assert.IsTrue(handled);
+        }
+
+        [Test]
+        [ExpectedException(typeof(MoreThanOneErrorHandlerException))]
+        public void Error_MoreThanOne_Exception()
+        {
+            var mock = new Mock<IPrinter>();
+            var sample = new Sample_32 { Printer = mock.Object };
+
+            var p = Parser.Create<Sample_32>();
+
+            p.Run(new string[] { }, sample);
+        }
+
+        [Test]
+        [ExpectedException(typeof(ArgumentMismatchException))]
+        public void Error_DefinedWithInt_Exception()
+        {
+            Parser<Sample_35>.Run(null);
+        }
+
+        [Test]
+        [ExpectedException(typeof(ArgumentMismatchException))]
+        public void Error_DefinedWithBadException_Exception()
+        {
+            Parser<Sample_36>.Run(null);
+        }
+
+        [Test]
+        public void Error_Handled_1()
+        {
+            var sample = new Sample_33();
+
+            Assert.IsNull(sample.Ex);
+
+            try
+            {
+                Parser<Sample_33>.Run(new[] { "foo1" }, sample);
+
+                Assert.Fail();
+            }
+            catch (Exception ex)
+            {
+                Assert.IsNotNull(sample.Ex);
+                Assert.AreEqual(ex, sample.Ex);
+            }
+        }
+
+        [Test]
+        public void Error_Handled_2()
+        {
+            var sample = new Sample_33();
+
+            Assert.IsNull(sample.Ex);
+
+            try
+            {
+                Parser<Sample_33>.Run(new[] { "foo" }, sample);
+
+                Assert.Fail();
+            }
+            catch (Exception ex)
+            {
+                Assert.IsNotNull(sample.Ex);
+                Assert.AreEqual(ex, sample.Ex);
+            }
+        }
+
+        [Test]
+        public void Error_Handled_Empty()
+        {
+            var sample = new Sample_34();
+
+            Assert.IsFalse(sample.Handled);
+
+            try
+            {
+                Parser<Sample_34>.Run(new[] { "foo" }, sample);
+
+                Assert.Fail();
+            }
+            catch
+            {
+                Assert.IsTrue(sample.Handled);
+            }
+        }
     }
 }

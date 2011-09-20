@@ -69,6 +69,7 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ErrorAttribute.cs" />
     <Compile Include="DefaultVerbAttribute.cs" />
     <Compile Include="FW2Stuff.cs" />
     <Compile Include="EmptyAttribute.cs" />
