@@ -596,6 +596,13 @@ namespace CLAP
 
             sb.Append(p.ParameterInfo.ParameterType.Name);
 
+            if (p.ParameterInfo.ParameterType.IsEnum)
+            {
+                var values = Enum.GetNames(p.ParameterInfo.ParameterType);
+
+                sb.AppendFormat(":[{0}]", values.StringJoin(","));
+            }
+
             if (p.Required)
             {
                 sb.Append(", Required");
