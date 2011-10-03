@@ -60,6 +60,16 @@ namespace CLAP
             throw new InvalidOperationException("No elements in the collection that matches the predicate");
         }
 
+        public static T FirstOrDefault<T>(this IEnumerable<T> collection)
+        {
+            foreach (var item in collection)
+            {
+                return item;
+            }
+
+            return default(T);
+        }
+
         public static T FirstOrDefault<T>(this IEnumerable<T> collection, Func<T, bool> predicate)
         {
             foreach (var item in collection)
