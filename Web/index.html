@@ -14,10 +14,24 @@
                 <a href="#what" class="menu_item">WHAT</a>
                 <a href="#attributes" class="menu_item">ATTRIBUTES</a>
                 <div class="sub_menu" menu_id="#attributes">
-                    <a href="#attributes_verb" class="sub_menu_item">Verb</a>
-                    <a href="#attributes_parameter" class="sub_menu_item">Parameter</a>
-                    <a href="#attributes_defaultverb" class="sub_menu_item">DefaultVerb</a>
-                    <a href="#attributes_global" class="sub_menu_item">Global</a>
+                    <a href="#attribute_verb" class="sub_menu_item">Verb</a>
+                    <a href="#attribute_parameter" class="sub_menu_item">Parameter</a>
+                    <a href="#attribute_defaultverb" class="sub_menu_item">DefaultVerb</a>
+                    <a href="#attribute_empty" class="sub_menu_item">Empty</a>
+                    <a href="#attribute_error" class="sub_menu_item">Error</a>
+                    <a href="#attribute_help" class="sub_menu_item">Help</a>
+                    <a href="#attribute_global" class="sub_menu_item">Global</a>
+                </div>
+                <a href="#validation" class="menu_item">VALIDATION</a>
+                <div class="sub_menu" menu_id="#validation">
+                    <a href="#validation_lessthan" class="sub_menu_item">LessThan</a>
+                    <a href="#validation_lessorequalto" class="sub_menu_item">LessOrEqualTo</a>
+                    <a href="#validation_morethan" class="sub_menu_item">MoreThan</a>
+                    <a href="#validation_moreorequalto" class="sub_menu_item">MoreOrEqualTo</a>
+                    <a href="#validation_regexmatches" class="sub_menu_item">RegexMatches</a>
+                    <a href="#validation_fileexists" class="sub_menu_item">FileExists</a>
+                    <a href="#validation_directoryexists" class="sub_menu_item">DirectoryExists</a>
+                    <a href="#validation_pathexists" class="sub_menu_item">PathExists</a>
                 </div>
                 <a href="#samples" class="menu_item">SAMPLES</a>
                 <a href="#expressions" class="menu_item">EXPRESSIONS</a>
@@ -36,15 +50,262 @@
                     <h2>Attributes</h2>
                     <p>Using CLAP with attributes is the easiest way to create your app's functionality.</p>
                     <p>CLAP's attributes allow you to define various verbs, parameters, global parameters, even error-handling and more.</p>
-                    <p>There's no reason for your <span class="code">void Main()</span> method to be more than a single line of code.</p>
-                    <div class="attribute">
-                        <div class="attribute_name">Verb</div>
-                        <div class="attribute_description">Marks a method as an available verb</div>
+                    <p>There's no reason for your <span class="code highlight">void Main()</span> method to be more than a single line of code.</p>
+                    <div class="attribute" id="attribute_verb">
+                        <div class="attribute_name code">Verb</div>
+                        <div class="attribute_description">
+                            <p>Marks a method as an available verb.</p>
+                        </div>
                         <div class="attribute_properties">
+                            <h3>Properties:</h3>
                             <div class="attribute_property">
-                                <span class="attribute_property_name">Aliases</span>
-                                <span class="attribute_property_type">String</span>
-                                <div class="attribute_property_description">Additional aliases for the verb</div>
+                                <div class="attribute_property_name code">Aliases (String)</div>
+                                <div class="attribute_property_description">
+                                    <p>Additional aliases for the verb.</p>
+                                </div>
+                            </div>
+                            <div class="attribute_property">
+                                <div class="attribute_property_name code">Description (String)</div>
+                                <div class="attribute_property_description">
+                                    <p>Used to describe the verb when displaying help.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="attribute_samples">
+                            <h3>Example:</h3>
+                            <pre class="attribute_sample code">
+  class Program
+  {
+      <span class="highlight code">[Verb]</span>
+      public static void Foo()
+      {
+      }
+  }</pre>
+                        </div>
+                    </div>
+                    <div class="attribute" id="attribute_parameter">
+                        <div class="attribute_name code">Parameter</div>
+                        <div class="attribute_description">
+                            <p>Adds additional properties to verb's parameters.</p>
+                            <p>Using the Parameter attribute is only required if any of the properties is needed, otherwise, it is optional.</p>
+                            <h3>Supported types:</h3>
+                            <ul>
+                                <li>String</li>
+                                <li>Numeric (int, float etc)</li>
+                                <li>Boolean (can also used as switches: <span class="code highlight">-p:true</span> is the same as <span class="code highlight">-p</span>)</li>
+                                <li>Enums</li>
+                                <li>Guid</li>
+                                <li>Uri</li>
+                                <li>Arrays of all the above (as CSV)</li>
+                            </ul>
+                        </div>
+                        <div class="attribute_properties">
+                            <h3>Properties:</h3>
+                            <div class="attribute_property">
+                                <div class="attribute_property_name code">Default (Object)</div>
+                                <div class="attribute_property_description">The default value of the parameter, in-case no input was provided</div>
+                            </div>
+                            <div class="attribute_property">
+                                <div class="attribute_property_name code">Required (Boolean)</div>
+                                <div class="attribute_property_description">Whether the parameter is required</div>
+                            </div>
+                            <div class="attribute_property">
+                                <div class="attribute_property_name code">Aliases (String)</div>
+                                <div class="attribute_property_description">Additional aliases for the parameter</div>
+                            </div>
+                            <div class="attribute_property">
+                                <div class="attribute_property_name code">Description (String)</div>
+                                <div class="attribute_property_description">Used to describe the verb when displaying help</div>
+                            </div>
+                        </div>
+                        <div class="attribute_samples">
+                            <h3>Example:</h3>
+                            <pre class="attribute_sample code">
+  class Program
+  {
+      [Verb]
+      public static void Foo(
+          <span class="highlight code">[Parameter(Required=true)]</span>
+          string name,
+          <span class="highlight">[Parameter(Default=5)]</span>
+          int count,
+          bool upperCase)
+      {
+      }
+  }</pre>
+                        </div>
+                    </div>
+                    <div class="attribute" id="attribute_defaultverb">
+                        <div class="attribute_name code">DefaultVerb(String verb)</div>
+                        <div class="attribute_description">
+                            <p>Marks a class with a default verb to execute in-case no verb was provided by the user.</p>
+                        </div>
+                        <div class="attribute_samples">
+                            <h3>Example:</h3>
+                            <pre class="attribute_sample code">
+  <span class="highlight code">[DefaultVerb("Foo")]</span>
+  class Program
+  {
+      [Verb]
+      public static void Foo()
+      {
+      }
+  }</pre>
+                        </div>
+                    </div>
+                    <div class="attribute" id="attribute_empty">
+                        <div class="attribute_name code">Empty</div>
+                        <div class="attribute_description">
+                            <p>Marks a method to execute when no input was provided by the user.</p>
+                            <p>Only a single method can be marked with <span class="code highlight">[Empty]</span> in a class.</p>
+                        </div>
+                        <div class="attribute_samples">
+                            <h3>Example:</h3>
+                            <pre class="attribute_sample code">
+  class Program
+  {
+      [Verb]
+      public static void Foo()
+      {
+      }
+
+      <span class="highlight code">[Empty]</span>
+      public static void NoInput()
+      {
+      }
+  }</pre>
+                        </div>
+                    </div>
+                    <div class="attribute" id="attribute_error">
+                        <div class="attribute_name code">Error</div>
+                        <div class="attribute_description">
+                            <p>Marks a method to execute when an error occurs.</p>
+                            <p>Only a single method can be marked with <span class="code highlight">[Error]</span> and it must match one of the following signatures:</p>
+                            <div class="code highlight" style="margin-bottom:2px">void Error() {}</div>
+                            <div class="code highlight">void Error(Exception ex) {}</div>
+                            <h4>Notice that there is no restriction for the name of the method, only the signature.</h4>
+                        </div>
+                        <div class="attribute_properties">
+                            <h3>Properties:</h3>
+                            <div class="attribute_property">
+                                <div class="attribute_property_name code">ReThrow (Boolean)</div>
+                                <div class="attribute_property_description">Whether to rethrow the execption after handling it</div>
+                            </div>
+                        </div>
+                        <div class="attribute_samples">
+                            <h3>Example:</h3>
+                            <pre class="attribute_sample code">
+  class Program
+  {
+      [Verb]
+      public static void Foo()
+      {
+      }
+
+      <span class="highlight code">[Error]</span>
+      public static void HandleError(Exception ex)
+      {
+      }
+  }</pre>
+                        </div>
+                    </div>
+                    <div class="attribute" id="attribute_help">
+                        <div class="attribute_name code">Help</div>
+                        <div class="attribute_description">
+                            <p>Marks a method to execute when the user requests for help.</p>
+                            <p>The method must match the following signature:</p>
+                            <div class="code highlight">void Help(string help) {}</div>
+                        </div>
+                        <div class="attribute_properties">
+                            <h3>Properties:</h3>
+                            <div class="attribute_property">
+                                <div class="attribute_property_name code">Name (String)</div>
+                                <div class="attribute_property_description">The parameter name for the help. If none specified - the method name is used instead.</div>
+                            </div>
+                            <div class="attribute_property">
+                                <div class="attribute_property_name code">Aliases (String)</div>
+                                <div class="attribute_property_description">Additional aliases for the parameter name</div>
+                            </div>
+                        </div>
+                        <div class="attribute_samples">
+                            <h3>Example:</h3>
+                            <pre class="attribute_sample code">
+  class Program
+  {
+      [Verb]
+      public static void Foo()
+      {
+      }
+
+      <span class="highlight code">[Help]</span>
+      public static void ShowHelp(string help)
+      {
+      }
+  }</pre>
+                        </div>
+                    </div>
+                    <div class="attribute" id="attribute_global">
+                        <div class="attribute_name code">Global</div>
+                        <div class="attribute_description">
+                            <p>Marks a method as a global parameter. A global parameter is available for all verbs within a class.
+                            <p>The global attribute can be applied only to methods that accept no more than a single supported parameter.
+                            If a method has no parameters - it is treated as a boolean switch.</p>
+                            <p>All globals are called before the executing verb.</p>
+                        </div>
+                        <div class="attribute_properties">
+                            <h3>Properties:</h3>
+                            <div class="attribute_property">
+                                <div class="attribute_property_name code">Name (String)</div>
+                                <div class="attribute_property_description">The parameter name. If none specified - the method name is used instead.</div>
+                            </div>
+                            <div class="attribute_property">
+                                <div class="attribute_property_name code">Aliases (String)</div>
+                                <div class="attribute_property_description">Additional aliases for the parameter name</div>
+                            </div>
+                            <div class="attribute_property">
+                                <div class="attribute_property_name code">Description (String)</div>
+                                <div class="attribute_property_description">Used to describe the parameter when displaying help</div>
+                            </div>
+                        </div>
+                        <div class="attribute_samples">
+                            <h3>Example:</h3>
+                            <pre class="attribute_sample code">
+  class Program
+  {
+      [Verb]
+      public static void Foo()
+      {
+      }
+
+      <span class="highlight code">[Global]</span>
+      public static void Log(string message)
+      {
+      }
+
+      <span class="highlight code">[Global(Aliases="d")]</span>
+      public static void Debug()
+      {
+          Debugger.Launch();
+      }
+  }</pre>
+                        </div>
+                    </div>
+                </div>
+                <div id="validation" class="content">
+                    <h2>Validation</h2>
+                    <p>xxx.</p>
+                    <div class="attribute" id="validation_lessthan">
+                        <div class="attribute_name code">LessThan</div>
+                        <div class="attribute_description">
+                            <p>xxx</p>
+                        </div>
+                        <div class="attribute_properties">
+                            <h3>Properties:</h3>
+                            <div class="attribute_property">
+                                <div class="attribute_property_name code">xxx (xxx)</div>
+                                <div class="attribute_property_description">
+                                    <p>xxx</p>
+                                </div>
                             </div>
                         </div>
                     </div>
