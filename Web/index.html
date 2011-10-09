@@ -1,17 +1,21 @@
 <html>
 <head>
+    <title>CLAP: Command-Line Auto Parser</title>
     <link rel="stylesheet" type="text/css" href="style.css"/>
+    <link rel="stylesheet" type="text/css" href="syntaxhighlighter/shCore.css"/>
+    <link rel="stylesheet" type="text/css" href="syntaxhighlighter/shThemeDefault.css"/>
     <script type="text/javascript" src="jquery-1.6.2.min.js"></script>
+    <script type="text/javascript" src="syntaxhighlighter/shCore.js"></script>
+    <script type="text/javascript" src="syntaxhighlighter/shBrushCSharp.js"></script>
     <script type="text/javascript" src="script.js"></script>
 </head>
 <body>
     <div id="container">
-        <div id="top">
-            <h2>CLAP: Command-Line Auto-Parser (for .NET)</h2>
-        </div>
-        <div>
+        <div id="header">CLAP: .NET Command-Line Auto-Parser</div>
+        <div id="center">
             <div id="left">
                 <a href="#what" class="menu_item">WHAT</a>
+                <a href="#using" class="menu_item">USING CLAP</a>
                 <a href="#attributes" class="menu_item">ATTRIBUTES</a>
                 <div class="sub_menu" menu_id="#attributes">
                     <a href="#attribute_verb" class="sub_menu_item">Verb</a>
@@ -33,21 +37,65 @@
                     <a href="#validation_directoryexists" class="sub_menu_item">DirectoryExists</a>
                     <a href="#validation_pathexists" class="sub_menu_item">PathExists</a>
                 </div>
-                <a href="#samples" class="menu_item">SAMPLES</a>
+                <a href="#custom_validation" class="menu_item">CUSTOM VALIDATION</a>
                 <a href="#expressions" class="menu_item">EXPRESSIONS</a>
+                <div class="sub_menu" menu_id="#expressions">
+                    <a href="#expressions_empty" class="sub_menu_item">Empty Handlers</a>
+                    <a href="#expressions_help" class="sub_menu_item">Help Handlers</a>
+                    <a href="#expressions_emptyhelp" class="sub_menu_item">Empty Help Handlers</a>
+                    <a href="#expressions_error" class="sub_menu_item">Error Handlers</a>
+                    <a href="#expressions_global" class="sub_menu_item">Global Handlers</a>
+                </div>
+                <a href="#examples" class="menu_item">EXAMPLES</a>
                 <a href="#download" class="menu_item">DOWNLOAD</a>
+                <a href="#about" class="menu_item">ABOUT</a>
             </div>
             <div id="right">
                 <div id="home" class="content">
-                    <h2>Home</h2>
+                    <h3>Home</h3>
                     <video>Video</video>
                 </div>
                 <div id="what" class="content">
-                    <h2>What is clap</h2>
+                    <h3>What is clap</h3>
                     <p>clap</p>
                 </div>
+                <div id="using" class="content">
+                    <h3>Using CLAP</h3>
+                    <ol>
+                        <li>Download the CLAP dll</li>
+                        <li>Add a reference to the dll from your Console or Windows application</li>
+                        <li>Add a <span class="code highlight">using</span> statement: <span class="code">using CLAP;</span></li>
+                        <li>Implement a verbs class (see the Attributes section)</li>
+                        <li>
+                            From your <span class="code">void Main</span> method, add a call to CLAP's parser using your class:<br/>
+                            <pre class="brush: csharp, highlight: 3">
+                                static void Main(string[] args)
+                                {
+                                    Parser&lt;TheApp>.Run(args);
+                                }
+                            </pre>
+                        </li>
+                    </ol>
+                    <h3>Static vs. Instance</h3>
+                    <p>
+                        If all the verbs of a class are static, using the above example is enough.
+                        However, if the verbs are not static, calling the parser requires an instance of the class.
+                    </p>
+                    <p>The following example shows how to the parser with a instance of the class:</p>
+                    <pre class="brush: csharp, highlight: 4">
+                        static void Main(string[] args)
+                        {
+                            var theApp = new TheApp();
+                            Parser&lt;TheApp>.Run(args, theApp);
+                        }
+                    </pre>
+                    <h3>Installing CLAP using NuGet</h3>
+                    <p>If you have NuGet installed, steps 1-2 can be skipped.</p>
+                    <p>Either find CLAP from the NuGet manager, or run the following command from NuGet's console:</p>
+                    <p class="code">PM> <span class="code highlight">Install-Package clap</span></p>
+                </div>
                 <div id="attributes" class="content">
-                    <h2>Attributes</h2>
+                    <h3>Attributes</h3>
                     <p>Using CLAP with attributes is the easiest way to create your app's functionality.</p>
                     <p>CLAP's attributes allow you to define various verbs, parameters, global parameters, even error-handling and more.</p>
                     <p>There's no reason for your <span class="code highlight">void Main()</span> method to be more than a single line of code.</p>
@@ -60,27 +108,24 @@
                             <h3>Properties:</h3>
                             <div class="attribute_property">
                                 <div class="attribute_property_name code">Aliases (String)</div>
-                                <div class="attribute_property_description">
-                                    <p>Additional aliases for the verb.</p>
-                                </div>
+                                <div class="attribute_property_description">Additional aliases for the verb.</div>
                             </div>
                             <div class="attribute_property">
                                 <div class="attribute_property_name code">Description (String)</div>
-                                <div class="attribute_property_description">
-                                    <p>Used to describe the verb when displaying help.</p>
-                                </div>
+                                <div class="attribute_property_description">Used to describe the verb when displaying help.</div>
                             </div>
                         </div>
                         <div class="attribute_samples">
                             <h3>Example:</h3>
-                            <pre class="attribute_sample code">
-  class Program
-  {
-      <span class="highlight code">[Verb]</span>
-      public static void Foo()
-      {
-      }
-  }</pre>
+                            <pre class="brush: csharp, highlight: 3">
+                                class Program
+                                {
+                                    [Verb]
+                                    public static void Foo()
+                                    {
+                                    }
+                                }
+                            </pre>
                         </div>
                     </div>
                     <div class="attribute" id="attribute_parameter">
@@ -120,37 +165,39 @@
                         </div>
                         <div class="attribute_samples">
                             <h3>Example:</h3>
-                            <pre class="attribute_sample code">
-  class Program
-  {
-      [Verb]
-      public static void Foo(
-          <span class="highlight code">[Parameter(Required=true)]</span>
-          string name,
-          <span class="highlight">[Parameter(Default=5)]</span>
-          int count,
-          bool upperCase)
-      {
-      }
-  }</pre>
+                            <pre class="brush: csharp, highlight: [5,7]">
+                                class Program
+                                {
+                                    [Verb]
+                                    public static void Foo(
+                                        [Parameter(Required=true)]
+                                        string name,
+                                        [Parameter(Default=5)]
+                                        int count,
+                                        bool upperCase)
+                                    {
+                                    }
+                                }
+                            </pre>
                         </div>
                     </div>
                     <div class="attribute" id="attribute_defaultverb">
-                        <div class="attribute_name code">DefaultVerb(String verb)</div>
+                        <div class="attribute_name code">DefaultVerb(string verb)</div>
                         <div class="attribute_description">
                             <p>Marks a class with a default verb to execute in-case no verb was provided by the user.</p>
                         </div>
                         <div class="attribute_samples">
                             <h3>Example:</h3>
-                            <pre class="attribute_sample code">
-  <span class="highlight code">[DefaultVerb("Foo")]</span>
-  class Program
-  {
-      [Verb]
-      public static void Foo()
-      {
-      }
-  }</pre>
+                            <pre class="brush: csharp, highlight: 1">
+                                [DefaultVerb("Foo")]
+                                class Program
+                                {
+                                    [Verb]
+                                    public static void Foo()
+                                    {
+                                    }
+                                }
+                            </pre>
                         </div>
                     </div>
                     <div class="attribute" id="attribute_empty">
@@ -161,19 +208,20 @@
                         </div>
                         <div class="attribute_samples">
                             <h3>Example:</h3>
-                            <pre class="attribute_sample code">
-  class Program
-  {
-      [Verb]
-      public static void Foo()
-      {
-      }
+                            <pre class="brush: csharp, highlight: 8">
+                                class Program
+                                {
+                                    [Verb]
+                                    public static void Foo()
+                                    {
+                                    }
 
-      <span class="highlight code">[Empty]</span>
-      public static void NoInput()
-      {
-      }
-  }</pre>
+                                    [Empty]
+                                    public static void NoInput()
+                                    {
+                                    }
+                                }
+                            </pre>
                         </div>
                     </div>
                     <div class="attribute" id="attribute_error">
@@ -194,19 +242,20 @@
                         </div>
                         <div class="attribute_samples">
                             <h3>Example:</h3>
-                            <pre class="attribute_sample code">
-  class Program
-  {
-      [Verb]
-      public static void Foo()
-      {
-      }
+                            <pre class="brush: csharp, highlight: 8">
+                                class Program
+                                {
+                                    [Verb]
+                                    public static void Foo()
+                                    {
+                                    }
 
-      <span class="highlight code">[Error]</span>
-      public static void HandleError(Exception ex)
-      {
-      }
-  }</pre>
+                                    [Error]
+                                    public static void HandleError(Exception ex)
+                                    {
+                                    }
+                                }
+                            </pre>
                         </div>
                     </div>
                     <div class="attribute" id="attribute_help">
@@ -229,19 +278,20 @@
                         </div>
                         <div class="attribute_samples">
                             <h3>Example:</h3>
-                            <pre class="attribute_sample code">
-  class Program
-  {
-      [Verb]
-      public static void Foo()
-      {
-      }
+                            <pre class="brush: csharp, highlight: 8">
+                                class Program
+                                {
+                                    [Verb]
+                                    public static void Foo()
+                                    {
+                                    }
 
-      <span class="highlight code">[Help]</span>
-      public static void ShowHelp(string help)
-      {
-      }
-  }</pre>
+                                    [Help]
+                                    public static void ShowHelp(string help)
+                                    {
+                                    }
+                                }
+                            </pre>
                         </div>
                     </div>
                     <div class="attribute" id="attribute_global">
@@ -269,61 +319,479 @@
                         </div>
                         <div class="attribute_samples">
                             <h3>Example:</h3>
-                            <pre class="attribute_sample code">
-  class Program
-  {
-      [Verb]
-      public static void Foo()
-      {
-      }
+                            <pre class="brush: csharp, highlight: [8,13]">
+                                class Program
+                                {
+                                    [Verb]
+                                    public static void Foo()
+                                    {
+                                    }
 
-      <span class="highlight code">[Global]</span>
-      public static void Log(string message)
-      {
-      }
+                                    [Global]
+                                    public static void Log(string message)
+                                    {
+                                    }
 
-      <span class="highlight code">[Global(Aliases="d")]</span>
-      public static void Debug()
-      {
-          Debugger.Launch();
-      }
-  }</pre>
+                                    [Global(Aliases="d")]
+                                    public static void Debug()
+                                    {
+                                        Debugger.Launch();
+                                    }
+                                }
+                            </pre>
                         </div>
                     </div>
                 </div>
                 <div id="validation" class="content">
-                    <h2>Validation</h2>
-                    <p>xxx.</p>
+                    <h3>Validation</h3>
+                    <p>Validation attributes validate the input before executing the verb.</p>
+                    <p>CLAP comes with some built-in validation attributes and custom validation can be easily implemented.</p>
                     <div class="attribute" id="validation_lessthan">
-                        <div class="attribute_name code">LessThan</div>
+                        <div class="attribute_name code">LessThan(double number)</div>
                         <div class="attribute_description">
-                            <p>xxx</p>
+                            <p>Validates that a numeric value is less than a specified value.</p>
                         </div>
-                        <div class="attribute_properties">
-                            <h3>Properties:</h3>
-                            <div class="attribute_property">
-                                <div class="attribute_property_name code">xxx (xxx)</div>
-                                <div class="attribute_property_description">
-                                    <p>xxx</p>
-                                </div>
-                            </div>
+                        <div class="attribute_samples">
+                            <h3>Example:</h3>
+                            <pre class="brush: csharp, highlight: 5">
+                                class Program
+                                {
+                                    [Verb]
+                                    public static void Foo(
+                                        [LessThan(10)]
+                                        int count)
+                                    {
+                                    }
+                                }
+                            </pre>
+                        </div>
+                    </div>
+                    <div class="attribute" id="validation_lessorequalto">
+                        <div class="attribute_name code">LessOrEqualTo(double number)</div>
+                        <div class="attribute_description">
+                            <p>Validates that a numeric value is less or equals a specified value.</p>
+                        </div>
+                        <div class="attribute_samples">
+                            <h3>Example:</h3>
+                            <pre class="brush: csharp, highlight: 5">
+                                class Program
+                                {
+                                    [Verb]
+                                    public static void Foo(
+                                        [LessOrEqualTo(30.5)]
+                                        double angle)
+                                    {
+                                    }
+                                }
+                            </pre>
+                        </div>
+                    </div>
+                    <div class="attribute" id="validation_morethan">
+                        <div class="attribute_name code">MoreThan(double number)</div>
+                        <div class="attribute_description">
+                            <p>Validates that a numeric value is more than a specified value.</p>
+                        </div>
+                        <div class="attribute_samples">
+                            <h3>Example:</h3>
+                            <pre class="brush: csharp, highlight: 5">
+                                class Program
+                                {
+                                    [Verb]
+                                    public static void Foo(
+                                        [MoreThan(10)]
+                                        int count)
+                                    {
+                                    }
+                                }
+                            </pre>
+                        </div>
+                    </div>
+                    <div class="attribute" id="validation_moreorequalto">
+                        <div class="attribute_name code">MoreOrEqualTo(double number)</div>
+                        <div class="attribute_description">
+                            <p>Validates that a numeric value is more or equals a specified value.</p>
+                        </div>
+                        <div class="attribute_samples">
+                            <h3>Example:</h3>
+                            <pre class="brush: csharp, highlight: 5">
+                                class Program
+                                {
+                                    [Verb]
+                                    public static void Foo(
+                                        [MoreOrEqualTo(30.5)]
+                                        double angle)
+                                    {
+                                    }
+                                }
+                            </pre>
+                        </div>
+                    </div>
+                    <div class="attribute" id="validation_regexmatches">
+                        <div class="attribute_name code">RegexMatches(string pattern)</div>
+                        <div class="attribute_description">
+                            <p>Validates that a string value matches a specified regular-expression.</p>
+                        </div>
+                        <div class="attribute_samples">
+                            <h3>Example:</h3>
+                            <pre class="brush: csharp, highlight: 5">
+                                class Program
+                                {
+                                    [Verb]
+                                    public static void Foo(
+                                        [RegexMatches(@"[0-9a-zA-Z]*")]
+                                        string name)
+                                    {
+                                    }
+                                }
+                            </pre>
+                        </div>
+                    </div>
+                    <div class="attribute" id="validation_fileexists">
+                        <div class="attribute_name code">FileExists</div>
+                        <div class="attribute_description">
+                            <p>Validates that a file exists.</p>
+                        </div>
+                        <div class="attribute_samples">
+                            <h3>Example:</h3>
+                            <pre class="brush: csharp, highlight: 5">
+                                class Program
+                                {
+                                    [Verb]
+                                    public static void Foo(
+                                        [FileExists]
+                                        string filePath)
+                                    {
+                                    }
+                                }
+                            </pre>
+                        </div>
+                    </div>
+                    <div class="attribute" id="validation_directoryexists">
+                        <div class="attribute_name code">DirectoryExists</div>
+                        <div class="attribute_description">
+                            <p>Validates that a directory exists.</p>
+                        </div>
+                        <div class="attribute_samples">
+                            <h3>Example:</h3>
+                            <pre class="brush: csharp, highlight: 5">
+                                class Program
+                                {
+                                    [Verb]
+                                    public static void Foo(
+                                        [DirectoryExists]
+                                        string path)
+                                    {
+                                    }
+                                }
+                            </pre>
+                        </div>
+                    </div>
+                    <div class="attribute" id="validation_pathexists">
+                        <div class="attribute_name code">PathExists</div>
+                        <div class="attribute_description">
+                            <p>Validates that a file or a directory exists.</p>
+                        </div>
+                        <div class="attribute_samples">
+                            <h3>Example:</h3>
+                            <pre class="brush: csharp, highlight: 5">
+                                class Program
+                                {
+                                    [Verb]
+                                    public static void Foo(
+                                        [PathExists]
+                                        string path)
+                                    {
+                                    }
+                                }
+                            </pre>
                         </div>
                     </div>
                 </div>
-                <div id="samples" class="content">
-                    <h2>Samples</h2>
-                    <p>samples</p>
+                <div id="custom_validation" class="content">
+                    <h3>Custom Validation</h3>
+                    <p>CLAP comes with a set of built-in validation attributes, however,
+                    additional custom validation attributes can be easily implemented and used.</p>
+                    <h2>Creating a custom validator</h2>
+                    <p>Creating a custom validator requires implementing a validator class that implementes the IParameterValidator interface
+                    and a validation attribute class that derives from ValidationAttribute.</p>
+                    <h3>1. Implement the IParameterValidator interface</h3>
+                    <p>Create a class and implement the following method:</p>
+                    <p class="code">void Validate(ParameterInfo parameter, object value);</p>
+                    <h3>Example:</h3>
+                    <pre class="brush: csharp, highlight: 10">
+                        class LengthValidator : IParameterValidator
+                        {
+                            public int Length { get; private set; }
+
+                            public LengthValidator(int length)
+                            {
+                                Length = length;
+                            }
+
+                            public void Validate(ParameterInfo parameter, object value)
+                            {
+                                var str = (string)value;
+
+                                if (str.Length < Length)
+                                {
+                                    throw new ValidationException(
+                                        string.Format("Length should be at least {0}", Length));
+                                }
+                            }
+                        }
+                    </pre>
+                    <p>
+                        Notice that the <span class="highlight code">parameter</span> argument is not used in this example.
+                        The important part is the actual value being validated. The additional
+                        <span class="code">parameter</span> argument is provided in-case validation needs to be against 
+                        reflected information about the parameter type, or, if that information is required for creating a
+                        validation error message.<br/>
+                        Anyway, it is provided and can be ignored.
+                    </p>
+                    <h3>2. Derive from ValidationAttribute</h3>
+                    <p>
+                        Create a class that derives from ValidationAttribute and create an 
+                        instance of the validator class (from the previous step) in the constructor.
+                    </p>
+                    <h3>Example:</h3>
+                    <pre class="brush: csharp, highlight: [2,7]">
+                        [AttributeUsage(AttributeTargets.Parameter)]
+                        class LengthAtLeastAttribute : ValidationAttribute
+                        {
+                            public int Length { get; private set; }
+
+                            public LengthAtLeastAttribute(int length)
+                                : base(new LengthValidator(length))
+                            {
+                                Length = length;
+                            }
+
+                            public override string Description
+                            {
+                                get
+                                {
+                                    return string.Format(
+                                        "Length is at least {0}", Length);
+                                }
+                            }
+                        }
+                    </pre>
+                    <p>
+                        In this example, the attribute is used to validate that an input string has a length of
+                        at least a specified number of characters.
+                        For example:
+                        <pre class="brush: csharp, highlight: [2,7]">
+                        [Verb]
+                        public static void Foo([LengthAtLeast(10)] string text)
+                        {
+                        }
+                        </pre>
+                        The <span class="code">text</span> argument must be at least 10 characters long, otherwise,
+                        an exception will be thrown.
+                    </p>
+                    <p>
+                        The <span class="code">Description</span> property is used when generating the help string.
+                    </p>
                 </div>
                 <div id="expressions" class="content">
-                    <h2>Expressions</h2>
-                    <p>expressions</p>
+                    <h3>Expressions</h3>
+                    <p>Creating a verbs class is easy and the result is a beautiful class with clear separation of concerns.</p>
+                    <p>
+                        Defining error, help and empty handlers, as well as global parameters 
+                        can be also implemented using methods on an existing parser.
+                        These methods use lambda expressions syntax to define the behavior.
+                    </p>
+                    <p>
+                        If you own all the application's code, there is no real motivation for using the expressions syntax.
+                        However, if you don't have the source of the program (you only have the binary)
+                        and you can't derive from the program's class (it is sealed) - then adding the extra functionality is possible
+                        only using expressions.
+                    </p>
+                    <p>Following is an example for using one of the expression methods:</p>
+                    <pre class="brush: csharp, highlight: 5">
+                        static void Main(string[] args)
+                        {
+                            var p = Parser.Create&lt;TheApp>();
+
+                            p.RegisterParameterHandler("debug", () => Debugger.Launch());
+
+                            p.Run(args);
+                        }
+                    </pre>
+                    <p>
+                        In this example, we take at existing verbs class (TheApp) and add the 
+                        <span class="code highlight">-debug</span> functionality that triggers the debugger.
+                    </p>
+                    <h2>Expression Methods</h2>
+                    <div class="attribute" id="expressions_empty">
+                        <div class="attribute_name code">RegisterEmptyHandler(Action handler)</div>
+                        <div class="attribute_description">
+                            <p>Registers an action that will be executed when no input was provided by the user.</p>
+                            <p>
+                                Only a single empty handler can be registered. Trying to register more than one
+                                handler will throw a <span class="code">MoreThanOneEmptyHandlerException</span>.
+                            </p>
+                        </div>
+                        <div class="attribute_samples">
+                            <h3>Example:</h3>
+                            <pre class="brush: csharp, highlight: 5">
+                                static void Main(string[] args)
+                                {
+                                    var p = Parser.Create&lt;TheApp>();
+
+                                    p.RegisterEmptyHandler(() => Console.WriteLine("No Input"));
+
+                                    p.Run(args);
+                                }
+                            </pre>
+                            <p>This will print "No Input" whenever the exe is executed without any input.</p>
+                            <p>Notice that anonymous delegates can be used instead of the lambda expression:</p>
+                            <pre class="brush: csharp, highlight: [5,6,7,8]">
+                                static void Main(string[] args)
+                                {
+                                    var p = Parser.Create&lt;TheApp>();
+
+                                    p.RegisterEmptyHandler(delegate
+                                    {
+                                        Console.WriteLine("No Input");
+                                    });
+
+                                    p.Run(args);
+                                }
+                            </pre>
+                            <p>This is more usefull when more than a single statement is to be executed.</p>
+                        </div>
+                    </div>
+                    <div class="attribute" id="expressions_help">
+                        <div class="attribute_name code">RegisterHelpHandler(string names, Action&lt;string> helpHandler)</div>
+                        <div class="attribute_description">
+                            <p>Registers an action that will be executed when help is requested by the user.</p>
+                        </div>
+                        <div class="attribute_samples">
+                            <h3>Example:</h3>
+                            <pre class="brush: csharp, highlight: 5">
+                                static void Main(string[] args)
+                                {
+                                    var p = Parser.Create&lt;TheApp>();
+
+                                    p.RegisterHelpHandler("?,h,help", help => Console.WriteLine(help));
+
+                                    p.Run(args);
+                                }
+                            </pre>
+                            <p>
+                                This will print the help string when either <span class="code highlight">-?</span>,
+                                <span class="code highlight">-h</span> or <span class="code highlight">-help</span> are provided.
+                            </p>
+                            <p>The help string is automatically generated.</p>
+                        </div>
+                    </div>
+                    <div class="attribute" id="expressions_emptyhelp">
+                        <div class="attribute_name code">RegisterEmptyHelpHandler(Action&lt;string> handler)</div>
+                        <div class="attribute_description">
+                            <p>Print the help string when no input is provided by the user.</p>
+                            <p>
+                                Only a single empty help handler can be registered. Trying to register more than one
+                                handler will throw a <span class="code">MoreThanOneEmptyHandlerException</span>.
+                            </p>
+                        </div>
+                        <div class="attribute_samples">
+                            <h3>Example:</h3>
+                            <pre class="brush: csharp, highlight: 5">
+                                static void Main(string[] args)
+                                {
+                                    var p = Parser.Create&lt;TheApp>();
+
+                                    p.RegisterEmptyHelpHandler(help => Console.WriteLine(help));
+
+                                    p.Run(args);
+                                }
+                            </pre>
+                            <p>This will print the help string when the program is executed without any arguments.</p>
+                        </div>
+                    </div>
+                    <div class="attribute" id="expressions_error">
+                        <div class="attribute_name code">RegisterErrorHandler(Action&lt;Exception> handler, [bool rethrow = false])</div>
+                        <div class="attribute_description">
+                            <p>Registers an action that will be executed when an error occurs.</p>
+                            <p>if <span class="code">rethrow</span> is true - the exception will be rethrown by the parser, keeping the original stack trace.</p>
+                            <p>if <span class="code">rethrow</span> is false - the exception will not be rethrown after handling it. The default is <span class="code">false</span>.</p>
+                            <p>
+                                Only a single error handler can be registered. Trying to register more than one
+                                handler will throw a <span class="code">MoreThanOneErrorHandlerException</span>.
+                            </p>
+                        </div>
+                        <div class="attribute_samples">
+                            <h3>Example:</h3>
+                            <pre class="brush: csharp, highlight: 5">
+                                static void Main(string[] args)
+                                {
+                                    var p = Parser.Create&lt;TheApp>();
+
+                                    p.RegisterErrorHandler(ex =>
+                                    {
+                                        Console.ForegroundColor = ConsoleColor.Red;
+                                        Console.WriteLine(ex.Message);
+                                        Console.ResetColor();
+                                    });
+
+                                    p.Run(args);
+                                }
+                            </pre>
+                            <p>This will print the error message in red.</p>
+                        </div>
+                    </div>
+                    <div class="attribute" id="expressions_global">
+                        <div class="attribute_name code">RegisterParameterHandler(string names, Action action, [string description])</div>
+                        <div class="attribute_name code">RegisterParameterHandler&lt;T>(string names, Action&lt;T> action, [string description])</div>
+                        <div class="attribute_description">
+                            <p>Registers a parameter handler.</p>
+                            <p>
+                                A parameter handler can be either an action that accepts no arguments
+                                or an action that accepts one of the support argument types.
+                            </p>
+                            <p>If the action accept no arguments (<span class="code">Action</span>) it is treated as a boolean switch.</p>
+                            <p>If the action accpets one parameter of the supported types, the value of the argument is passed to the handler.</p>
+                            <p><em>See the <span class="code">Parameter</span> attribute section for a list of supported types.</em></p>
+                            <p>The <span class="code">description</span> parameter is used to generate the help string.</p>
+                        </div>
+                        <div class="attribute_samples">
+                            <h3>Example:</h3>
+                            <pre class="brush: csharp, highlight: [5,6]">
+                                static void Main(string[] args)
+                                {
+                                    var p = Parser.Create&lt;TheApp>();
+
+                                    p.RegisterParameterHandler("d,debug", () => Debugger.Launch());
+                                    p.RegisterParameterHandler&lt;int>("p,pause", seconds => Thread.Sleep(1000 * seconds));
+
+                                    p.Run(args);
+                                }
+                            </pre>
+                            <p>This will launch the debugger when the user enters either <span class="code highlight">-d</span> or <span class="code highlight">-debug</span>.</p>
+                            <p>
+                                In-addition, when using <span class="code highlight">-p</span> or <span class="code highlight">-pause</span>,
+                                the execution will pause for the specified seconds, for example: <span class="code highlight">-p:5</span>.
+                            </p>
+                            <p>
+                                Arguments are handled in the input order.<br />
+                                For example, entering <span class="code highlight">-d -p:5</span> will first trigger the debugger and will then pause.<br />
+                                Entering <span class="code highlight">-p:5 -d</span> will first pause and then trigger the debugger.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div id="examples" class="content">
+                    <h3>Examples</h3>
+                    <p>examples</p>
                 </div>
                 <div id="download" class="content">
-                    <h2>Get it</h2>
+                    <h3>Get it</h3>
                     <p>get it</p>
                 </div>
             </div>
         </div>
+        <div id="footer">SharpRegion <span class="color">&#9679;</span> Vercue <span class="color">&#9679;</span> By Adrian Aisemberg</div>
     </div>
 </body>
 </html>

@@ -7,6 +7,7 @@ namespace CLAP.Validation
     /// More-Than validation
     /// </summary>
     [Serializable]
+    [AttributeUsage(AttributeTargets.Parameter)]
     public sealed class MoreThanAttribute : NumberValidationAttribute
     {
         /// <summary>

@@ -72,7 +72,8 @@ namespace CLAP
                 BindingFlags.Public |
                 BindingFlags.NonPublic |
                 BindingFlags.Instance |
-                BindingFlags.Static);
+                BindingFlags.Static |
+                BindingFlags.FlattenHierarchy);
 
             return methods;
         }

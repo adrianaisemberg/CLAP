@@ -8,6 +8,7 @@ namespace CLAP.Validation
     /// Regex validation
     /// </summary>
     [Serializable]
+    [AttributeUsage(AttributeTargets.Parameter)]
     public sealed class RegexMatchesAttribute : ValidationAttribute
     {
         public string Pattern { get; private set; }

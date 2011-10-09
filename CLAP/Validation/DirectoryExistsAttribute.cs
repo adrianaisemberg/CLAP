@@ -8,6 +8,7 @@ namespace CLAP.Validation
     /// Directory exists validation
     /// </summary>
     [Serializable]
+    [AttributeUsage(AttributeTargets.Parameter)]
     public sealed class DirectoryExistsAttribute : ValidationAttribute
     {
         public DirectoryExistsAttribute()

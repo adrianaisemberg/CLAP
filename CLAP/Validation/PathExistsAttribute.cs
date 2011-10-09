@@ -8,6 +8,7 @@ namespace CLAP.Validation
     /// Path exists validation (file or directory)
     /// </summary>
     [Serializable]
+    [AttributeUsage(AttributeTargets.Parameter)]
     public sealed class PathExistsAttribute : ValidationAttribute
     {
         public PathExistsAttribute()

@@ -352,7 +352,7 @@ namespace CLAP
         {
             if (m_registeredEmptyHandler != null)
             {
-                throw new InvalidOperationException("Empty handler is already registered");
+                throw new MoreThanOneEmptyHandlerException();
             }
 
             var help = GetHelpString();
@@ -367,7 +367,7 @@ namespace CLAP
         {
             if (m_registeredEmptyHandler != null)
             {
-                throw new InvalidOperationException("Empty handler is already registered");
+                throw new MoreThanOneEmptyHandlerException();
             }
 
             m_registeredEmptyHandler = handler;
@@ -382,7 +382,7 @@ namespace CLAP
         {
             if (m_registeredErrorHandler != null)
             {
-                throw new InvalidOperationException("Error handler is already registered");
+                throw new MoreThanOneErrorHandlerException();
             }
 
             m_registeredErrorHandler = handler;

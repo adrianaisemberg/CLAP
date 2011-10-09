@@ -23,6 +23,9 @@ $(function(){
     });
     
     $("#home").show();
+    
+    SyntaxHighlighter.defaults['toolbar'] = false;
+    SyntaxHighlighter.all();
 });
 
 function fadeSubMenuIn(href){

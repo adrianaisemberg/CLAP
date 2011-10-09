@@ -7,6 +7,7 @@ namespace CLAP.Validation
     /// More Or Equal-To validation
     /// </summary>
     [Serializable]
+    [AttributeUsage(AttributeTargets.Parameter)]
     public sealed class MoreOrEqualToAttribute : NumberValidationAttribute
     {
         /// <summary>

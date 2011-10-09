@@ -10,7 +10,44 @@ namespace ConsoleTest
     {
         static void Main(string[] args)
         {
-            Parser<MyApp>.Run(args);
+            var p = Parser.Create<TheNewApp>();
+
+            p.RegisterParameterHandler("d,debug", () => Debugger.Launch());
+            p.RegisterParameterHandler<int>("p,pause", seconds => System.Threading.Thread.Sleep(1000 * seconds));
+
+            Parser<TheNewApp>.Run(args);
+        }
+    }
+
+    class BaseApp
+    {
+        [Error]
+        public static void Error(Exception ex)
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine(ex.Message);
+            Console.ResetColor();
+        }
+
+        [Help, Empty]
+        public static void Help(string help)
+        {
+            Console.WriteLine(help);
+        }
+
+        [Global]
+        public static void Debug()
+        {
+            Debugger.Launch();
+        }
+    }
+
+    [DefaultVerb("foo")]
+    class TheNewApp : BaseApp
+    {
+        [Verb]
+        public static void Foo([MoreThan(10)]int count)
+        {
         }
     }
 
@@ -192,6 +229,7 @@ namespace ConsoleTest
     //    }
     //}
 
+    [AttributeUsage(AttributeTargets.Parameter)]
     class LengthValidationAttribute : ValidationAttribute
     {
         public int Length { get; private set; }

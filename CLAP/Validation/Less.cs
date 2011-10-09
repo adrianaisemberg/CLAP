@@ -7,6 +7,7 @@ namespace CLAP.Validation
     /// Less-Than validation
     /// </summary>
     [Serializable]
+    [AttributeUsage(AttributeTargets.Parameter)]
     public sealed class LessThanAttribute : NumberValidationAttribute
     {
         /// <summary>

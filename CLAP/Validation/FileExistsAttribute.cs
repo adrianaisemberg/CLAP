@@ -8,6 +8,7 @@ namespace CLAP.Validation
     /// File exists validation
     /// </summary>
     [Serializable]
+    [AttributeUsage(AttributeTargets.Parameter)]
     public sealed class FileExistsAttribute : ValidationAttribute
     {
         public FileExistsAttribute()

@@ -150,7 +150,7 @@ namespace CLAP
     public class MoreThanOneEmptyHandlerException : CommandLineException
     {
         public MoreThanOneEmptyHandlerException()
-            : this("More than one empty handler was defined. Only a single method can be marked with [Empty] in a type.")
+            : this("More than one empty handler was defined. Only a single method can be marked with [Empty] in a type and only a single action can be registered as an empty handler.")
         {
         }
         public MoreThanOneEmptyHandlerException(string message) : base(message) { }
@@ -165,7 +165,7 @@ namespace CLAP
     public class MoreThanOneErrorHandlerException : CommandLineException
     {
         public MoreThanOneErrorHandlerException()
-            : this("More than one error handler was defined. Only a single method can be marked with [Error] in a type.")
+            : this("More than one error handler was defined. Only a single method can be marked with [Error] in a type and only a single action can be registered as an error handler.")
         {
         }
         public MoreThanOneErrorHandlerException(string message) : base(message) { }
