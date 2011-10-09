@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Reflection;
 using CLAP;
 using CLAP.Validation;
+using System.Threading;
 
 namespace ConsoleTest
 {
@@ -10,12 +11,7 @@ namespace ConsoleTest
     {
         static void Main(string[] args)
         {
-            var p = Parser.Create<TheNewApp>();
-
-            p.RegisterParameterHandler("d,debug", () => Debugger.Launch());
-            p.RegisterParameterHandler<int>("p,pause", seconds => System.Threading.Thread.Sleep(1000 * seconds));
-
-            Parser<TheNewApp>.Run(args);
+            Parser<TheApp>.Run(args);
         }
     }
 
@@ -29,7 +25,8 @@ namespace ConsoleTest
             Console.ResetColor();
         }
 
-        [Help, Empty]
+        [Empty]
+        [Help(Aliases = "h,?")]
         public static void Help(string help)
         {
             Console.WriteLine(help);
@@ -39,6 +36,57 @@ namespace ConsoleTest
         public static void Debug()
         {
             Debugger.Launch();
+        }
+    }
+
+    [DefaultVerb("hello")]
+    class TheApp : BaseApp
+    {
+        [Verb(Description = "Prints 'Hello' and a name")]
+        public static void Hello(
+
+            [Parameter(
+                Aliases = "n",
+                Required = true,
+                Description = "The name")]
+            string name,
+
+            [LessOrEqualTo(30)]
+            [Parameter(
+                Aliases = "c",
+                Default = 10,
+                Description = "The number of lines to print")]
+            int count)
+        {
+            for (int i = 0; i < count; i++)
+            {
+                Console.WriteLine("Hello {0}", name);
+            }
+        }
+
+        [Verb]
+        public static void Count(
+            [LessOrEqualTo(50), MoreOrEqualTo(0)] int start,
+            [LessOrEqualTo(100), MoreThan(50)] int end,
+            [Parameter(Aliases = "p,pause", Default = 1.5)] double pauseSeconds,
+            [Parameter(Aliases = "align")] Alignment alignment)
+        {
+            var sign = alignment == Alignment.Left ? "-" : "";
+
+            var format = "{0," + sign + "5}";
+
+            for (int i = start; i <= end; i++)
+            {
+                Console.WriteLine(format, i);
+
+                Thread.Sleep((int)(pauseSeconds * 1000));
+            }
+        }
+
+        public enum Alignment
+        {
+            Right,
+            Left,
         }
     }
 
