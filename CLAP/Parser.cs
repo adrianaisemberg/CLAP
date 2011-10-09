@@ -234,6 +234,18 @@ namespace CLAP
                 //
                 method.MethodInfo.Invoke(obj, parameters.ToArray());
             }
+            catch (TargetInvocationException tex)
+            {
+                if (tex.InnerException != null)
+                {
+                    var rethrow = HandleError(tex.InnerException, obj);
+
+                    if (rethrow)
+                    {
+                        throw;
+                    }
+                }
+            }
             catch (Exception ex)
             {
                 var rethrow = HandleError(ex, obj);
