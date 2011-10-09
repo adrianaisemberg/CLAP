@@ -30,6 +30,16 @@ a:hover
     font-size: 12px;
 }
 
+.console
+{
+    font-family: Consolas, fixed;
+    font-weight: bold;
+    font-size: 12px;
+    background-color: black;
+    padding: 5px;
+    color: white;
+}
+
 h2
 {
     margin-top: 0;
@@ -78,7 +88,7 @@ h2
     position: relative;
     left: 200px;
     background: white;
-    width: 700px;
+    width: 800px;
     min-height: 500px;
 }
 
@@ -129,6 +139,13 @@ h2
 .content h3
 {
     margin: 20px 0 5px;
+    padding-bottom: 3px;
+    border-bottom: 1px solid #2768B1;
+}
+
+.content h4
+{
+    margin: 5px 0;
     padding-bottom: 3px;
     border-bottom: 1px solid #2768B1;
 }

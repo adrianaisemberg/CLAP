@@ -82,10 +82,11 @@
                         However, if the verbs are not static, calling the parser requires an instance of the class.
                     </p>
                     <p>The following example shows how to the parser with a instance of the class:</p>
-                    <pre class="brush: csharp, highlight: 4">
+                    <pre class="brush: csharp, highlight: 5">
                         static void Main(string[] args)
                         {
                             var theApp = new TheApp();
+
                             Parser&lt;TheApp>.Run(args, theApp);
                         }
                     </pre>
@@ -165,15 +166,13 @@
                         </div>
                         <div class="attribute_samples">
                             <h3>Example:</h3>
-                            <pre class="brush: csharp, highlight: [5,7]">
+                            <pre class="brush: csharp, highlight: [5,6]">
                                 class Program
                                 {
                                     [Verb]
                                     public static void Foo(
-                                        [Parameter(Required=true)]
-                                        string name,
-                                        [Parameter(Default=5)]
-                                        int count,
+                                        [Parameter(Required = true)] string name,
+                                        [Parameter(Default = 5)] int count,
                                         bool upperCase)
                                     {
                                     }
@@ -353,13 +352,11 @@
                         </div>
                         <div class="attribute_samples">
                             <h3>Example:</h3>
-                            <pre class="brush: csharp, highlight: 5">
+                            <pre class="brush: csharp, highlight: 4">
                                 class Program
                                 {
                                     [Verb]
-                                    public static void Foo(
-                                        [LessThan(10)]
-                                        int count)
+                                    public static void Foo([LessThan(10)] int count)
                                     {
                                     }
                                 }
@@ -373,13 +370,11 @@
                         </div>
                         <div class="attribute_samples">
                             <h3>Example:</h3>
-                            <pre class="brush: csharp, highlight: 5">
+                            <pre class="brush: csharp, highlight: 4">
                                 class Program
                                 {
                                     [Verb]
-                                    public static void Foo(
-                                        [LessOrEqualTo(30.5)]
-                                        double angle)
+                                    public static void Foo([LessOrEqualTo(30.5)] double angle)
                                     {
                                     }
                                 }
@@ -393,13 +388,11 @@
                         </div>
                         <div class="attribute_samples">
                             <h3>Example:</h3>
-                            <pre class="brush: csharp, highlight: 5">
+                            <pre class="brush: csharp, highlight: 4">
                                 class Program
                                 {
                                     [Verb]
-                                    public static void Foo(
-                                        [MoreThan(10)]
-                                        int count)
+                                    public static void Foo([MoreThan(10)] int count)
                                     {
                                     }
                                 }
@@ -413,13 +406,11 @@
                         </div>
                         <div class="attribute_samples">
                             <h3>Example:</h3>
-                            <pre class="brush: csharp, highlight: 5">
+                            <pre class="brush: csharp, highlight: 4">
                                 class Program
                                 {
                                     [Verb]
-                                    public static void Foo(
-                                        [MoreOrEqualTo(30.5)]
-                                        double angle)
+                                    public static void Foo([MoreOrEqualTo(30.5)] double angle)
                                     {
                                     }
                                 }
@@ -433,13 +424,11 @@
                         </div>
                         <div class="attribute_samples">
                             <h3>Example:</h3>
-                            <pre class="brush: csharp, highlight: 5">
+                            <pre class="brush: csharp, highlight: 4">
                                 class Program
                                 {
                                     [Verb]
-                                    public static void Foo(
-                                        [RegexMatches(@"[0-9a-zA-Z]*")]
-                                        string name)
+                                    public static void Foo([RegexMatches(@"[0-9a-zA-Z]*")] string name)
                                     {
                                     }
                                 }
@@ -453,13 +442,11 @@
                         </div>
                         <div class="attribute_samples">
                             <h3>Example:</h3>
-                            <pre class="brush: csharp, highlight: 5">
+                            <pre class="brush: csharp, highlight: 4">
                                 class Program
                                 {
                                     [Verb]
-                                    public static void Foo(
-                                        [FileExists]
-                                        string filePath)
+                                    public static void Foo([FileExists] string filePath)
                                     {
                                     }
                                 }
@@ -473,13 +460,11 @@
                         </div>
                         <div class="attribute_samples">
                             <h3>Example:</h3>
-                            <pre class="brush: csharp, highlight: 5">
+                            <pre class="brush: csharp, highlight: 4">
                                 class Program
                                 {
                                     [Verb]
-                                    public static void Foo(
-                                        [DirectoryExists]
-                                        string path)
+                                    public static void Foo([DirectoryExists] string path)
                                     {
                                     }
                                 }
@@ -493,13 +478,11 @@
                         </div>
                         <div class="attribute_samples">
                             <h3>Example:</h3>
-                            <pre class="brush: csharp, highlight: 5">
+                            <pre class="brush: csharp, highlight: 4">
                                 class Program
                                 {
                                     [Verb]
-                                    public static void Foo(
-                                        [PathExists]
-                                        string path)
+                                    public static void Foo([PathExists] string path)
                                     {
                                     }
                                 }
@@ -534,8 +517,7 @@
 
                                 if (str.Length < Length)
                                 {
-                                    throw new ValidationException(
-                                        string.Format("Length should be at least {0}", Length));
+                                    throw new ValidationException(string.Format("Length should be at least {0}", Length));
                                 }
                             }
                         }
@@ -570,8 +552,7 @@
                             {
                                 get
                                 {
-                                    return string.Format(
-                                        "Length is at least {0}", Length);
+                                    return string.Format("Length is at least {0}", Length);
                                 }
                             }
                         }
@@ -581,10 +562,10 @@
                         at least a specified number of characters.
                         For example:
                         <pre class="brush: csharp, highlight: [2,7]">
-                        [Verb]
-                        public static void Foo([LengthAtLeast(10)] string text)
-                        {
-                        }
+                            [Verb]
+                            public static void Foo([LengthAtLeast(10)] string text)
+                            {
+                            }
                         </pre>
                         The <span class="code">text</span> argument must be at least 10 characters long, otherwise,
                         an exception will be thrown.
@@ -606,21 +587,6 @@
                         However, if you don't have the source of the program (you only have the binary)
                         and you can't derive from the program's class (it is sealed) - then adding the extra functionality is possible
                         only using expressions.
-                    </p>
-                    <p>Following is an example for using one of the expression methods:</p>
-                    <pre class="brush: csharp, highlight: 5">
-                        static void Main(string[] args)
-                        {
-                            var p = Parser.Create&lt;TheApp>();
-
-                            p.RegisterParameterHandler("debug", () => Debugger.Launch());
-
-                            p.Run(args);
-                        }
-                    </pre>
-                    <p>
-                        In this example, we take at existing verbs class (TheApp) and add the 
-                        <span class="code highlight">-debug</span> functionality that triggers the debugger.
                     </p>
                     <h2>Expression Methods</h2>
                     <div class="attribute" id="expressions_empty">
@@ -723,7 +689,7 @@
                         </div>
                         <div class="attribute_samples">
                             <h3>Example:</h3>
-                            <pre class="brush: csharp, highlight: 5">
+                            <pre class="brush: csharp, highlight: [5,6,7,8,9,10]">
                                 static void Main(string[] args)
                                 {
                                     var p = Parser.Create&lt;TheApp>();
@@ -782,8 +748,138 @@
                     </div>
                 </div>
                 <div id="examples" class="content">
-                    <h3>Examples</h3>
-                    <p>examples</p>
+                    <h2>Examples</h2>
+                    <div class="attribute">
+                        <h4>A useful base class for all console applications:</h4>
+                        <pre class="brush: csharp">
+                            class ConsoleBase
+                            {
+                                [Error]
+                                public static void Error(Exception ex)
+                                {
+                                    Console.ForegroundColor = ConsoleColor.Red;
+                                    Console.WriteLine(ex.Message);
+                                    Console.ResetColor();
+                                }
+
+                                [Empty]
+                                [Help(Aliases = "h,?")]
+                                public static void Help(string help)
+                                {
+                                    Console.WriteLine(help);
+                                }
+
+                                [Global]
+                                public static void Debug()
+                                {
+                                    Debugger.Launch();
+                                }
+                            }
+                        </pre>
+                        <p>Deriving from that class gives you:</p>
+                        <ul>
+                            <li>Errors will be handled and printed in red</li>
+                            <li>
+                                Either <span class="code highlight">-h</span>, <span class="code highlight">-?</span>,
+                                <span class="code highlight">-help</span> or an empty input will print the genareted help
+                            </li>
+                            <li><span class="code highlight">-debug</span> will launch the debugger</li>
+                        </ul>
+                    </div>
+                    <div class="attribute">
+                        <h4>A class with some verbs and validation:</h4>
+                        <pre class="brush: csharp">
+                            [DefaultVerb("hello")]
+                            class TheApp : BaseApp
+                            {
+                                [Verb(Description = "Prints 'Hello' and a name")]
+                                public static void Hello(
+                                    
+                                    [Parameter(Aliases = "n", Required = true, Description = "The name")]
+                                    string name,
+                                    
+                                    [LessOrEqualTo(30)]
+                                    [Parameter(Aliases = "c", Default = 10, Description = "The number of lines to print")]
+                                    int count)
+                                {
+                                    for (int i = 0; i < count; i++)
+                                    {
+                                        Console.WriteLine("Hello {0}", name);
+                                    }
+                                }
+
+                                [Verb]
+                                public static void Count(
+                                    [LessOrEqualTo(50), MoreOrEqualTo(0)] int start,
+                                    [LessOrEqualTo(100), MoreThan(50)] int end,
+                                    [Parameter(Aliases = "p,pause", Default = 1.5)] double pauseSeconds,
+                                    [Parameter(Aliases = "align")] Alignment alignment)
+                                {
+                                    var sign = alignment == Alignment.Left ? "-" : "";
+
+                                    var format = "{0," + sign + "5}";
+
+                                    for (int i = start; i <= end; i++)
+                                    {
+                                        Console.WriteLine(format, i);
+
+                                        Thread.Sleep((int)(pauseSeconds * 1000));
+                                    }
+                                }
+
+                                public enum Alignment
+                                {
+                                    Right,
+                                    Left,
+                                }
+                            }
+                        </pre>
+                        <p>The first verb, <span class="code">Hello</span> has two parameters:</p>
+                        <ol>
+                            <li><span class="code highlight">name</span>: Required and has an alias "n".</li>
+                            <li>
+                                <span class="code highlight">count</span>: Has a default of 10 and an alias "c".
+                                The value has to be less or equal to 30 to be valid.
+                            </li>
+                        </ol>
+                        <p>
+                            The second verb, <span class="code">Count</span> prints a list of numbers 
+                            with left or right alignment and a pause between each line. The verb has four parameters:</p>
+                        <ol>
+                            <li><span class="code highlight">start</span>: The value has to be between 0 and 50.</li>
+                            <li><span class="code highlight">end</span>: The value has to between 50 and 100.</li>
+                            <li><span class="code highlight">pauseSeconds</span>: Default of 1.5 and aliases: "p" and "pause".</li>
+                            <li><span class="code highlight">alignment</span>: An enum with an alias "align".</li>
+                        </ol>
+                        <p>Sample run:</p>
+                        <pre class="console">
+> myexe hello -n:CLAP -c:5
+Hello CLAP
+Hello CLAP
+Hello CLAP
+Hello CLAP
+Hello CLAP</pre>
+                        <pre class="console">
+> myexe count -start:1 -end:55 -p:0.1 -align:Left
+1
+2
+3
+4
+...
+55</pre>
+                        <pre class="console">
+> myexe count -start:10 -end:55 -p:0.1 -align:Right
+    10
+    11
+    12
+    13
+...
+    55</pre>
+                        <p>
+                            Notice that all names, including the verbs and parameters,
+                            are <b>case-insensitive</b> but enum values are <b>case-sensitive</b>.
+                        </p>
+                    </div>
                 </div>
                 <div id="download" class="content">
                     <h3>Get it</h3>
