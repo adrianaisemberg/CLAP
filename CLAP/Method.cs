@@ -1,5 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Reflection;
 
 namespace CLAP
@@ -26,6 +26,11 @@ namespace CLAP
         /// </summary>
         public MethodInfo MethodInfo { get; private set; }
 
+        /// <summary>
+        /// Whether this verb is the default verb of the class
+        /// </summary>
+        public bool IsDefault { get; set; }
+
         #endregion Properties
 
         #region Constructors
@@ -36,10 +41,7 @@ namespace CLAP
         /// <param name="method">The <see cref="MethodInfo"/> to describe</param>
         public Method(MethodInfo method)
         {
-            if (method == null)
-            {
-                throw new ArgumentNullException("method");
-            }
+            Debug.Assert(method != null);
 
             Names = new List<string>();
 
@@ -53,6 +55,7 @@ namespace CLAP
             var verbAttribute = method.GetAttribute<VerbAttribute>();
 
             Description = verbAttribute.Description;
+            IsDefault = verbAttribute.IsDefault;
 
             if (verbAttribute.Aliases != null)
             {
@@ -62,17 +65,5 @@ namespace CLAP
         }
 
         #endregion Constructors
-
-        #region Methods
-
-        /// <summary>
-        /// Overrides ToString
-        /// </summary>
-        public override string ToString()
-        {
-            return MethodInfo.ToString();
-        }
-
-        #endregion Methods
     }
 }

@@ -18,5 +18,10 @@ namespace CLAP
         /// The description of the verb. Used to generate the help string
         /// </summary>
         public string Description { get; set; }
+
+        /// <summary>
+        /// Whether this verb is the default verb of the class
+        /// </summary>
+        public bool IsDefault { get; set; }
     }
 }

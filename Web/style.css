@@ -1,6 +1,6 @@
 *
 {
-    font-size: 11px;
+    font-size: 12px;
     font-family: Verdana, Arial, Geneva, Helvetica, sans-serif;
     color: #424242;
 }
@@ -23,21 +23,48 @@ a:hover
     color: #5A8FCC;
 }
 
+li
+{
+    margin-bottom: 5px;
+}
+
 .code
 {
-    font-family: Consolas, fixed;
+    font-family: "Consolas", "Bitstream Vera Sans Mono", "Courier New", Courier, monospace;
     font-weight: bold;
-    font-size: 12px;
+    font-size: 14px;
 }
 
 .console
 {
-    font-family: Consolas, fixed;
-    font-weight: bold;
-    font-size: 12px;
     background-color: black;
     padding: 5px;
     color: white;
+    font-family: "Consolas", "Bitstream Vera Sans Mono", "Courier New", Courier, monospace;
+    font-size: 14px;
+}
+
+.console *
+{
+    font-family: "Consolas", "Bitstream Vera Sans Mono", "Courier New", Courier, monospace;
+    font-size: 14px;
+}
+
+.commandline
+{
+    color: #FFFDAB;
+}
+
+#intro_code
+{
+    overflow: hidden;
+    border: 1px solid #B8CADE;
+}
+
+#license *
+{
+    font-family: "Consolas", "Bitstream Vera Sans Mono", "Courier New", Courier, monospace;
+    font-size: 14px;
 }
 
 h2
@@ -88,8 +115,7 @@ h2
     position: relative;
     left: 200px;
     background: white;
-    width: 800px;
-    min-height: 500px;
+    width: 700px;
 }
 
 .menu_item,.sub_menu_item
@@ -111,6 +137,7 @@ h2
 .content
 {
     display: none;
+    min-height: 550px;
 }
 
 .highlight

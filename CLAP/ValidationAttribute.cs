@@ -27,10 +27,7 @@ namespace CLAP
         /// <summary>
         /// The description of this validation attribute, used when asking for help
         /// </summary>
-        public virtual string Description
-        {
-            get { return GetType().Name; }
-        }
+        public abstract string Description { get; }
     }
 
     /// <summary>

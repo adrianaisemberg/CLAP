@@ -15,6 +15,15 @@ namespace ConsoleTest
         }
     }
 
+    class ClapApp
+    {
+        [Verb]
+        public static void Foo(string bar, int count)
+        {
+            for (int i = 0; i < count; i++) Console.WriteLine("This parser {0}", bar);
+        }
+    }
+
     class BaseApp
     {
         [Error]
@@ -39,10 +48,9 @@ namespace ConsoleTest
         }
     }
 
-    [DefaultVerb("hello")]
     class TheApp : BaseApp
     {
-        [Verb(Description = "Prints 'Hello' and a name")]
+        [Verb(IsDefault = true, Description = "Prints 'Hello' and a name")]
         public static void Hello(
 
             [Parameter(
@@ -90,19 +98,17 @@ namespace ConsoleTest
         }
     }
 
-    [DefaultVerb("foo")]
     class TheNewApp : BaseApp
     {
-        [Verb]
+        [Verb(IsDefault = true)]
         public static void Foo([MoreThan(10)]int count)
         {
         }
     }
 
-    [DefaultVerb("test")]
     class AnotherApp
     {
-        [Verb]
+        [Verb(IsDefault = true)]
         public static void Test(string x, int y)
         {
         }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Reflection;
 
 namespace CLAP
@@ -46,10 +47,7 @@ namespace CLAP
         /// <param name="parameter">The <see cref="ParameterInfo"/> to describe</param>
         public Parameter(ParameterInfo parameter)
         {
-            if (parameter == null)
-            {
-                throw new ArgumentNullException("parameter");
-            }
+            Debug.Assert(parameter != null);
 
             Names = new List<string>();
 
@@ -80,17 +78,5 @@ namespace CLAP
         }
 
         #endregion Constructors
-
-        #region Methods
-
-        /// <summary>
-        /// Overrides ToString
-        /// </summary>
-        public override string ToString()
-        {
-            return ParameterInfo.ToString();
-        }
-
-        #endregion Methods
     }
 }

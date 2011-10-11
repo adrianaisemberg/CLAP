@@ -22,7 +22,7 @@ $(function(){
         return false;
     });
     
-    $("#home").show();
+    $("#what").show();
     
     SyntaxHighlighter.defaults['toolbar'] = false;
     SyntaxHighlighter.all();

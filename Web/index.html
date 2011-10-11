@@ -1,6 +1,6 @@
 <html>
 <head>
-    <title>CLAP: Command-Line Auto Parser</title>
+    <title>CLAP: .NET Command-Line Auto-Parser</title>
     <link rel="stylesheet" type="text/css" href="style.css"/>
     <link rel="stylesheet" type="text/css" href="syntaxhighlighter/shCore.css"/>
     <link rel="stylesheet" type="text/css" href="syntaxhighlighter/shThemeDefault.css"/>
@@ -48,23 +48,53 @@
                 </div>
                 <a href="#examples" class="menu_item">EXAMPLES</a>
                 <a href="#download" class="menu_item">DOWNLOAD</a>
+                <a href="#license" class="menu_item">LICENSE</a>
                 <a href="#about" class="menu_item">ABOUT</a>
             </div>
             <div id="right">
-                <div id="home" class="content">
-                    <h3>Home</h3>
-                    <video>Video</video>
-                </div>
                 <div id="what" class="content">
-                    <h3>What is clap</h3>
-                    <p>clap</p>
+                    <div id="intro_code">
+                        <pre class="brush: csharp, highlight: [5,11]">
+                            class Program
+                            {
+                                static void Main(string[] args)
+                                {
+                                    Parser&lt;ClapApp>.Run(args);
+                                }
+                            }
+
+                            class ClapApp
+                            {
+                                [Verb]
+                                public static void Foo(string bar, int count)
+                                {
+                                    for (int i = 0; i < count; i++)
+                                    {
+                                        Console.WriteLine("This parser {0}", bar);
+                                    }
+                                }
+                            }
+                        </pre>
+                    </div>
+                    <pre class="console">
+<span class="commandline">> myexe foo -bar:"Kicks Ass!" -count:10</span>
+This parser Kicks Ass!
+This parser Kicks Ass!
+This parser Kicks Ass!
+This parser Kicks Ass!
+This parser Kicks Ass!
+This parser Kicks Ass!
+This parser Kicks Ass!
+This parser Kicks Ass!
+This parser Kicks Ass!
+This parser Kicks Ass!</pre>
                 </div>
                 <div id="using" class="content">
                     <h3>Using CLAP</h3>
                     <ol>
                         <li>Download the CLAP dll</li>
                         <li>Add a reference to the dll from your Console or Windows application</li>
-                        <li>Add a <span class="code highlight">using</span> statement: <span class="code">using CLAP;</span></li>
+                        <li>Add a <span class="code">using</span> statement: <span class="code highlight">using CLAP;</span></li>
                         <li>Implement a verbs class (see the Attributes section)</li>
                         <li>
                             From your <span class="code">void Main</span> method, add a call to CLAP's parser using your class:<br/>
@@ -517,7 +547,8 @@
 
                                 if (str.Length < Length)
                                 {
-                                    throw new ValidationException(string.Format("Length should be at least {0}", Length));
+                                    throw new ValidationException(
+                                        string.Format("Length should be at least {0}", Length));
                                 }
                             }
                         }
@@ -723,13 +754,15 @@
                         </div>
                         <div class="attribute_samples">
                             <h3>Example:</h3>
-                            <pre class="brush: csharp, highlight: [5,6]">
+                            <pre class="brush: csharp, highlight: [5,6,7,8]">
                                 static void Main(string[] args)
                                 {
                                     var p = Parser.Create&lt;TheApp>();
 
                                     p.RegisterParameterHandler("d,debug", () => Debugger.Launch());
-                                    p.RegisterParameterHandler&lt;int>("p,pause", seconds => Thread.Sleep(1000 * seconds));
+                                    p.RegisterParameterHandler&lt;int>(
+                                        "p,pause",
+                                        seconds => Thread.Sleep(1000 * seconds));
 
                                     p.Run(args);
                                 }
@@ -799,7 +832,8 @@
                                     string name,
                                     
                                     [LessOrEqualTo(30)]
-                                    [Parameter(Aliases = "c", Default = 10, Description = "The number of lines to print")]
+                                    [Parameter(Aliases = "c", Default = 10, 
+                                               Description = "The number of lines to print")]
                                     int count)
                                 {
                                     for (int i = 0; i < count; i++)
@@ -853,14 +887,14 @@
                         </ol>
                         <p>Sample run:</p>
                         <pre class="console">
-> myexe hello -n:CLAP -c:5
+<span class="commandline">> myexe hello -n:CLAP -c:5</span>
 Hello CLAP
 Hello CLAP
 Hello CLAP
 Hello CLAP
 Hello CLAP</pre>
                         <pre class="console">
-> myexe count -start:1 -end:55 -p:0.1 -align:Left
+<span class="commandline">> myexe count -start:1 -end:55 -p:0.1 -align:Left</span>
 1
 2
 3
@@ -868,12 +902,12 @@ Hello CLAP</pre>
 ...
 55</pre>
                         <pre class="console">
-> myexe count -start:10 -end:55 -p:0.1 -align:Right
+<span class="commandline">> myexe count -start:10 -end:55 -p:0.1 -align:Right</span>
     10
     11
     12
     13
-...
+    ...
     55</pre>
                         <p>
                             Notice that all names, including the verbs and parameters,
@@ -884,6 +918,38 @@ Hello CLAP</pre>
                 <div id="download" class="content">
                     <h3>Get it</h3>
                     <p>get it</p>
+                </div>
+                <div id="about" class="content">
+                    <h3>About</h3>
+                    <p>CLAP: A free and open-source project by Adrian Aisemberg, <a href="mailto:adrianaisemberg@gmail.com">adrianaisemberg@gmail.com</a>.</p>
+                    <p>More by Adrian:</p>
+                    <ul>
+                        <li><a href="http://www.vercue.com">vercue.com</a>: A kick-ass svn client for Windows</li>
+                        <li><a href="http://www.sharpregion.com">sharpregion.com</a>: A kick-ass blog about vercue</li>
+                    </ul>
+                </div>
+                <div id="license" class="content">
+                    <h3>License</h3>
+                    <p>MIT License</p>
+                    <p>Copyright (c) 2011 Adrian Aisemberg, SharpRegion</p>
+                    <p>
+                        Permission is hereby granted, free of charge, to any person obtaining a copy of this software
+                        and associated documentation files (the "Software"), to deal in the Software without restriction,
+                        including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+                        and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so,
+                        subject to the following conditions:
+                    </p>
+                    <p>
+                        The above copyright notice and this permission notice shall be included in all copies or substantial
+                        portions of the Software.
+                    </p>
+                    <p>
+                        THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+                        INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE
+                        AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+                        DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+                        OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                    
+                    </p>
                 </div>
             </div>
         </div>

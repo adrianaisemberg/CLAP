@@ -26,10 +26,9 @@ namespace Tests
         public IPrinter Printer { get; set; }
     }
 
-    [DefaultVerb("print")]
     public class Sample_02 : BaseSample
     {
-        [Verb(Aliases = "p", Description = "Prints a message")]
+        [Verb(IsDefault = true, Aliases = "p", Description = "Prints a message")]
         public void Print(
 
             [Parameter(Aliases = "c")]
@@ -110,10 +109,9 @@ namespace Tests
         }
     }
 
-    [DefaultVerb("p")]
     public class Sample_04 : BaseSample
     {
-        [Verb(Aliases = "p", Description = "Prints a message")]
+        [Verb(IsDefault = true, Aliases = "p", Description = "Prints a message")]
         public void Print(
 
             Int32 count,
@@ -147,10 +145,9 @@ namespace Tests
         }
     }
 
-    [DefaultVerb("p")]
     public class Sample_05 : BaseSample
     {
-        [Verb(Aliases = "p", Description = "Prints a message")]
+        [Verb(IsDefault = true, Aliases = "p", Description = "Prints a message")]
         public void Print(
 
             [Parameter(Aliases = "c")]
@@ -165,10 +162,9 @@ namespace Tests
         }
     }
 
-    [DefaultVerb("p")]
     public class Sample_06 : BaseSample
     {
-        [Verb(Aliases = "p", Description = "Prints a message")]
+        [Verb(IsDefault = true, Aliases = "p", Description = "Prints a message")]
         public void Print(
 
             Int32 count,
@@ -297,8 +293,13 @@ namespace Tests
 
     public class Sample_10 : BaseSample
     {
-        [Verb]
+        [Verb(IsDefault = true, Description = "prints")]
         public void Print()
+        {
+        }
+
+        [Verb]
+        public void Print2([Parameter(Required = true)]string str)
         {
         }
 
@@ -314,7 +315,7 @@ namespace Tests
             Printer.Print("zoo");
         }
 
-        [Global]
+        [Global(Aliases = "m")]
         public void Mish([LessThan(10)] int count)
         {
             for (int i = 0; i < count; i++)
@@ -482,15 +483,6 @@ namespace Tests
         }
     }
 
-    [DefaultVerb("loof")]
-    public class Sample_26 : BaseSample
-    {
-        [Verb]
-        public static void Foo()
-        {
-        }
-    }
-
     public class Sample_27 : BaseSample
     {
         public static IPrinter StaticPrinter { get; set; }
@@ -550,20 +542,18 @@ namespace Tests
         }
     }
 
-    [DefaultVerb("foo")]
     public class Sample_30 : BaseSample
     {
-        [Verb]
+        [Verb(IsDefault = true)]
         public void Foo()
         {
             Printer.Print("works!");
         }
     }
 
-    [DefaultVerb("foo")]
     public class Sample_31 : BaseSample
     {
-        [Verb]
+        [Verb(IsDefault = true)]
         public void Foo(string x, int y)
         {
             Printer.Print("works!");
@@ -629,6 +619,53 @@ namespace Tests
     {
         [Error]
         public void Error(TargetInvocationException ex)
+        {
+        }
+    }
+
+    public class Sample_37 : BaseSample
+    {
+        [Error]
+        public void Error(Exception ex1, Exception ex2)
+        {
+        }
+    }
+
+    public class Sample_38 : BaseSample
+    {
+        [Verb(IsDefault = true)]
+        public void Foo1()
+        {
+        }
+
+        [Verb(IsDefault = true)]
+        public void Foo2()
+        {
+        }
+    }
+
+    public class Sample_39 : BaseSample
+    {
+        [Verb(IsDefault = true)]
+        public void Foo()
+        {
+            throw new Exception();
+        }
+    }
+
+    public class All_Validations_Sample
+    {
+        [Verb]
+        public static void Foo(
+            [MoreThan(1)]
+            [MoreOrEqualTo(1)]
+            [LessThan(1)]
+            [LessOrEqualTo(1)]
+            [RegexMatches("1")]
+            [FileExists]
+            [DirectoryExists]
+            [PathExists]
+            int x)
         {
         }
     }

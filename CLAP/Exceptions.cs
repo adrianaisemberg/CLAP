@@ -150,11 +150,10 @@ namespace CLAP
     public class MoreThanOneEmptyHandlerException : CommandLineException
     {
         public MoreThanOneEmptyHandlerException()
-            : this("More than one empty handler was defined. Only a single method can be marked with [Empty] in a type and only a single action can be registered as an empty handler.")
+            : base("More than one empty handler was defined. Only a single method can be marked with [Empty] in a type and only a single action can be registered as an empty handler.")
         {
         }
-        public MoreThanOneEmptyHandlerException(string message) : base(message) { }
-        public MoreThanOneEmptyHandlerException(string message, Exception inner) : base(message, inner) { }
+
         protected MoreThanOneEmptyHandlerException(
           System.Runtime.Serialization.SerializationInfo info,
           System.Runtime.Serialization.StreamingContext context)
@@ -165,11 +164,10 @@ namespace CLAP
     public class MoreThanOneErrorHandlerException : CommandLineException
     {
         public MoreThanOneErrorHandlerException()
-            : this("More than one error handler was defined. Only a single method can be marked with [Error] in a type and only a single action can be registered as an error handler.")
+            : base("More than one error handler was defined. Only a single method can be marked with [Error] in a type and only a single action can be registered as an error handler.")
         {
         }
-        public MoreThanOneErrorHandlerException(string message) : base(message) { }
-        public MoreThanOneErrorHandlerException(string message, Exception inner) : base(message, inner) { }
+
         protected MoreThanOneErrorHandlerException(
           System.Runtime.Serialization.SerializationInfo info,
           System.Runtime.Serialization.StreamingContext context)
@@ -216,4 +214,22 @@ namespace CLAP
           System.Runtime.Serialization.StreamingContext context)
             : base(info, context) { }
     }
+
+    [Serializable]
+    public class MoreThanOneDefaultVerbException : CommandLineException
+    {
+        public IEnumerable<string> Verbs { get; private set; }
+
+        public MoreThanOneDefaultVerbException(IEnumerable<string> verbs)
+            : base("More than one default verb was defined: '{0}'".FormatWith(verbs.StringJoin(", ")))
+        {
+            Verbs = verbs;
+        }
+
+        protected MoreThanOneDefaultVerbException(
+          System.Runtime.Serialization.SerializationInfo info,
+          System.Runtime.Serialization.StreamingContext context)
+            : base(info, context) { }
+    }
+
 }

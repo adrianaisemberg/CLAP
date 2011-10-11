@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Reflection;
 using CLAP;
 using Moq;
 using NUnit.Framework;
@@ -90,6 +91,16 @@ namespace Tests
             {
                 Assert.IsTrue(ex.Message.Contains("Duplicate parameter names found in Print: c, x"));
             }
+        }
+
+        [Test]
+        [ExpectedException(typeof(MissingArgumentValueException))]
+        public void Execute_NoParameterValue()
+        {
+            var printer = new Printer();
+            var sample = new Sample_02 { Printer = printer };
+
+            Execute(sample, "print /c=5 /msg= /prefix=hello_");
         }
 
         [Test]
@@ -292,11 +303,19 @@ namespace Tests
             int x = 0;
 
             var p = Parser.Create<Sample_02>();
-            p.RegisterParameterHandler("inc", delegate { x++; });
+
+            // with and without description for coverage
+            //
+            p.RegisterParameterHandler("dec", delegate { x--; });
+            p.RegisterParameterHandler("inc", delegate { x++; }, "description");
 
             p.Run("print /c=5 /msg=test /prefix=hello_ /inc".Split(' '), sample);
 
             Assert.AreEqual(1, x);
+
+            p.Run("print /c=5 /msg=test /prefix=hello_ /dec".Split(' '), sample);
+
+            Assert.AreEqual(0, x);
         }
 
         [Test]
@@ -565,6 +584,16 @@ namespace Tests
         }
 
         [Test]
+        public void _Help_WithEverything_Coverage()
+        {
+            var p = Parser.Create<Sample_10>();
+
+            p.RegisterParameterHandler("param", delegate { }, "description");
+
+            p.GetHelpString();
+        }
+
+        [Test]
         [ExpectedException(typeof(ParserExecutionTargetException))]
         public void Help_Static_CalledWithTarget_Exception()
         {
@@ -652,7 +681,7 @@ namespace Tests
         }
 
         [Test]
-        [ExpectedException(typeof(InvalidOperationException))]
+        [ExpectedException(typeof(MoreThanOneEmptyHandlerException))]
         public void RegisterHelpHandler_MoreThanOnce_Exception()
         {
             var p = Parser.Create<Sample_25>();
@@ -662,7 +691,23 @@ namespace Tests
         }
 
         [Test]
-        [ExpectedException(typeof(InvalidOperationException))]
+        public void RegisterEmptyHelpHandler_Called()
+        {
+            var p = Parser.Create<Sample_25>();
+
+            string help = null;
+
+            p.RegisterEmptyHelpHandler(h => help = h);
+
+            Assert.IsNull(help);
+
+            p.Run(new string[] { });
+
+            Assert.IsNotNull(help);
+        }
+
+        [Test]
+        [ExpectedException(typeof(MoreThanOneEmptyHandlerException))]
         public void RegisterEmptyHelpHandler_MoreThanOnce_Exception()
         {
             var p = Parser.Create<Sample_25>();
@@ -696,15 +741,6 @@ namespace Tests
         public void Run_NoVerb_NoDefaultVerb_Exception()
         {
             var p = Parser.Create<Sample_25>();
-
-            p.Run(new string[] { "-x" });
-        }
-
-        [Test]
-        [ExpectedException(typeof(MissingVerbException))]
-        public void Run_DefaultVerb_NoMatchingDefaultMethod_Exception()
-        {
-            var p = Parser.Create<Sample_26>();
 
             p.Run(new string[] { "-x" });
         }
@@ -1002,10 +1038,7 @@ namespace Tests
         [Test]
         public void Execute_HandleError_Registered_NoRethrow()
         {
-            var mock = new Mock<IPrinter>();
-            var sample = new Sample_13 { Printer = mock.Object };
-
-            var p = Parser.Create<Sample_13>();
+            var p = Parser.Create<Sample_39>();
             var handled = false;
 
             p.RegisterErrorHandler(ex =>
@@ -1013,7 +1046,7 @@ namespace Tests
                 handled = true;
             }, false);
 
-            p.Run(new string[] { }, sample);
+            p.Run(new string[] { });
 
             Assert.IsTrue(handled);
         }
@@ -1021,10 +1054,7 @@ namespace Tests
         [Test]
         public void Execute_HandleError_Registered_DefaultNoRethrow()
         {
-            var mock = new Mock<IPrinter>();
-            var sample = new Sample_13 { Printer = mock.Object };
-
-            var p = Parser.Create<Sample_13>();
+            var p = Parser.Create<Sample_39>();
             var handled = false;
 
             p.RegisterErrorHandler(ex =>
@@ -1032,7 +1062,7 @@ namespace Tests
                 handled = true;
             });
 
-            p.Run(new string[] { }, sample);
+            p.Run(new string[] { });
 
             Assert.IsTrue(handled);
         }
@@ -1040,10 +1070,7 @@ namespace Tests
         [Test]
         public void Execute_HandleError_Registered_Rethrow()
         {
-            var mock = new Mock<IPrinter>();
-            var sample = new Sample_13 { Printer = mock.Object };
-
-            var p = Parser.Create<Sample_13>();
+            var p = Parser.Create<Sample_39>();
             var handled = false;
 
             p.RegisterErrorHandler(ex =>
@@ -1053,11 +1080,11 @@ namespace Tests
 
             try
             {
-                p.Run(new string[] { }, sample);
+                p.Run(new string[] { });
 
                 Assert.Fail();
             }
-            catch (MoreThanOneEmptyHandlerException)
+            catch (Exception)
             {
                 Assert.IsTrue(handled);
             }
@@ -1121,6 +1148,16 @@ namespace Tests
         }
 
         [Test]
+        [ExpectedException(typeof(MoreThanOneErrorHandlerException))]
+        public void RegisterError_MoreThanOne_Exception()
+        {
+            var p = Parser.Create<Sample_02>();
+
+            p.RegisterErrorHandler(delegate { });
+            p.RegisterErrorHandler(delegate { });
+        }
+
+        [Test]
         [ExpectedException(typeof(ArgumentMismatchException))]
         public void Error_DefinedWithInt_Exception()
         {
@@ -1132,6 +1169,13 @@ namespace Tests
         public void Error_DefinedWithBadException_Exception()
         {
             Parser<Sample_36>.Run(null);
+        }
+
+        [Test]
+        [ExpectedException(typeof(ArgumentMismatchException))]
+        public void Error_DefinedWithMoreThanOneParameter_Exception()
+        {
+            Parser<Sample_37>.Run(null);
         }
 
         [Test]
@@ -1167,6 +1211,11 @@ namespace Tests
 
                 Assert.Fail();
             }
+            catch (TargetInvocationException tex)
+            {
+                Assert.IsNotNull(sample.Ex);
+                Assert.AreEqual(tex.InnerException, sample.Ex);
+            }
             catch (Exception ex)
             {
                 Assert.IsNotNull(sample.Ex);
@@ -1191,6 +1240,27 @@ namespace Tests
             {
                 Assert.IsTrue(sample.Handled);
             }
+        }
+
+        [Test]
+        public void _Validation_Descriptions_Coverage()
+        {
+            var p = Parser.Create<All_Validations_Sample>();
+
+            p.GetHelpString();
+        }
+
+        [Test]
+        public void Method_Constructor_Null_Exception()
+        {
+
+        }
+
+        [Test]
+        [ExpectedException(typeof(MoreThanOneDefaultVerbException))]
+        public void DefaultVerb_MoreThanOnce_Exception()
+        {
+            Parser.Create<Sample_38>();
         }
     }
 }

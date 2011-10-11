@@ -49,6 +49,8 @@ namespace CLAP
             m_type = type;
             m_globalRegisteredHandlers = new Dictionary<string, GlobalParameterHandler>();
             m_registeredHelpHandlers = new Dictionary<string, Action<string>>();
+
+            Validate();
         }
 
         #endregion Constructors
@@ -73,8 +75,6 @@ namespace CLAP
         /// </summary>
         public void Run(string[] args, object obj)
         {
-            ValidateDefinedErrorHandlers();
-
             try
             {
                 // no args
@@ -103,9 +103,11 @@ namespace CLAP
 
                 // find the method by the given verb
                 //
-                var method = GetMethod(m_type, verb);
+                var typeVerbs = GetVerbs(m_type);
 
-                // if no method is found - a default has to exist
+                var method = typeVerbs.FirstOrDefault(v => v.Names.Contains(verb.ToLowerInvariant()));
+
+                // if no method is found - a default must exist
                 //
                 if (method == null)
                 {
@@ -115,22 +117,13 @@ namespace CLAP
                         throw new MissingVerbException(verb);
                     }
 
+                    method = typeVerbs.FirstOrDefault(v => v.IsDefault);
+
                     // no default - error
-                    //
-                    if (!m_type.HasAttribute<DefaultVerbAttribute>())
-                    {
-                        throw new MissingDefaultVerbException();
-                    }
-
-                    verb = m_type.GetAttribute<DefaultVerbAttribute>().Verb;
-
-                    method = GetMethod(m_type, verb);
-
-                    // there is a verb, but no method matches it
                     //
                     if (method == null)
                     {
-                        throw new MissingVerbException(verb);
+                        throw new MissingDefaultVerbException();
                     }
 
                     noVerb = true;
@@ -319,7 +312,19 @@ namespace CLAP
             {
                 sb.AppendLine();
 
-                sb.AppendLine("{0}: {1}".FormatWith(verb.Names.StringJoin("/"), verb.Description));
+                sb.Append(verb.Names.StringJoin("/")).Append(":");
+
+                if (verb.IsDefault)
+                {
+                    sb.Append(" [Default]");
+                }
+
+                if (!string.IsNullOrEmpty(verb.Description))
+                {
+                    sb.AppendFormat(" {0}", verb.Description);
+                }
+
+                sb.AppendLine();
 
                 var parameters = GetParameters(verb.MethodInfo);
 
@@ -404,6 +409,34 @@ namespace CLAP
         #endregion Public Methods
 
         #region Private Methods
+
+        private void Validate()
+        {
+            // no more than one default verb
+            var verbMethods = m_type.GetMethodsWith<VerbAttribute>().
+                Select(m => new Method(m));
+
+            var defaultVerbs = verbMethods.Where(m => m.IsDefault);
+
+            if (defaultVerbs.Count() > 1)
+            {
+                throw new MoreThanOneDefaultVerbException(defaultVerbs.Select(m => m.MethodInfo.Name));
+            }
+
+            // no more than one error handler
+            //
+            ValidateDefinedErrorHandlers();
+
+            // no more than one empty handler
+            //
+            var definedEmptyHandlers = m_type.GetMethodsWith<EmptyAttribute>();
+
+            if (definedEmptyHandlers.Count() > 1)
+            {
+                throw new MoreThanOneEmptyHandlerException();
+            }
+
+        }
 
         private void RegisterParameterHandlerInternal<T>(string names, Action<T> action, string description)
         {
@@ -703,19 +736,11 @@ namespace CLAP
             var verbMethods = type.GetMethodsWith<VerbAttribute>().
                 Select(m => new Method(m));
 
+            var defaultVerbs = verbMethods.Where(m => m.IsDefault);
+
+            Debug.Assert(defaultVerbs.Count() <= 1);
+
             return verbMethods;
-        }
-
-        /// <summary>
-        /// Get the method that matches the given verb
-        /// </summary>
-        private static Method GetMethod(Type type, string verb)
-        {
-            var verbs = GetVerbs(type);
-
-            var method = verbs.FirstOrDefault(v => v.Names.Contains(verb.ToLowerInvariant()));
-
-            return method;
         }
 
         /// <summary>
@@ -926,10 +951,7 @@ namespace CLAP
             var definedEmptyHandlers = m_type.GetMethodsWith<EmptyAttribute>();
             var definedEmptyHandlersCount = definedEmptyHandlers.Count();
 
-            if (definedEmptyHandlersCount > 1)
-            {
-                throw new MoreThanOneEmptyHandlerException();
-            }
+            Debug.Assert(definedEmptyHandlersCount <= 1);
 
             if (definedEmptyHandlersCount == 1)
             {
@@ -986,19 +1008,17 @@ namespace CLAP
                 }
             }
 
+            var defaultVerb = GetDefaultVerb(m_type);
+
             // if there is a default verb - execute it
             //
-            if (m_type.HasAttribute<DefaultVerbAttribute>())
+            if (defaultVerb != null)
             {
-                var verb = m_type.GetAttribute<DefaultVerbAttribute>().Verb;
-
-                var method = GetMethod(m_type, verb);
-
                 // create an array of (null) arguments that matches the method
                 //
-                var parameters = method.MethodInfo.GetParameters().Select(p => (object)null).ToArray();
+                var parameters = defaultVerb.MethodInfo.GetParameters().Select(p => (object)null).ToArray();
 
-                method.MethodInfo.Invoke(target, parameters);
+                defaultVerb.MethodInfo.Invoke(target, parameters);
             }
         }
 
@@ -1090,6 +1110,13 @@ namespace CLAP
                         "Method '{0}' is marked as [Error] so it should have a single Exception parameter or none".FormatWith(method));
                 }
             }
+        }
+
+        private static Method GetDefaultVerb(Type type)
+        {
+            var verbs = GetVerbs(type);
+
+            return verbs.FirstOrDefault(v => v.IsDefault);
         }
 
         #endregion Private Methods
