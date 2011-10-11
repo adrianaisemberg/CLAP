@@ -34,11 +34,15 @@ li
     min-height: 100%;
 }
 
-.code
+.code, .codeblock, .codeblock *
 {
     font-family: "Consolas", "Bitstream Vera Sans Mono", "Courier New", Courier, monospace;
-    font-weight: bold;
     font-size: 14px;
+}
+
+.code
+{
+    background-color: #F2F2F2;
 }
 
 .console
@@ -213,4 +217,41 @@ h2
 {
     margin-top: 2px;
     margin-left: 16px;
+}
+
+.grumble
+{
+    position: absolute;
+}
+
+#grumble_intro_code_4
+{
+    position: absolute;
+    top: 150px;
+    left: 30px;
+}
+
+.grumble-text *
+{
+    color: white;
+}
+
+.code_keyword
+{
+    color: #0000FF
+}
+
+.code_type
+{
+    color: #548FC7;
+}
+
+.code_string
+{
+    color: #A31515;
+}
+
+.seq
+{
+    visibility: hidden;
 }

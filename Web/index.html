@@ -4,9 +4,11 @@
     <link rel="stylesheet" type="text/css" href="style.css"/>
     <link rel="stylesheet" type="text/css" href="syntaxhighlighter/shCore.css"/>
     <link rel="stylesheet" type="text/css" href="syntaxhighlighter/shThemeDefault.css"/>
+    <link rel="stylesheet" type="text/css" href="grumble/grumble.min.css"/>
     <script type="text/javascript" src="jquery-1.6.2.min.js"></script>
     <script type="text/javascript" src="syntaxhighlighter/shCore.js"></script>
     <script type="text/javascript" src="syntaxhighlighter/shBrushCSharp.js"></script>
+    <script type="text/javascript" src="grumble/jquery.grumble.min.js"></script>
     <script type="text/javascript" src="script.js"></script>
 </head>
 <body>
@@ -25,7 +27,7 @@
                     <a href="#attribute_help" class="sub_menu_item">Help</a>
                     <a href="#attribute_global" class="sub_menu_item">Global</a>
                 </div>
-                <a href="#validation" class="menu_item">VALIDATION</a>
+                <a href="#validation" class="menu_item">VALIDATION</a><span class="grumble" text="Lots of features here" angle="60" distance="90" showAfter="18000" hideAfter="3000"></span>
                 <div class="sub_menu" menu_id="#validation">
                     <a href="#validation_lessthan" class="sub_menu_item">LessThan</a>
                     <a href="#validation_lessorequalto" class="sub_menu_item">LessOrEqualTo</a>
@@ -53,40 +55,40 @@
             <div id="right">
                 <div id="what" class="content">
                     <div id="intro_code">
-                        <pre class="brush: csharp, highlight: [5,11]">
-                            class Program
-                            {
-                                static void Main(string[] args)
-                                {
-                                    Parser&lt;ClapApp>.Run(args);
-                                }
-                            }
+                        <pre class="codeblock">
+    <span class="code_keyword"><span class="grumble" text="take an existing class" angle="-70" distance="-5" showAfter="1000" hideAfter="6500"></span>class</span> <span class="code_type">ClapApp</span>
+    {
+        <span class="seq" timeout="8000">[<span class="code_type">Verb</span>]</span><span class="grumble" text="add this thingy" angle="50" distance="0" showAfter="8000" hideAfter="4000"></span>
+        <span class="code_keyword">public static void</span> <span class="grumble" text="with some methods" angle="-10" distance="0" showAfter="2500" hideAfter="5000"></span>Foo(<span class="code_keyword">string</span> bar,<span class="grumble" text="and some parameters" angle="45" distance="0" showAfter="3500" hideAfter="4000"></span> <span class="code_keyword">int</span> count)
+        {
+            <span class="code_keyword">for</span> (<span class="code_keyword">int</span> i = 0; i < count; i++)
+            {
+                <span class="code_type">Console</span>.WriteLine(<span class="code_string">"This parser kicks {0}"</span>, bar);
+            }
+        }
+    }
 
-                            class ClapApp
-                            {
-                                [Verb]
-                                public static void Foo(string bar, int count)
-                                {
-                                    for (int i = 0; i < count; i++)
-                                    {
-                                        Console.WriteLine("This parser {0}", bar);
-                                    }
-                                }
-                            }
+    <span class="seq" timeout="9000"><span class="code_keyword">class</span> <span class="code_type">Program</span>
+    {
+        <span class="code_keyword">static void</span> Main(<span class="code_keyword">string</span>[] args)
+        {
+            <span class="seq" timeout="10000"><span class="code_type">Parser</span>&lt;<span class="code_type">ClapApp</span>>.Run(args);</span><span class="grumble" text="and also this line" angle="60" distance="-5" showAfter="10000" hideAfter="3000"></span>
+        }
+    }</span>
                         </pre>
                     </div>
-                    <pre class="console">
-<span class="commandline">> myexe foo -bar:"Kicks Ass!" -count:10</span>
-This parser Kicks Ass!
-This parser Kicks Ass!
-This parser Kicks Ass!
-This parser Kicks Ass!
-This parser Kicks Ass!
-This parser Kicks Ass!
-This parser Kicks Ass!
-This parser Kicks Ass!
-This parser Kicks Ass!
-This parser Kicks Ass!</pre>
+                    <pre class="console seq" timeout="13000">
+C:\> <span class="commandline">myexe foo -bar:Ass! -count:10</span><span class="grumble" text="OMFG! Magic!" angle="30" distance="5" showAfter="14000" hideAfter="3000"></span>
+<span class="seq" timeout="16000">This parser kicks Ass!</span>
+<span class="seq" timeout="16100">This parser kicks Ass!</span>
+<span class="seq" timeout="16200">This parser kicks Ass!</span>
+<span class="seq" timeout="16300">This parser kicks Ass!</span>
+<span class="seq" timeout="16400">This parser kicks Ass!</span>
+<span class="seq" timeout="16500">This parser kicks Ass!</span>
+<span class="seq" timeout="16600">This parser kicks Ass!</span>
+<span class="seq" timeout="16700">This parser kicks Ass!</span>
+<span class="seq" timeout="16800">This parser kicks Ass!</span>
+<span class="seq" timeout="16900">This parser kicks Ass!</span></span></pre>
                 </div>
                 <div id="using" class="content">
                     <h3>Using CLAP</h3>

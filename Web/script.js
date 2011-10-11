@@ -1,3 +1,4 @@
+var played;
 $(function(){
     $("#left").find("a.menu_item").click(function(){
         selectLink($(this));
@@ -15,7 +16,43 @@ $(function(){
     
     SyntaxHighlighter.defaults['toolbar'] = false;
     SyntaxHighlighter.all();
+        
+    setTimeout(function(){play();},2000);
 });
+
+function grumble(){
+    $(".grumble").each(function(i,d){
+        var o = $(d);
+        o.css({
+            top: o.attr("top"),
+            left: o.attr("left"),
+        });
+        o.grumble({
+            text: o.attr("text"),
+            angle: parseInt(o.attr("angle")),
+            distance: parseInt(o.attr("distance")),
+            showAfter: parseInt(o.attr("showAfter")),
+            hideAfter: parseInt(o.attr("hideAfter")),
+        });
+    });
+}
+
+function play(){
+    if (played)
+    {
+        return;
+    }
+    
+    grumble();
+
+    $(".seq").each(function(i,e){
+        setTimeout(function(){
+            $(e).css('visibility','visible').hide().fadeIn();
+        },parseInt($(e).attr("timeout")));
+    });
+    
+    played = true;
+}
 
 function selectLink(link){
     $(".content:visible").hide();
