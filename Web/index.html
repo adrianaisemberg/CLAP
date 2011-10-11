@@ -14,13 +14,12 @@
         <div id="header">CLAP: .NET Command-Line Auto-Parser</div>
         <div id="center">
             <div id="left">
-                <a href="#what" class="menu_item">WHAT</a>
+                <a href="#what" class="menu_item selected">WTF?</a>
                 <a href="#using" class="menu_item">USING CLAP</a>
                 <a href="#attributes" class="menu_item">ATTRIBUTES</a>
                 <div class="sub_menu" menu_id="#attributes">
                     <a href="#attribute_verb" class="sub_menu_item">Verb</a>
                     <a href="#attribute_parameter" class="sub_menu_item">Parameter</a>
-                    <a href="#attribute_defaultverb" class="sub_menu_item">DefaultVerb</a>
                     <a href="#attribute_empty" class="sub_menu_item">Empty</a>
                     <a href="#attribute_error" class="sub_menu_item">Error</a>
                     <a href="#attribute_help" class="sub_menu_item">Help</a>
@@ -123,7 +122,7 @@ This parser Kicks Ass!</pre>
                     <h3>Installing CLAP using NuGet</h3>
                     <p>If you have NuGet installed, steps 1-2 can be skipped.</p>
                     <p>Either find CLAP from the NuGet manager, or run the following command from NuGet's console:</p>
-                    <p class="code">PM> <span class="code highlight">Install-Package clap</span></p>
+                    <p class="console"><b>PM></b> Install-Package clap</p>
                 </div>
                 <div id="attributes" class="content">
                     <h3>Attributes</h3>
@@ -138,6 +137,19 @@ This parser Kicks Ass!</pre>
                         <div class="attribute_properties">
                             <h3>Properties:</h3>
                             <div class="attribute_property">
+                                <div class="attribute_property_name code">IsDefault (Boolean)</div>
+                                <div class="attribute_property_description">
+                                    <p>
+                                        <p>Whether this verb is the class's default.</p>
+                                        <p>A default verb is called when no verb argument was entered.</p>
+                                        <p>
+                                            Only a single verb can be set as default. Having more than one default verb
+                                            will throw a <span class="code">MoreThanOneDefaultVerbException</span>.
+                                        </p>
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="attribute_property">
                                 <div class="attribute_property_name code">Aliases (String)</div>
                                 <div class="attribute_property_description">Additional aliases for the verb.</div>
                             </div>
@@ -151,7 +163,7 @@ This parser Kicks Ass!</pre>
                             <pre class="brush: csharp, highlight: 3">
                                 class Program
                                 {
-                                    [Verb]
+                                    [Verb(IsDefault = true)]
                                     public static void Foo()
                                     {
                                     }
@@ -204,25 +216,6 @@ This parser Kicks Ass!</pre>
                                         [Parameter(Required = true)] string name,
                                         [Parameter(Default = 5)] int count,
                                         bool upperCase)
-                                    {
-                                    }
-                                }
-                            </pre>
-                        </div>
-                    </div>
-                    <div class="attribute" id="attribute_defaultverb">
-                        <div class="attribute_name code">DefaultVerb(string verb)</div>
-                        <div class="attribute_description">
-                            <p>Marks a class with a default verb to execute in-case no verb was provided by the user.</p>
-                        </div>
-                        <div class="attribute_samples">
-                            <h3>Example:</h3>
-                            <pre class="brush: csharp, highlight: 1">
-                                [DefaultVerb("Foo")]
-                                class Program
-                                {
-                                    [Verb]
-                                    public static void Foo()
                                     {
                                     }
                                 }
@@ -822,10 +815,9 @@ This parser Kicks Ass!</pre>
                     <div class="attribute">
                         <h4>A class with some verbs and validation:</h4>
                         <pre class="brush: csharp">
-                            [DefaultVerb("hello")]
                             class TheApp : BaseApp
                             {
-                                [Verb(Description = "Prints 'Hello' and a name")]
+                                [Verb(IsDefault = true, Description = "Prints 'Hello' and a name")]
                                 public static void Hello(
                                     
                                     [Parameter(Aliases = "n", Required = true, Description = "The name")]
@@ -851,7 +843,7 @@ This parser Kicks Ass!</pre>
                                 {
                                     var sign = alignment == Alignment.Left ? "-" : "";
 
-                                    var format = "{0," + sign + "5}";
+                                    var format = "{0,"ee + sign + "5}";
 
                                     for (int i = start; i <= end; i++)
                                     {
@@ -868,7 +860,7 @@ This parser Kicks Ass!</pre>
                                 }
                             }
                         </pre>
-                        <p>The first verb, <span class="code">Hello</span> has two parameters:</p>
+                        <p>The first verb, <span class="code">Hello</span> is the default verb and it has two parameters:</p>
                         <ol>
                             <li><span class="code highlight">name</span>: Required and has an alias "n".</li>
                             <li>
@@ -921,7 +913,7 @@ Hello CLAP</pre>
                 </div>
                 <div id="about" class="content">
                     <h3>About</h3>
-                    <p>CLAP: A free and open-source project by Adrian Aisemberg, <a href="mailto:adrianaisemberg@gmail.com">adrianaisemberg@gmail.com</a>.</p>
+                    <p>CLAP: A free and open-source project by Adrian Aisemberg (<a href="mailto:adrianaisemberg@gmail.com">adrianaisemberg@gmail.com</a>).</p>
                     <p>More by Adrian:</p>
                     <ul>
                         <li><a href="http://www.vercue.com">vercue.com</a>: A kick-ass svn client for Windows</li>
@@ -953,7 +945,13 @@ Hello CLAP</pre>
                 </div>
             </div>
         </div>
-        <div id="footer">SharpRegion <span class="color">&#9679;</span> Vercue <span class="color">&#9679;</span> By Adrian Aisemberg</div>
+    </div>
+    <div id="footer">
+        <a href="http://www.sharpregion.com">SharpRegion</a>
+        <span class="color">&#9679;</span>
+        <a href="http://www.vercue.com">Vercue</a>
+        <span class="color">&#9679;</span>
+        By <a href="mailto:adrianaisemberg@gmail.com">Adrian Aisemberg</a>
     </div>
 </body>
 </html>

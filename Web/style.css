@@ -8,14 +8,13 @@
 html, body
 {
     padding: 0;
-    margin: 20px 0 0;
-    height: 100%;
+    margin: 0;
+    position: relative;
 }
 
 a
 {
     text-decoration: none;
-    font-weight: bold;
 }
 
 a:hover
@@ -26,6 +25,13 @@ a:hover
 li
 {
     margin-bottom: 5px;
+}
+
+#container
+{
+    height: auto !important;
+    height: 100%;
+    min-height: 100%;
 }
 
 .code
@@ -39,13 +45,11 @@ li
 {
     background-color: black;
     padding: 5px;
-    color: white;
-    font-family: "Consolas", "Bitstream Vera Sans Mono", "Courier New", Courier, monospace;
-    font-size: 14px;
 }
 
-.console *
+.console, .console *
 {
+    color: white;
     font-family: "Consolas", "Bitstream Vera Sans Mono", "Courier New", Courier, monospace;
     font-size: 14px;
 }
@@ -79,9 +83,7 @@ h2
 
 #header
 {
-    margin-bottom: 40px;
-    left: 250px;
-    position: relative;
+    padding: 20px 0 40px 250px;
     max-width: 500px;
     color: #2768B1;
     font-size: 21px;
@@ -94,10 +96,12 @@ h2
 
 #footer
 {
+    position: absolute;
+    width: 100%;
+    bottom: 0;
     text-align: center;
     padding: 10px 0;
     border-top: 1px solid #E3EAF1;
-    margin-top: 20px;
 }
 
 #left
@@ -137,7 +141,7 @@ h2
 .content
 {
     display: none;
-    min-height: 550px;
+    padding-bottom: 45px;
 }
 
 .highlight
@@ -208,5 +212,5 @@ h2
 .attribute_property_description
 {
     margin-top: 2px;
-    text-indent: 16px;
+    margin-left: 16px;
 }
