@@ -13,17 +13,13 @@ namespace CLAP
     /// <summary>
     /// A command-line arguments parser
     /// </summary>
-    public class Parser
+    public sealed class Parser<T>
     {
         #region Fields
 
         // The possible prefixes of a parameter
         //
         private readonly static string[] s_prefixes = new[] { "/", "-" };
-
-        // The type to reflect it's verbs
-        //
-        private readonly Type m_type;
 
         private readonly Dictionary<string, GlobalParameterHandler> m_globalRegisteredHandlers;
 
@@ -39,14 +35,8 @@ namespace CLAP
         /// <summary>
         /// Creates a parser for the given type
         /// </summary>
-        public Parser(Type type)
+        public Parser()
         {
-            if (type == null)
-            {
-                throw new ArgumentNullException("type");
-            }
-
-            m_type = type;
             m_globalRegisteredHandlers = new Dictionary<string, GlobalParameterHandler>();
             m_registeredHelpHandlers = new Dictionary<string, Action<string>>();
 
@@ -57,23 +47,17 @@ namespace CLAP
 
         #region Public Methods
 
-        public static Parser Create<T>()
-        {
-            return new Parser(typeof(T));
-        }
-
-        /// <summary>
-        /// Executes a static verb on the type
-        /// </summary>
         public void Run(string[] args)
         {
-            Run(args, null);
+            RunInternal(args, null);
         }
 
-        /// <summary>
-        /// Executes an instance verb on the object
-        /// </summary>
         public void Run(string[] args, object obj)
+        {
+            RunInternal(args, obj);
+        }
+
+        private void RunInternal(string[] args, object obj)
         {
             try
             {
@@ -103,7 +87,7 @@ namespace CLAP
 
                 // find the method by the given verb
                 //
-                var typeVerbs = GetVerbs(m_type);
+                var typeVerbs = GetVerbs();
 
                 var method = typeVerbs.FirstOrDefault(v => v.Names.Contains(verb.ToLowerInvariant()));
 
@@ -275,7 +259,7 @@ namespace CLAP
         /// <summary>
         /// Registers an action to a global parameter name
         /// </summary>
-        public void RegisterParameterHandler<T>(string names, Action<T> action)
+        public void RegisterParameterHandler<TParameter>(string names, Action<TParameter> action)
         {
             RegisterParameterHandler(
                 names,
@@ -286,7 +270,7 @@ namespace CLAP
         /// <summary>
         /// Registers an action to a global parameter name
         /// </summary>
-        public void RegisterParameterHandler<T>(string names, Action<T> action, string description)
+        public void RegisterParameterHandler<TParameter>(string names, Action<TParameter> action, string description)
         {
             RegisterParameterHandlerInternal(
                 names,
@@ -299,7 +283,7 @@ namespace CLAP
         /// </summary>
         public string GetHelpString()
         {
-            var verbs = GetVerbs(m_type);
+            var verbs = GetVerbs();
 
             if (verbs.None())
             {
@@ -413,7 +397,7 @@ namespace CLAP
         private void Validate()
         {
             // no more than one default verb
-            var verbMethods = m_type.GetMethodsWith<VerbAttribute>().
+            var verbMethods = typeof(T).GetMethodsWith<VerbAttribute>().
                 Select(m => new Method(m));
 
             var defaultVerbs = verbMethods.Where(m => m.IsDefault);
@@ -429,7 +413,7 @@ namespace CLAP
 
             // no more than one empty handler
             //
-            var definedEmptyHandlers = m_type.GetMethodsWith<EmptyAttribute>();
+            var definedEmptyHandlers = typeof(T).GetMethodsWith<EmptyAttribute>();
 
             if (definedEmptyHandlers.Count() > 1)
             {
@@ -438,7 +422,7 @@ namespace CLAP
 
         }
 
-        private void RegisterParameterHandlerInternal<T>(string names, Action<T> action, string description)
+        private void RegisterParameterHandlerInternal<TParameter>(string names, Action<TParameter> action, string description)
         {
             RegisterParameterHandlerInternal(
                 names.CommaSplit(),
@@ -446,22 +430,22 @@ namespace CLAP
                 description);
         }
 
-        private void RegisterParameterHandlerInternal<T>(IEnumerable<string> names, Action<T> action, string description)
+        private void RegisterParameterHandlerInternal<TParameter>(IEnumerable<string> names, Action<TParameter> action, string description)
         {
             var objectAction = new Action<string>(str =>
             {
                 object v = null;
 
-                if (typeof(T) == typeof(bool) && str == null)
+                if (typeof(TParameter) == typeof(bool) && str == null)
                 {
                     v = true;
                 }
                 else
                 {
-                    v = GetValueForParameter(typeof(T), string.Empty, str);
+                    v = GetValueForParameter(typeof(TParameter), string.Empty, str);
                 }
 
-                action((T)v);
+                action((TParameter)v);
             });
 
             foreach (var name in names)
@@ -473,7 +457,7 @@ namespace CLAP
                         Name = name,
                         Handler = objectAction,
                         Desription = description,
-                        Type = typeof(T),
+                        Type = typeof(TParameter),
                     });
             }
         }
@@ -553,7 +537,7 @@ namespace CLAP
             return null;
         }
 
-        private static object GetValueForParameter(Type parameterType, string inputKey, string stringValue)
+        private object GetValueForParameter(Type parameterType, string inputKey, string stringValue)
         {
             // in case of a switch - the default is true/false according to the switch
             //
@@ -572,7 +556,7 @@ namespace CLAP
 
                 // Create a generic instance of the ConvertToArray method
                 //
-                var convertToArrayMethod = typeof(Parser).GetMethod(
+                var convertToArrayMethod = GetType().GetMethod(
                         "ConvertToArray",
                         BindingFlags.NonPublic | BindingFlags.Static).
                     MakeGenericMethod(type);
@@ -595,9 +579,9 @@ namespace CLAP
         /// <summary>
         /// This method is called via reflection
         /// </summary>
-        private static T[] ConvertToArray<T>(string[] values)
+        private static TConvert[] ConvertToArray<TConvert>(string[] values)
         {
-            return values.Select(c => ConvertString(c, typeof(T))).Cast<T>().ToArray();
+            return values.Select(c => ConvertString(c, typeof(TConvert))).Cast<TConvert>().ToArray();
         }
 
         /// <summary>
@@ -731,9 +715,9 @@ namespace CLAP
         /// <summary>
         /// Create a list of methods (verbs) for the given type
         /// </summary>
-        private static IEnumerable<Method> GetVerbs(Type type)
+        private IEnumerable<Method> GetVerbs()
         {
-            var verbMethods = type.GetMethodsWith<VerbAttribute>().
+            var verbMethods = typeof(T).GetMethodsWith<VerbAttribute>().
                 Select(m => new Method(m));
 
             var defaultVerbs = verbMethods.Where(m => m.IsDefault);
@@ -780,14 +764,14 @@ namespace CLAP
 
         private IEnumerable<MethodInfo> GetDefinedGlobals()
         {
-            var globals = m_type.GetMethodsWith<GlobalAttribute>();
+            var globals = typeof(T).GetMethodsWith<GlobalAttribute>();
 
             return globals;
         }
 
         private IEnumerable<ErrorHandler> GetDefinedErrorHandlers()
         {
-            var errorHandlers = m_type.GetMethodsWith<ErrorAttribute>();
+            var errorHandlers = typeof(T).GetMethodsWith<ErrorAttribute>();
 
             return errorHandlers.Select(m => new ErrorHandler
             {
@@ -887,7 +871,7 @@ namespace CLAP
                 helpHandled = true;
             }
 
-            var definedHelpMethods = m_type.GetMethodsWith<HelpAttribute>();
+            var definedHelpMethods = typeof(T).GetMethodsWith<HelpAttribute>();
 
             foreach (var method in definedHelpMethods)
             {
@@ -948,7 +932,7 @@ namespace CLAP
                 m_registeredEmptyHandler();
             }
 
-            var definedEmptyHandlers = m_type.GetMethodsWith<EmptyAttribute>();
+            var definedEmptyHandlers = typeof(T).GetMethodsWith<EmptyAttribute>();
             var definedEmptyHandlersCount = definedEmptyHandlers.Count();
 
             Debug.Assert(definedEmptyHandlersCount <= 1);
@@ -1008,7 +992,7 @@ namespace CLAP
                 }
             }
 
-            var defaultVerb = GetDefaultVerb(m_type);
+            var defaultVerb = GetDefaultVerb();
 
             // if there is a default verb - execute it
             //
@@ -1112,9 +1096,9 @@ namespace CLAP
             }
         }
 
-        private static Method GetDefaultVerb(Type type)
+        private Method GetDefaultVerb()
         {
-            var verbs = GetVerbs(type);
+            var verbs = GetVerbs();
 
             return verbs.FirstOrDefault(v => v.IsDefault);
         }
@@ -1140,33 +1124,23 @@ namespace CLAP
         #endregion Types
     }
 
-    #region Parser<T>
-
     /// <summary>
     /// A command-line arguments parser
     /// </summary>
-    public static class Parser<T>
+    public static class Parser
     {
-        /// <summary>
-        /// Executes a verb and arguments
-        /// </summary>
-        public static void Run(string[] args)
+        public static void Run<T>(string[] args, T t)
         {
-            var p = new Parser(typeof(T));
-
-            p.Run(args);
-        }
-
-        /// <summary>
-        /// Executes a verb and arguments on the object
-        /// </summary>
-        public static void Run(string[] args, T t)
-        {
-            var p = new Parser(typeof(T));
+            var p = new Parser<T>();
 
             p.Run(args, t);
         }
-    }
 
-    #endregion Parser<T>
+        public static void Run<T>(string[] args)
+        {
+            var p = new Parser<T>();
+
+            p.Run(args);
+        }
+    }
 }

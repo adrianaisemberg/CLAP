@@ -12,7 +12,7 @@ namespace Tests
     {
         private void Execute<T>(T obj, String cmd)
         {
-            Parser<T>.Run(cmd.Split(' '), obj);
+            Parser.Run(cmd.Split(' '), obj);
         }
 
         [Test]
@@ -302,7 +302,7 @@ namespace Tests
 
             int x = 0;
 
-            var p = Parser.Create<Sample_02>();
+            var p = new Parser<Sample_02>();
 
             // with and without description for coverage
             //
@@ -326,7 +326,7 @@ namespace Tests
 
             var debug = String.Empty;
 
-            var p = Parser.Create<Sample_02>();
+            var p = new Parser<Sample_02>();
             p.RegisterParameterHandler<string>("debug", str => debug = str);
 
             p.Run("print /c=5 /msg=test /prefix=hello_ /debug=true".Split(' '), sample);
@@ -335,19 +335,12 @@ namespace Tests
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
-        public void Parser_NullType_Exception()
-        {
-            var p = new Parser(null);
-        }
-
-        [Test]
         public void Global_Defined_WithArg()
         {
             var mock = new Mock<IPrinter>();
             var sample = new Sample_10 { Printer = mock.Object };
 
-            var p = Parser.Create<Sample_10>();
+            var p = new Parser<Sample_10>();
 
             p.Run("print -foo:blah".Split(' '), sample);
 
@@ -361,7 +354,7 @@ namespace Tests
             var mock = new Mock<IPrinter>();
             var sample = new Sample_12 { Printer = mock.Object };
 
-            var p = Parser.Create<Sample_12>();
+            var p = new Parser<Sample_12>();
 
             p.Run("print -foo".Split(' '), sample);
         }
@@ -372,7 +365,7 @@ namespace Tests
             var mock = new Mock<IPrinter>();
             var sample = new Sample_10 { Printer = mock.Object };
 
-            var p = Parser.Create<Sample_10>();
+            var p = new Parser<Sample_10>();
 
             p.Run("print -bar".Split(' '), sample);
 
@@ -385,7 +378,7 @@ namespace Tests
             var mock = new Mock<IPrinter>();
             var sample = new Sample_10 { Printer = mock.Object };
 
-            var p = Parser.Create<Sample_10>();
+            var p = new Parser<Sample_10>();
 
             p.Run("print -mish:5".Split(' '), sample);
 
@@ -399,7 +392,7 @@ namespace Tests
             var mock = new Mock<IPrinter>();
             var sample = new Sample_10 { Printer = mock.Object };
 
-            var p = Parser.Create<Sample_10>();
+            var p = new Parser<Sample_10>();
 
             p.Run("print -abra:cadabra".Split(' '), sample);
         }
@@ -410,7 +403,7 @@ namespace Tests
             var mock = new Mock<IPrinter>();
             var sample = new Sample_10 { Printer = mock.Object };
 
-            var p = Parser.Create<Sample_10>();
+            var p = new Parser<Sample_10>();
 
             p.Run("-showhelp".Split(' '), sample);
             p.Run("showhelp".Split(' '), sample);
@@ -424,7 +417,7 @@ namespace Tests
             var mock = new Mock<IPrinter>();
             var sample = new Sample_11 { Printer = mock.Object };
 
-            var p = Parser.Create<Sample_11>();
+            var p = new Parser<Sample_11>();
 
             p.RegisterHelpHandler("help", s => sample.Print());
 
@@ -440,7 +433,7 @@ namespace Tests
             var mock = new Mock<IPrinter>();
             var sample = new Sample_09 { Printer = mock.Object };
 
-            var p = Parser.Create<Sample_09>();
+            var p = new Parser<Sample_09>();
 
             p.Run(new string[] { }, sample);
 
@@ -456,7 +449,7 @@ namespace Tests
 
             var sample = new Sample_16();
 
-            var p = Parser.Create<Sample_16>();
+            var p = new Parser<Sample_16>();
 
             p.Run(new string[] { });
 
@@ -472,7 +465,7 @@ namespace Tests
             var mock = new Mock<IPrinter>();
             var sample = new Sample_20 { Printer = mock.Object };
 
-            var p = Parser.Create<Sample_20>();
+            var p = new Parser<Sample_20>();
 
             p.Run(new string[] { }, sample);
         }
@@ -483,7 +476,7 @@ namespace Tests
             var mock = new Mock<IPrinter>();
             var sample = new Sample_11 { Printer = mock.Object };
 
-            var p = Parser.Create<Sample_11>();
+            var p = new Parser<Sample_11>();
 
             p.RegisterEmptyHandler(() => sample.Print());
 
@@ -499,7 +492,7 @@ namespace Tests
             var mock = new Mock<IPrinter>();
             var sample = new Sample_13 { Printer = mock.Object };
 
-            var p = Parser.Create<Sample_13>();
+            var p = new Parser<Sample_13>();
 
             p.Run(new string[] { }, sample);
         }
@@ -511,7 +504,7 @@ namespace Tests
             var mock = new Mock<IPrinter>();
             var sample = new Sample_14 { Printer = mock.Object };
 
-            var p = Parser.Create<Sample_14>();
+            var p = new Parser<Sample_14>();
 
             p.Run(new string[] { }, sample);
         }
@@ -523,7 +516,7 @@ namespace Tests
             var mock = new Mock<IPrinter>();
             var sample = new Sample_15 { Printer = mock.Object };
 
-            var p = Parser.Create<Sample_15>();
+            var p = new Parser<Sample_15>();
 
             p.Run(new string[] { });
         }
@@ -534,7 +527,7 @@ namespace Tests
             var mock = new Mock<IPrinter>();
             var sample = new Sample_17 { Printer = mock.Object };
 
-            var p = Parser.Create<Sample_17>();
+            var p = new Parser<Sample_17>();
 
             p.Run(new string[] { }, sample);
 
@@ -548,7 +541,7 @@ namespace Tests
             var mock = new Mock<IPrinter>();
             var sample = new Sample_18 { Printer = mock.Object };
 
-            var p = Parser.Create<Sample_18>();
+            var p = new Parser<Sample_18>();
 
             p.Run(new string[] { }, sample);
         }
@@ -560,7 +553,7 @@ namespace Tests
             var mock = new Mock<IPrinter>();
             var sample = new Sample_19 { Printer = mock.Object };
 
-            var p = Parser.Create<Sample_19>();
+            var p = new Parser<Sample_19>();
 
             p.Run(new string[] { }, sample);
         }
@@ -571,7 +564,7 @@ namespace Tests
             var mock = new Mock<IPrinter>();
             var sample = new Sample_21 { Printer = mock.Object };
 
-            var p = Parser.Create<Sample_21>();
+            var p = new Parser<Sample_21>();
 
             p.Run(new[] { "help" }, sample);
             p.Run(new[] { "h" }, sample);
@@ -586,7 +579,7 @@ namespace Tests
         [Test]
         public void _Help_WithEverything_Coverage()
         {
-            var p = Parser.Create<Sample_10>();
+            var p = new Parser<Sample_10>();
 
             p.RegisterParameterHandler("param", delegate { }, "description");
 
@@ -600,7 +593,7 @@ namespace Tests
             var mock = new Mock<IPrinter>();
             var sample = new Sample_22 { Printer = mock.Object };
 
-            var p = Parser.Create<Sample_22>();
+            var p = new Parser<Sample_22>();
 
             p.Run(new[] { "-?" }, sample);
         }
@@ -612,7 +605,7 @@ namespace Tests
             var mock = new Mock<IPrinter>();
             var sample = new Sample_23 { Printer = mock.Object };
 
-            var p = Parser.Create<Sample_23>();
+            var p = new Parser<Sample_23>();
 
             p.Run(new[] { "-?" });
         }
@@ -626,7 +619,7 @@ namespace Tests
 
             var sample = new Sample_22 { Printer = mock.Object };
 
-            var p = Parser.Create<Sample_22>();
+            var p = new Parser<Sample_22>();
 
             p.Run(new[] { "-?" });
 
@@ -639,7 +632,7 @@ namespace Tests
             var mock = new Mock<IPrinter>();
             var sample = new Sample_23 { Printer = mock.Object };
 
-            var p = Parser.Create<Sample_23>();
+            var p = new Parser<Sample_23>();
 
             p.Run(new[] { "-?" }, sample);
 
@@ -653,7 +646,7 @@ namespace Tests
             var mock = new Mock<IPrinter>();
             var sample = new Sample_24 { Printer = mock.Object };
 
-            var p = Parser.Create<Sample_24>();
+            var p = new Parser<Sample_24>();
 
             p.Run(new[] { "-?" }, sample);
         }
@@ -665,7 +658,7 @@ namespace Tests
             var mock = new Mock<IPrinter>();
             var sample = new Sample_25 { Printer = mock.Object };
 
-            var p = Parser.Create<Sample_25>();
+            var p = new Parser<Sample_25>();
 
             p.Run(new[] { "-?" }, sample);
         }
@@ -684,7 +677,7 @@ namespace Tests
         [ExpectedException(typeof(MoreThanOneEmptyHandlerException))]
         public void RegisterHelpHandler_MoreThanOnce_Exception()
         {
-            var p = Parser.Create<Sample_25>();
+            var p = new Parser<Sample_25>();
 
             p.RegisterEmptyHandler(delegate { });
             p.RegisterEmptyHandler(delegate { });
@@ -693,7 +686,7 @@ namespace Tests
         [Test]
         public void RegisterEmptyHelpHandler_Called()
         {
-            var p = Parser.Create<Sample_25>();
+            var p = new Parser<Sample_25>();
 
             string help = null;
 
@@ -710,7 +703,7 @@ namespace Tests
         [ExpectedException(typeof(MoreThanOneEmptyHandlerException))]
         public void RegisterEmptyHelpHandler_MoreThanOnce_Exception()
         {
-            var p = Parser.Create<Sample_25>();
+            var p = new Parser<Sample_25>();
 
             p.RegisterEmptyHelpHandler(delegate { });
             p.RegisterEmptyHelpHandler(delegate { });
@@ -720,7 +713,7 @@ namespace Tests
         [ExpectedException(typeof(InvalidOperationException))]
         public void RegisterHelpHandler_MoreThanOnce_SameKey_Exception()
         {
-            var p = Parser.Create<Sample_25>();
+            var p = new Parser<Sample_25>();
 
             p.RegisterHelpHandler("a", delegate { });
             p.RegisterHelpHandler("b", delegate { });
@@ -731,7 +724,7 @@ namespace Tests
         [ExpectedException(typeof(MissingVerbException))]
         public void Run_Verb_NoMatchingMethod_Exception()
         {
-            var p = Parser.Create<Sample_25>();
+            var p = new Parser<Sample_25>();
 
             p.Run(new[] { "boo!" });
         }
@@ -740,7 +733,7 @@ namespace Tests
         [ExpectedException(typeof(MissingDefaultVerbException))]
         public void Run_NoVerb_NoDefaultVerb_Exception()
         {
-            var p = Parser.Create<Sample_25>();
+            var p = new Parser<Sample_25>();
 
             p.Run(new string[] { "-x" });
         }
@@ -752,7 +745,7 @@ namespace Tests
 
             Sample_27.StaticPrinter = mock.Object;
 
-            Parser<Sample_27>.Run("foo -x:bar".Split(' '));
+            Parser.Run<Sample_27>("foo -x:bar".Split(' '));
 
             Sample_27.StaticPrinter = null;
 
@@ -766,7 +759,7 @@ namespace Tests
 
             var sample = new Sample_28 { Printer = mock.Object };
 
-            Parser<Sample_28>.Run("foo -x:string -g:{0813A561-AC86-4C82-8EB1-0B6814637C7C}".Split(' '), sample);
+            Parser.Run("foo -x:string -g:{0813A561-AC86-4C82-8EB1-0B6814637C7C}".Split(' '), sample);
 
             mock.Verify(o => o.Print("string0813A561-AC86-4C82-8EB1-0B6814637C7C".ToLower()));
         }
@@ -778,7 +771,7 @@ namespace Tests
 
             var sample = new Sample_28 { Printer = mock.Object };
 
-            Parser<Sample_28>.Run("foo -x:string".Split(' '), sample);
+            Parser.Run("foo -x:string".Split(' '), sample);
 
             mock.Verify(o => o.Print("string" + Guid.Empty));
         }
@@ -790,7 +783,7 @@ namespace Tests
 
             var sample = new Sample_28 { Printer = mock.Object };
 
-            Parser<Sample_28>.Run("bar -x:string".Split(' '), sample);
+            Parser.Run("bar -x:string".Split(' '), sample);
 
             mock.Verify(o => o.Print("string2FBBAAAA-02AF-4F40-BADE-957F566B221E".ToLower()));
         }
@@ -804,7 +797,7 @@ namespace Tests
 
             // should not fail. I don't care what the help string is
             //
-            Parser<Sample_28>.Run(new string[0], sample);
+            Parser.Run(new string[0], sample);
         }
 
         [Test]
@@ -814,7 +807,7 @@ namespace Tests
 
             var sample = new Sample_28 { Printer = mock.Object };
 
-            Parser<Sample_28>.Run(new[] { "zoo" }, sample);
+            Parser.Run(new[] { "zoo" }, sample);
 
             mock.Verify(o => o.Print("5"));
         }
@@ -826,7 +819,7 @@ namespace Tests
 
             var sample = new Sample_29 { Printer = mock.Object };
 
-            Parser<Sample_29>.Run("foo -x:string -u:http://www.com".Split(' '), sample);
+            Parser.Run("foo -x:string -u:http://www.com".Split(' '), sample);
 
             mock.Verify(o => o.Print("stringhttp://www.com/".ToLower()));
         }
@@ -838,7 +831,7 @@ namespace Tests
 
             var sample = new Sample_29 { Printer = mock.Object };
 
-            Parser<Sample_29>.Run("foo -x:string".Split(' '), sample);
+            Parser.Run("foo -x:string".Split(' '), sample);
 
             mock.Verify(o => o.Print("string"));
         }
@@ -850,7 +843,7 @@ namespace Tests
 
             var sample = new Sample_29 { Printer = mock.Object };
 
-            Parser<Sample_29>.Run("bar -x:string".Split(' '), sample);
+            Parser.Run("bar -x:string".Split(' '), sample);
 
             mock.Verify(o => o.Print("stringhttp://www.com/".ToLower()));
         }
@@ -958,7 +951,7 @@ namespace Tests
             var mock = new Mock<IPrinter>();
             var sample = new Sample_02 { Printer = mock.Object };
 
-            var p = Parser.Create<Sample_02>();
+            var p = new Parser<Sample_02>();
 
             try
             {
@@ -987,7 +980,7 @@ namespace Tests
             var mock = new Mock<IPrinter>();
             var sample = new Sample_02 { Printer = mock.Object };
 
-            var p = Parser.Create<Sample_02>();
+            var p = new Parser<Sample_02>();
 
             try
             {
@@ -1019,7 +1012,7 @@ namespace Tests
             var mock = new Mock<IPrinter>();
             var sample = new Sample_30 { Printer = mock.Object };
 
-            Parser<Sample_30>.Run(new string[] { }, sample);
+            Parser.Run(new string[] { }, sample);
 
             mock.Verify(o => o.Print("works!"));
         }
@@ -1030,7 +1023,7 @@ namespace Tests
             var mock = new Mock<IPrinter>();
             var sample = new Sample_31 { Printer = mock.Object };
 
-            Parser<Sample_31>.Run(new string[] { }, sample);
+            Parser.Run(new string[] { }, sample);
 
             mock.Verify(o => o.Print("works!"));
         }
@@ -1038,7 +1031,7 @@ namespace Tests
         [Test]
         public void Execute_HandleError_Registered_NoRethrow()
         {
-            var p = Parser.Create<Sample_39>();
+            var p = new Parser<Sample_39>();
             var handled = false;
 
             p.RegisterErrorHandler(ex =>
@@ -1054,7 +1047,7 @@ namespace Tests
         [Test]
         public void Execute_HandleError_Registered_DefaultNoRethrow()
         {
-            var p = Parser.Create<Sample_39>();
+            var p = new Parser<Sample_39>();
             var handled = false;
 
             p.RegisterErrorHandler(ex =>
@@ -1070,7 +1063,7 @@ namespace Tests
         [Test]
         public void Execute_HandleError_Registered_Rethrow()
         {
-            var p = Parser.Create<Sample_39>();
+            var p = new Parser<Sample_39>();
             var handled = false;
 
             p.RegisterErrorHandler(ex =>
@@ -1096,7 +1089,7 @@ namespace Tests
             var mock = new Mock<IPrinter>();
             var sample = new Sample_02 { Printer = mock.Object };
 
-            var p = Parser.Create<Sample_02>();
+            var p = new Parser<Sample_02>();
 
             var handled = false;
 
@@ -1122,7 +1115,7 @@ namespace Tests
         {
             var sample = new ValidationSample_01();
 
-            var p = Parser.Create<ValidationSample_01>();
+            var p = new Parser<ValidationSample_01>();
             var handled = false;
 
             p.RegisterErrorHandler(ex =>
@@ -1142,7 +1135,7 @@ namespace Tests
             var mock = new Mock<IPrinter>();
             var sample = new Sample_32 { Printer = mock.Object };
 
-            var p = Parser.Create<Sample_32>();
+            var p = new Parser<Sample_32>();
 
             p.Run(new string[] { }, sample);
         }
@@ -1151,7 +1144,7 @@ namespace Tests
         [ExpectedException(typeof(MoreThanOneErrorHandlerException))]
         public void RegisterError_MoreThanOne_Exception()
         {
-            var p = Parser.Create<Sample_02>();
+            var p = new Parser<Sample_02>();
 
             p.RegisterErrorHandler(delegate { });
             p.RegisterErrorHandler(delegate { });
@@ -1161,21 +1154,21 @@ namespace Tests
         [ExpectedException(typeof(ArgumentMismatchException))]
         public void Error_DefinedWithInt_Exception()
         {
-            Parser<Sample_35>.Run(null);
+            Parser.Run<Sample_35>(null);
         }
 
         [Test]
         [ExpectedException(typeof(ArgumentMismatchException))]
         public void Error_DefinedWithBadException_Exception()
         {
-            Parser<Sample_36>.Run(null);
+            Parser.Run<Sample_36>(null);
         }
 
         [Test]
         [ExpectedException(typeof(ArgumentMismatchException))]
         public void Error_DefinedWithMoreThanOneParameter_Exception()
         {
-            Parser<Sample_37>.Run(null);
+            Parser.Run<Sample_37>(null);
         }
 
         [Test]
@@ -1187,7 +1180,7 @@ namespace Tests
 
             try
             {
-                Parser<Sample_33>.Run(new[] { "foo1" }, sample);
+                Parser.Run(new[] { "foo1" }, sample);
 
                 Assert.Fail();
             }
@@ -1207,7 +1200,7 @@ namespace Tests
 
             try
             {
-                Parser<Sample_33>.Run(new[] { "foo" }, sample);
+                Parser.Run(new[] { "foo" }, sample);
 
                 Assert.Fail();
             }
@@ -1232,7 +1225,7 @@ namespace Tests
 
             try
             {
-                Parser<Sample_34>.Run(new[] { "foo" }, sample);
+                Parser.Run(new[] { "foo" }, sample);
 
                 Assert.Fail();
             }
@@ -1245,7 +1238,7 @@ namespace Tests
         [Test]
         public void _Validation_Descriptions_Coverage()
         {
-            var p = Parser.Create<All_Validations_Sample>();
+            var p = new Parser<All_Validations_Sample>();
 
             p.GetHelpString();
         }
@@ -1260,7 +1253,7 @@ namespace Tests
         [ExpectedException(typeof(MoreThanOneDefaultVerbException))]
         public void DefaultVerb_MoreThanOnce_Exception()
         {
-            Parser.Create<Sample_38>();
+            new Parser<Sample_38>();
         }
     }
 }

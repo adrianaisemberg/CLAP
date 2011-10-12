@@ -11,7 +11,7 @@ namespace ConsoleTest
     {
         static void Main(string[] args)
         {
-            Parser<TheApp>.Run(args);
+            Parser.Run<TheApp>(args);
         }
     }
 
