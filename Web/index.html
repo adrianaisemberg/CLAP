@@ -72,7 +72,7 @@
     {
         <span class="code_keyword">static void</span> Main(<span class="code_keyword">string</span>[] args)
         {
-            <span class="seq" timeout="10000"><span class="code_type">Parser</span>&lt;<span class="code_type">ClapApp</span>>.Run(args);</span><span class="grumble" text="and also this line" angle="60" distance="-5" showAfter="10000" hideAfter="3000"></span>
+            <span class="seq" timeout="10000"><span class="code_type">Parser</span>.Run&lt;<span class="code_type">ClapApp</span>>(args);</span><span class="grumble" text="and also this line" angle="60" distance="-5" showAfter="10000" hideAfter="3000"></span>
         }
     }</span>
                         </pre>
@@ -102,7 +102,7 @@ C:\> <span class="commandline">myexe foo -bar:Ass! -count:10</span><span class="
                             <pre class="brush: csharp, highlight: 3">
                                 static void Main(string[] args)
                                 {
-                                    Parser&lt;TheApp>.Run(args);
+                                    Parser.Run&lt;TheApp>(args);
                                 }
                             </pre>
                         </li>
@@ -118,7 +118,7 @@ C:\> <span class="commandline">myexe foo -bar:Ass! -count:10</span><span class="
                         {
                             var theApp = new TheApp();
 
-                            Parser&lt;TheApp>.Run(args, theApp);
+                            Parser.Run(args, theApp);
                         }
                     </pre>
                     <h3>Installing CLAP using NuGet</h3>
@@ -629,7 +629,7 @@ C:\> <span class="commandline">myexe foo -bar:Ass! -count:10</span><span class="
                             <pre class="brush: csharp, highlight: 5">
                                 static void Main(string[] args)
                                 {
-                                    var p = Parser.Create&lt;TheApp>();
+                                    var p = new Parser&lt;TheApp>();
 
                                     p.RegisterEmptyHandler(() => Console.WriteLine("No Input"));
 
@@ -641,7 +641,7 @@ C:\> <span class="commandline">myexe foo -bar:Ass! -count:10</span><span class="
                             <pre class="brush: csharp, highlight: [5,6,7,8]">
                                 static void Main(string[] args)
                                 {
-                                    var p = Parser.Create&lt;TheApp>();
+                                    var p = new Parser&lt;TheApp>();
 
                                     p.RegisterEmptyHandler(delegate
                                     {
@@ -664,7 +664,7 @@ C:\> <span class="commandline">myexe foo -bar:Ass! -count:10</span><span class="
                             <pre class="brush: csharp, highlight: 5">
                                 static void Main(string[] args)
                                 {
-                                    var p = Parser.Create&lt;TheApp>();
+                                    var p = new Parser&lt;TheApp>();
 
                                     p.RegisterHelpHandler("?,h,help", help => Console.WriteLine(help));
 
@@ -692,7 +692,7 @@ C:\> <span class="commandline">myexe foo -bar:Ass! -count:10</span><span class="
                             <pre class="brush: csharp, highlight: 5">
                                 static void Main(string[] args)
                                 {
-                                    var p = Parser.Create&lt;TheApp>();
+                                    var p = new Parser&lt;TheApp>();
 
                                     p.RegisterEmptyHelpHandler(help => Console.WriteLine(help));
 
@@ -718,7 +718,7 @@ C:\> <span class="commandline">myexe foo -bar:Ass! -count:10</span><span class="
                             <pre class="brush: csharp, highlight: [5,6,7,8,9,10]">
                                 static void Main(string[] args)
                                 {
-                                    var p = Parser.Create&lt;TheApp>();
+                                    var p = new Parser&lt;TheApp>();
 
                                     p.RegisterErrorHandler(ex =>
                                     {
@@ -752,7 +752,7 @@ C:\> <span class="commandline">myexe foo -bar:Ass! -count:10</span><span class="
                             <pre class="brush: csharp, highlight: [5,6,7,8]">
                                 static void Main(string[] args)
                                 {
-                                    var p = Parser.Create&lt;TheApp>();
+                                    var p = new Parser&lt;TheApp>();
 
                                     p.RegisterParameterHandler("d,debug", () => Debugger.Launch());
                                     p.RegisterParameterHandler&lt;int>(
@@ -845,7 +845,7 @@ C:\> <span class="commandline">myexe foo -bar:Ass! -count:10</span><span class="
                                 {
                                     var sign = alignment == Alignment.Left ? "-" : "";
 
-                                    var format = "{0,"ee + sign + "5}";
+                                    var format = "{0," + sign + "5}";
 
                                     for (int i = start; i <= end; i++)
                                     {
