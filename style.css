@@ -15,11 +15,17 @@ html, body
 a
 {
     text-decoration: none;
+    color: #2768B1;
 }
 
-a:hover
+a:hover, #left a:hover, #footer a:hover
 {
     color: #5A8FCC;
+}
+
+#left a, #footer a
+{
+    color: #424242;
 }
 
 li
@@ -153,9 +159,9 @@ h2
     background-color: #FDFCE7;
 }
 
-.selected
+.selected, .selected *
 {
-    color: #2768B1;
+    color: #2768B1 !important;
 }
 
 .sub_menu
@@ -259,9 +265,4 @@ h2
 .seq
 {
     visibility: hidden;
-}
-
-div[sectionid='#about'] a
-{
-    color: #2768B1;
 }

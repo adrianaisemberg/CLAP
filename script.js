@@ -1,6 +1,6 @@
 var played;
 $(function(){
-    $("#left").find("a.menu_item").click(function(){
+    $("a.menu_item").click(function(){
         selectLink($(this));
         window.scrollTo(0,0);
     });
