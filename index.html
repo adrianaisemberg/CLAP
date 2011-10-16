@@ -2,6 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
 <head>
     <title>CLAP: .NET Command-Line Auto-Parser</title>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
     <link rel="stylesheet" type="text/css" href="style.css"/>
     <link rel="stylesheet" type="text/css" href="syntaxhighlighter/shCore.css"/>
     <link rel="stylesheet" type="text/css" href="syntaxhighlighter/shThemeDefault.css"/>
@@ -75,7 +76,7 @@
         <span class="seq" timeout="8000">[<span class="code_type">Verb</span>]</span><span class="grumbler" text="add this thingy" angle="50" distance="0" showAfter="8000" hideAfter="4000"></span>
         <span class="code_keyword">public static void</span> <span class="grumbler" text="with some methods" angle="-10" distance="0" showAfter="2500" hideAfter="5000"></span>Foo(<span class="code_keyword">string</span> bar,<span class="grumbler" text="and some parameters" angle="45" distance="0" showAfter="3500" hideAfter="4000"></span> <span class="code_keyword">int</span> count)
         {
-            <span class="code_keyword">for</span> (<span class="code_keyword">int</span> i = 0; i < count; i++)
+            <span class="code_keyword">for</span> (<span class="code_keyword">int</span> i = 0; i &lt; count; i++)
             {
                 <span class="code_type">Console</span>.WriteLine(<span class="code_string">"This parser kicks {0}"</span>, bar);
             }
@@ -102,7 +103,7 @@ C:\> <span class="commandline">myexe foo -bar:Ass! -count:10</span><span class="
 <span class="seq" timeout="16600">This parser kicks Ass!</span>
 <span class="seq" timeout="16700">This parser kicks Ass!</span>
 <span class="seq" timeout="16800">This parser kicks Ass!</span>
-<span class="seq" timeout="16900">This parser kicks Ass!</span></span></pre>
+<span class="seq" timeout="16900">This parser kicks Ass!</span></pre>
                 </div>
                 <div sectionid="#using" class="content">
                     <h3>Getting Started</h3>
@@ -156,13 +157,11 @@ C:\> <span class="commandline">myexe foo -bar:Ass! -count:10</span><span class="
                                 <div class="attribute_property">
                                     <div class="attribute_property_name code">IsDefault (Boolean)</div>
                                     <div class="attribute_property_description">
+                                        <p>Whether this verb is the class's default.</p>
+                                        <p>A default verb is called when no verb argument was entered.</p>
                                         <p>
-                                            <p>Whether this verb is the class's default.</p>
-                                            <p>A default verb is called when no verb argument was entered.</p>
-                                            <p>
-                                                Only a single verb can be set as default. Having more than one default verb
-                                                will throw a <span class="code">MoreThanOneDefaultVerbException</span>.
-                                            </p>
+                                            Only a single verb can be set as default. Having more than one default verb
+                                            will throw a <span class="code">MoreThanOneDefaultVerbException</span>.
                                         </p>
                                     </div>
                                 </div>
@@ -346,9 +345,11 @@ C:\> <span class="commandline">myexe foo -bar:Ass! -count:10</span><span class="
                         <div class="attribute">
                         <div class="attribute_name code">Global</div>
                         <div class="attribute_description">
-                            <p>Marks a method as a global parameter. A global parameter is available for all verbs within a class.
-                            <p>The global attribute can be applied only to methods that accept no more than a single supported parameter.
-                            If a method has no parameters - it is treated as a boolean switch.</p>
+                            <p>Marks a method as a global parameter. A global parameter is available for all verbs within a class.</p>
+                            <p>
+                                The global attribute can be applied only to methods that accept no more than a single supported parameter.
+                                If a method has no parameters - it is treated as a boolean switch.
+                            </p>
                             <p>All globals are called before the executing verb.</p>
                         </div>
                         <div class="attribute_properties">
@@ -582,7 +583,7 @@ C:\> <span class="commandline">myexe foo -bar:Ass! -count:10</span><span class="
                             {
                                 var str = (string)value;
 
-                                if (str.Length < Length)
+                                if (str.Length &lt; Length)
                                 {
                                     throw new ValidationException(
                                         string.Format("Length should be at least {0}", Length));
@@ -882,7 +883,7 @@ C:\> <span class="commandline">myexe foo -bar:Ass! -count:10</span><span class="
                                                Description = "The number of lines to print")]
                                     int count)
                                 {
-                                    for (int i = 0; i < count; i++)
+                                    for (int i = 0; i &lt; count; i++)
                                     {
                                         Console.WriteLine("Hello {0}", name);
                                     }
@@ -899,7 +900,7 @@ C:\> <span class="commandline">myexe foo -bar:Ass! -count:10</span><span class="
 
                                     var format = "{0," + sign + "5}";
 
-                                    for (int i = start; i <= end; i++)
+                                    for (int i = start; i &lt;= end; i++)
                                     {
                                         Console.WriteLine(format, i);
 
