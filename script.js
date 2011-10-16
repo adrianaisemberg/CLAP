@@ -2,6 +2,7 @@ var played;
 $(function(){
     $("#left").find("a.menu_item").click(function(){
         selectLink($(this));
+        window.scrollTo(0,0);
     });
     
     var hash = window.location.hash;
@@ -17,11 +18,13 @@ $(function(){
     SyntaxHighlighter.defaults['toolbar'] = false;
     SyntaxHighlighter.all();
         
-    setTimeout(function(){play();},2000);
+    setTimeout(function(){
+        play();
+    }, 1000);
 });
 
 function grumble(){
-    $(".grumble").each(function(i,d){
+    $(".grumbler").each(function(i,d){
         var o = $(d);
         o.css({
             top: o.attr("top"),
@@ -57,7 +60,19 @@ function play(){
 function selectLink(link){
     $(".content:visible").hide();
     var href = link.attr("href");
-    var content = $(href);
+
+    // hide all grumbles when navigating
+    //
+    if (href != "#what")
+    {
+        $(".grumble,.grumble-text,.grumbler").remove();
+    }
+
+    var content = $("[sectionid='" + href + "']");
+    if (content.length == 0)
+    {
+        content = $(href);
+    }
     content.fadeIn(200);
     $(".selected").removeClass("selected");
     link.addClass("selected");

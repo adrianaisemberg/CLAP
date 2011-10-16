@@ -69,7 +69,7 @@ li
     border: 1px solid #B8CADE;
 }
 
-#license *
+.fixedfont *
 {
     font-family: "Consolas", "Bitstream Vera Sans Mono", "Courier New", Courier, monospace;
     font-size: 14px;
@@ -161,7 +161,12 @@ h2
 .sub_menu
 {
     display: none;
-    margin: -3px 0 20px 5px;
+    margin: -3px 0 15px 15px;
+}
+
+.attribute_wrapper
+{
+    padding-top: 30px;
 }
 
 .attribute
@@ -254,4 +259,9 @@ h2
 .seq
 {
     visibility: hidden;
+}
+
+div[sectionid='#about'] a
+{
+    color: #2768B1;
 }
