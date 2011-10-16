@@ -1,5 +1,9 @@
 CLAP: A Kick-Ass .NET Command-Line Parser
 =========================================
+Full Documentation and Samples
+----------------------------------------
+http://adrianaisemberg.github.com/CLAP
+
 Basic example: One verb, Some parameters
 ----------------------------------------
 ```c#
@@ -7,7 +11,7 @@ class Program
 {
     public static void Main(string[] args)
     {
-        Parser<MyApp>.Run(args);
+        Parser.Run<MyApp>(args);
     }
 }
 
