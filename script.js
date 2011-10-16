@@ -5,6 +5,9 @@ $(function(){
         window.scrollTo(0,0);
     });
     
+    var x= $("noscript");
+    x.remove();
+    
     var hash = window.location.hash;
     if (hash)
     {
@@ -28,14 +31,14 @@ function grumble(){
         var o = $(d);
         o.css({
             top: o.attr("top"),
-            left: o.attr("left"),
+            left: o.attr("left")
         });
         o.grumble({
             text: o.attr("text"),
             angle: parseInt(o.attr("angle")),
             distance: parseInt(o.attr("distance")),
             showAfter: parseInt(o.attr("showAfter")),
-            hideAfter: parseInt(o.attr("hideAfter")),
+            hideAfter: parseInt(o.attr("hideAfter"))
         });
     });
 }

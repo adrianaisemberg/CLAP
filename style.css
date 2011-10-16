@@ -265,3 +265,16 @@ h2
 {
     visibility: hidden;
 }
+
+#noscript
+{
+    margin-top: -135px;
+    border: 3px dashed red;
+    padding: 15px 20px;
+    position: relative;
+}
+
+#noscript *
+{
+    font-size: 18px;
+}
