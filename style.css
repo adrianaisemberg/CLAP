@@ -291,6 +291,7 @@ h2
     bottom: 9px;
     left: 10px;
     opacity: 0.6;
+    min-width: 160px;
 }
 
 #share:hover
