@@ -9,7 +9,22 @@ html, body
 {
     padding: 0;
     margin: 0;
-    position: relative;
+    height: 100%;
+}
+
+#footer
+{
+    /*
+    position: absolute;
+    bottom: 0;
+    */
+    margin: -35px 0 0 0;
+    text-align: center;
+    padding: 10px 0;
+    width: 100%;
+    border-top: 1px solid #E3EAF1;
+
+    background-color: whitesmoke;
 }
 
 a
@@ -104,16 +119,6 @@ h2
     color: #2768B1;
 }
 
-#footer
-{
-    position: absolute;
-    width: 100%;
-    bottom: 0;
-    text-align: center;
-    padding: 10px 0;
-    border-top: 1px solid #E3EAF1;
-}
-
 #left
 {
     display: inline-block;
@@ -130,6 +135,7 @@ h2
     left: 200px;
     background: white;
     width: 700px;
+    margin-bottom: 50px;
 }
 
 .menu_item,.sub_menu_item
