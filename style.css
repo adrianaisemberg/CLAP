@@ -290,9 +290,6 @@ h2
     position: fixed;
     bottom: 9px;
     left: 10px;
-    xborder: 1px solid #ddd;
-    xmargin: 5px;
-    xpadding: 5px;
     opacity: 0.6;
 }
 
