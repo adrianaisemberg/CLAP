@@ -8,6 +8,7 @@
     <link rel="stylesheet" type="text/css" href="syntaxhighlighter/shThemeDefault.css"/>
     <link rel="stylesheet" type="text/css" href="grumble/grumble.min.css"/>
     <script type="text/javascript" src="jquery-1.6.2.min.js"></script>
+    <script type="text/javascript" src="jquery-ui/jquery-ui-1.8.16.custom.min.js"></script>
     <script type="text/javascript" src="syntaxhighlighter/shCore.js"></script>
     <script type="text/javascript" src="syntaxhighlighter/shBrushCSharp.js"></script>
     <script type="text/javascript" src="grumble/jquery.grumble.min.js"></script>
@@ -36,7 +37,6 @@
                 <a class="addthis_button_dotnetkicks"></a>
                 <a class="addthis_button_twitter"></a>
                 <a class="addthis_button_facebook"></a>
-                <a class="addthis_button_google"></a>
                 <a class="addthis_button_compact"></a>
                 <a class="addthis_counter addthis_bubble_style"></a>
             </div>
@@ -91,7 +91,7 @@
                 <div sectionid="#what" class="content">
                     <div id="intro_code">
                         <pre class="codeblock">
-    <span class="code_keyword"><span class="grumbler" text="take an existing class" angle="-70" distance="-5" showAfter="1000" hideAfter="6500"></span>class</span> <span class="code_type">ClapApp</span>
+    <span class="code_keyword"><span class="grumbler" text="take an existing class" angle="-70" distance="-5" showAfter="1000" hideAfter="6500"></span>class</span> <span class="code_type clapapp">ClapApp</span>
     {
         <span class="seq" timeout="8000">[<span class="code_type">Verb</span>]</span><span class="grumbler" text="add this thingy" angle="50" distance="0" showAfter="8000" hideAfter="4000"></span>
         <span class="code_keyword">public static void</span> <span class="grumbler" text="with some methods" angle="-10" distance="0" showAfter="2500" hideAfter="5000"></span>Foo(<span class="code_keyword">string</span> bar,<span class="grumbler" text="and some parameters" angle="45" distance="0" showAfter="3500" hideAfter="4000"></span> <span class="code_keyword">int</span> count)
@@ -107,7 +107,7 @@
     {
         <span class="code_keyword">static void</span> Main(<span class="code_keyword">string</span>[] args)
         {
-            <span class="seq" timeout="10000"><span class="code_type">Parser</span>.Run&lt;<span class="code_type">ClapApp</span>>(args);</span><span class="grumbler" text="and also this line" angle="60" distance="-5" showAfter="10000" hideAfter="3000"></span>
+            <span class="seq" timeout="10000"><span class="code_type">Parser</span>.Run&lt;<span class="code_type clapapp">ClapApp</span>>(args);</span><span class="grumbler" text="and also this line" angle="60" distance="-5" showAfter="10000" hideAfter="3000"></span>
         }
     }</span>
                         </pre>

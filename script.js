@@ -29,10 +29,7 @@ $(function(){
 function grumble(){
     $(".grumbler").each(function(i,d){
         var o = $(d);
-        o.css({
-            top: o.attr("top"),
-            left: o.attr("left")
-        });
+
         o.grumble({
             text: o.attr("text"),
             angle: parseInt(o.attr("angle")),
@@ -56,6 +53,10 @@ function play(){
             $(e).css('visibility','visible').hide().fadeIn();
         },parseInt($(e).attr("timeout")));
     });
+    
+    setTimeout(function(){
+        $(".clapapp").effect("highlight",{}, 4000);
+    },12500);
     
     played = true;
 }
