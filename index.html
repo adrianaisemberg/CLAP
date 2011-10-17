@@ -215,7 +215,7 @@ C:\> <span class="commandline">myexe foo -bar:Ass! -count:10</span><span class="
                             <h3>Properties:</h3>
                             <div class="attribute_property">
                                 <div class="attribute_property_name code">Default (Object)</div>
-                                <div class="attribute_property_description">The default value of the parameter, in-case no input was provided</div>
+                                <div class="attribute_property_description">The default value of the parameter, in case no input was provided</div>
                             </div>
                             <div class="attribute_property">
                                 <div class="attribute_property_name code">Required (Boolean)</div>
@@ -239,7 +239,8 @@ C:\> <span class="commandline">myexe foo -bar:Ass! -count:10</span><span class="
                                     public static void Foo(
                                         [Parameter(Required = true)] string name,
                                         [Parameter(Default = 5)] int count,
-                                        bool upperCase)
+                                        bool upperCase,
+                                        int[] numbers)
                                     {
                                     }
                                 }
@@ -600,7 +601,7 @@ C:\> <span class="commandline">myexe foo -bar:Ass! -count:10</span><span class="
                     <p>
                         Notice that the <span class="highlight code">parameter</span> argument is not used in this example.
                         The important part is the actual value being validated. The additional
-                        <span class="code">parameter</span> argument is provided in-case validation needs to be against 
+                        <span class="code">parameter</span> argument is provided in case validation needs to be against 
                         reflected information about the parameter type, or, if that information is required for creating a
                         validation error message.<br/>
                         Anyway, it is provided and can be ignored.
@@ -899,6 +900,18 @@ C:\> <span class="commandline">myexe foo -bar:Ass! -count:10</span><span class="
                                     }
                                 }
 
+                                [Verb(Aliases = "cart")]
+                                public static void Cartesian(int[] numbers, string[] names)
+                                {
+                                    foreach (var number in numbers)
+                                    {
+                                        foreach (var name in names)
+                                        {
+                                            Console.WriteLine("{0}:{1}", number, name);
+                                        }
+                                    }
+                                }
+
                                 [Verb]
                                 public static void Count(
                                     [LessOrEqualTo(50), MoreOrEqualTo(0)] int start,
@@ -950,6 +963,20 @@ Hello CLAP
 Hello CLAP
 Hello CLAP
 Hello CLAP</pre>
+                        <pre class="console">
+<span class="commandline">> myexe cart -numbers:1,5,8 -names:a,g,u,t</span>
+1:a
+1:g
+1:u
+1:t
+5:a
+5:g
+5:u
+5:t
+8:a
+8:g
+8:u
+8:t</pre>
                         <pre class="console">
 <span class="commandline">> myexe count -start:1 -end:55 -p:0.1 -align:Left</span>
 1
