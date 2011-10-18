@@ -67,7 +67,7 @@
                     <a href="#validation_fileexists" class="sub_menu_item">FileExists</a>
                     <a href="#validation_directoryexists" class="sub_menu_item">DirectoryExists</a>
                     <a href="#validation_pathexists" class="sub_menu_item">PathExists</a>
-                    <a href="#validation_expression" class="sub_menu_item">Expression <span class="highlight"><strong>(new!)</strong></span></a>
+                    <a href="#validation_expression" class="sub_menu_item">Validate(Expression)</a>
                 </div>
                 <a href="#custom_validation" class="menu_item">CUSTOM VALIDATION</a><span class="grumbler" text="Lots of features here" angle="50" distance="100" showAfter="18000" hideAfter="3000"></span>
                 <div class="sub_menu" menu_id="#custom_validation">
@@ -585,7 +585,7 @@ C:\> <span class="commandline">myexe foo -bar:Ass! -count:10</span><span class="
                     </div>
                     <div class="attribute_wrapper" id="validation_expression">
                         <div class="attribute">
-                        <div class="attribute_name code">Expression</div>
+                        <div class="attribute_name code">Validate(Expression)</div>
                         <div class="attribute_description">
                             <p>Validates all the arguments against an SQL expression.</p>
                             <p><em>Notice that this is a multiple parameters validator so it is placed over the Verb (or Global) instead of the parameter</em></p>
@@ -602,31 +602,31 @@ C:\> <span class="commandline">myexe foo -bar:Ass! -count:10</span><span class="
                                 class Program
                                 {
                                     [Verb]
-                                    [Expression("num1 > num2")]
+                                    [Validate("num1 > num2")]
                                     public static void Foo1(int num1, int num2)
                                     {
                                     }
 
                                     [Verb]
-                                    [Expression("num1 > num2 AND num2 > 100")]
+                                    [Validate("num1 > num2 AND num2 > 100")]
                                     public static void Foo2(int num1, int num2)
                                     {
                                     }
 
                                     [Verb]
-                                    [Expression("name LIKE 'John*'", CaseSensitive = true)]
+                                    [Validate("name LIKE 'John*'", CaseSensitive = true)]
                                     public static void Foo3(string name)
                                     {
                                     }
 
                                     [Verb]
-                                    [Expression("name IN ('ping','pong')")]
+                                    [Validate("name IN ('ping','pong')")]
                                     public static void Foo4(string name)
                                     {
                                     }
 
                                     [Verb]
-                                    [Expression("num1 + num2 >= num3")]
+                                    [Validate("num1 + num2 >= num3")]
                                     public static void Foo5(int num1, int num2, int num3)
                                     {
                                     }
