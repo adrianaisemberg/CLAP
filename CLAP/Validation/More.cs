@@ -15,8 +15,13 @@ namespace CLAP.Validation
         /// </summary>
         /// <param name="number"></param>
         public MoreThanAttribute(double number)
-            : base(new MoreThanValidator(number))
+            : base(number)
         {
+        }
+
+        public override IParameterValidator GetValidator()
+        {
+            return new MoreThanValidator(Number);
         }
 
         public override string Description

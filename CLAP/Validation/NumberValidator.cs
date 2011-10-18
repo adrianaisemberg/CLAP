@@ -8,10 +8,9 @@ namespace CLAP.Validation
     {
         protected double Number { get; private set; }
 
-        protected NumberValidationAttribute(NumberValidator validator)
-            : base(validator)
+        protected NumberValidationAttribute(double number)
         {
-            Number = validator.Number;
+            Number = number;
         }
     }
 

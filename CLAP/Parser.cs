@@ -188,7 +188,7 @@ namespace CLAP
                     //
                     if (value != null && p.HasAttribute<ValidationAttribute>())
                     {
-                        var validators = p.GetAttributes<ValidationAttribute>().Select(a => a.Validator);
+                        var validators = p.GetAttributes<ValidationAttribute>().Select(a => a.GetValidator());
 
                         // all validators must pass
                         //
@@ -844,7 +844,7 @@ namespace CLAP
                             //
                             if (value != null && p.HasAttribute<ValidationAttribute>())
                             {
-                                var validators = p.GetAttributes<ValidationAttribute>().Select(a => a.Validator);
+                                var validators = p.GetAttributes<ValidationAttribute>().Select(a => a.GetValidator());
 
                                 // all validators must pass
                                 //

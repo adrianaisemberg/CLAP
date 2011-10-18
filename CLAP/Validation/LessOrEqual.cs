@@ -14,8 +14,13 @@ namespace CLAP.Validation
         /// Constructor
         /// </summary>
         public LessOrEqualToAttribute(double number)
-            : base(new LessOrEqualToValidator(number))
+            : base(number)
         {
+        }
+
+        public override IParameterValidator GetValidator()
+        {
+            return new LessOrEqualToValidator(Number);
         }
 
         public override string Description

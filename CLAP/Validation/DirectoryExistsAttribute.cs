@@ -12,9 +12,13 @@ namespace CLAP.Validation
     public sealed class DirectoryExistsAttribute : ValidationAttribute
     {
         public DirectoryExistsAttribute()
-            : base(new DirectoryExistsValidator())
         {
 
+        }
+
+        public override IParameterValidator GetValidator()
+        {
+            return new DirectoryExistsValidator();
         }
 
         public override string Description

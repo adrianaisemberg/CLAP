@@ -12,9 +12,13 @@ namespace CLAP.Validation
     public sealed class PathExistsAttribute : ValidationAttribute
     {
         public PathExistsAttribute()
-            : base(new PathExistsValidator())
         {
 
+        }
+
+        public override IParameterValidator GetValidator()
+        {
+            return new PathExistsValidator();
         }
 
         public override string Description

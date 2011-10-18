@@ -13,16 +13,7 @@ namespace CLAP
         /// <summary>
         /// The validator
         /// </summary>
-        public IParameterValidator Validator { get; private set; }
-
-        /// <summary>
-        /// Constructor
-        /// </summary>
-        /// <param name="validator">The validator</param>
-        protected ValidationAttribute(IParameterValidator validator)
-        {
-            Validator = validator;
-        }
+        public abstract IParameterValidator GetValidator();
 
         /// <summary>
         /// The description of this validation attribute, used when asking for help

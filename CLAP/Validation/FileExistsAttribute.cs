@@ -12,9 +12,13 @@ namespace CLAP.Validation
     public sealed class FileExistsAttribute : ValidationAttribute
     {
         public FileExistsAttribute()
-            : base(new FileExistsValidator())
         {
 
+        }
+
+        public override IParameterValidator GetValidator()
+        {
+            return new FileExistsValidator();
         }
 
         public override string Description

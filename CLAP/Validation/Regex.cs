@@ -18,9 +18,13 @@ namespace CLAP.Validation
         /// </summary>
         /// <param name="pattern"></param>
         public RegexMatchesAttribute(string pattern)
-            : base(new RegexMatchesValidator(pattern))
         {
             Pattern = pattern;
+        }
+
+        public override IParameterValidator GetValidator()
+        {
+            return new RegexMatchesValidator(Pattern);
         }
 
         public override string Description

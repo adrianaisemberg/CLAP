@@ -289,9 +289,13 @@ namespace ConsoleTest
         public int Length { get; private set; }
 
         public LengthValidationAttribute(int length)
-            : base(new LengthValidator(length))
         {
             Length = length;
+        }
+
+        public override IParameterValidator GetValidator()
+        {
+            return new LengthValidator(Length);
         }
 
         public override string Description

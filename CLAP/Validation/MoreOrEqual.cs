@@ -14,9 +14,13 @@ namespace CLAP.Validation
         /// Constructor
         /// </summary>
         public MoreOrEqualToAttribute(double number)
-            : base(new MoreOrEqualToValidator(number))
+            : base(number)
         {
+        }
 
+        public override IParameterValidator GetValidator()
+        {
+            return new MoreOrEqualToValidator(Number);
         }
 
         public override string Description
