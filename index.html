@@ -622,22 +622,26 @@ C:\> <span class="commandline">myexe foo -bar:Ass! -count:10</span><span class="
                     </p>
                     <h3>2. Derive from ValidationAttribute</h3>
                     <p>
-                        Create a class that derives from ValidationAttribute and create an 
-                        instance of the validator class (from the previous step) in the constructor.
+                        Create a class that derives from ValidationAttribute and returns an 
+                        instance of the validator class (from the previous step) from the GetValidator() method.
                     </p>
                     <h3>Example:</h3>
-                    <pre class="brush: csharp, highlight: [2,7]">
+                    <pre class="brush: csharp, highlight: [2,13]">
                         [AttributeUsage(AttributeTargets.Parameter)]
                         class LengthAtLeastAttribute : ValidationAttribute
                         {
                             public int Length { get; private set; }
 
                             public LengthAtLeastAttribute(int length)
-                                : base(new LengthValidator(length))
                             {
                                 Length = length;
                             }
 
+                            public override IParameterValidator GetValidator()
+                            {
+                                return new LengthValidator(Length);
+                            }
+                            
                             public override string Description
                             {
                                 get
