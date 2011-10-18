@@ -94,7 +94,7 @@
     <Compile Include="Validation\MoreOrEqual.cs" />
     <Compile Include="Validation\NumberValidator.cs" />
     <Compile Include="Validation\Regex.cs" />
-    <Compile Include="Validation\ValidateExpressionAttribute.cs" />
+    <Compile Include="Validation\ExpressionAttribute.cs" />
     <Compile Include="VerbAttribute.cs" />
   </ItemGroup>
   <ItemGroup>

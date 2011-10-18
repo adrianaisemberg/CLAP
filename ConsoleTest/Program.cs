@@ -4,6 +4,7 @@ using System.Reflection;
 using CLAP;
 using CLAP.Validation;
 using System.Threading;
+using System.Linq;
 
 namespace ConsoleTest
 {
@@ -11,7 +12,7 @@ namespace ConsoleTest
     {
         static void Main(string[] args)
         {
-            Parser.Run<TheApp>(args);
+            Parser.Run<ClapApp>(args);
         }
     }
 
@@ -21,6 +22,28 @@ namespace ConsoleTest
         public static void Foo(string bar, int count)
         {
             for (int i = 0; i < count; i++) Console.WriteLine("This parser {0}", bar);
+        }
+
+        [Verb]
+        [SameLength]
+        public static void Bar(int[] numbers, string[] names)
+        {
+            for (int i = 0; i < numbers.Length; i++)
+            {
+                Console.WriteLine("{0}:{1}", numbers[i], names[i]);
+            }
+        }
+
+        [Verb]
+        [Expression("num1 + num2 >= num3")]
+        public static void Zoo(int num1, int num2, int num3)
+        {
+        }
+
+        [Help, Empty]
+        public static void Help(string h)
+        {
+            Console.WriteLine(h);
         }
     }
 
@@ -553,5 +576,45 @@ namespace ConsoleTest
     //    }
     //}
 
+    public class SameLengthAttribute : ParametersValidationAttribute
+    {
+        public override IParametersValidator GetValidator()
+        {
+            return new SameLengthValidator();
+        }
+
+        public override string Description
+        {
+            get { return "Validate that all arrays are of the same length"; }
+        }
+
+        private class SameLengthValidator : IParametersValidator
+        {
+            public void Validate(ParameterInfoAndValue[] parameters)
+            {
+                // At this point - we already know that all the parameters have a value
+                // that matches their types.
+                // This validator works only for arrays so we'll add
+                // a simple assertion for that.
+                //
+                Debug.Assert(parameters.All(p => p.Value is Array));
+
+                // Cast them all to arrays
+                //
+                var arrays = parameters.Select(p => p.Value).Cast<Array>();
+
+                // Take the first length
+                //
+                var length = arrays.First().Length;
+
+                // Validate that all arrays have the same length
+                //
+                if (!arrays.All(a => a.Length == length))
+                {
+                    throw new ValidationException("Not all arrays have the same length.");
+                }
+            }
+        }
+    }
 }
 

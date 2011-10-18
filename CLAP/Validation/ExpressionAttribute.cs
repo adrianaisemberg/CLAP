@@ -13,7 +13,7 @@ namespace CLAP.Validation
     /// For full documentation, see MSDN:
     /// http://msdn.microsoft.com/en-us/library/system.data.datacolumn.expression.aspx
     /// </remarks>
-    public sealed class ValidateExpressionAttribute : ParametersValidationAttribute
+    public sealed class ExpressionAttribute : ParametersValidationAttribute
     {
         /// <summary>
         /// The expression to validate
@@ -34,7 +34,7 @@ namespace CLAP.Validation
         /// http://msdn.microsoft.com/en-us/library/system.data.datacolumn.expression.aspx
         /// </remarks>
         /// <param name="expression">The expression to validate</param>
-        public ValidateExpressionAttribute(string expression)
+        public ExpressionAttribute(string expression)
         {
             Expression = expression;
         }
