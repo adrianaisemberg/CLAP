@@ -36,6 +36,13 @@ namespace CLAP
             return atts;
         }
 
+        public static IEnumerable<T> GetAttributes<T>(this MethodInfo method) where T : Attribute
+        {
+            var atts = Attribute.GetCustomAttributes(method, typeof(T)).Cast<T>();
+
+            return atts;
+        }
+
         public static bool HasAttribute<T>(this MethodInfo method) where T : Attribute
         {
             return Attribute.IsDefined(method, typeof(T));
@@ -79,6 +86,28 @@ namespace CLAP
         public static IEnumerable<string> CommaSplit(this string str)
         {
             return str.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+        }
+
+        public static void Each<T>(this IEnumerable<T> collection, Action<T, int> action)
+        {
+            var index = 0;
+
+            foreach (var item in collection)
+            {
+                action(item, index);
+
+                index++;
+            }
+        }
+
+        public static string ToSafeString(this object obj)
+        {
+            return ToSafeString(obj, string.Empty);
+        }
+
+        public static string ToSafeString(this object obj, string nullValue)
+        {
+            return obj == null ? nullValue : obj.ToString();
         }
     }
 }

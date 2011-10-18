@@ -184,7 +184,9 @@ namespace CLAP
 
                     // validation
                     //
-                    if (value != null && Attribute.IsDefined(p, typeof(ValidationAttribute)))
+                    // each parameter:
+                    //
+                    if (value != null && p.HasAttribute<ValidationAttribute>())
                     {
                         var validators = p.GetAttributes<ValidationAttribute>().Select(a => a.Validator);
 
@@ -199,6 +201,27 @@ namespace CLAP
                     // we have a valid value - add it to the list of parameters
                     //
                     parameters.Add(value);
+                }
+
+                // validate all parameters
+                //
+                if (method.MethodInfo.HasAttribute<ParametersValidationAttribute>())
+                {
+                    var validators = method.MethodInfo.GetAttributes<ParametersValidationAttribute>().Select(a => a.GetValidator());
+
+                    var parametersAndValues = new List<ParameterInfoAndValue>();
+
+                    methodParameters.Each((p, i) =>
+                    {
+                        parametersAndValues.Add(new ParameterInfoAndValue(p, parameters[i]));
+                    });
+
+                    // all validators must pass
+                    //
+                    foreach (var validator in validators)
+                    {
+                        validator.Validate(parametersAndValues.ToArray());
+                    }
                 }
 
                 if (inputArgs.Any())

@@ -1244,16 +1244,108 @@ namespace Tests
         }
 
         [Test]
-        public void Method_Constructor_Null_Exception()
-        {
-
-        }
-
-        [Test]
         [ExpectedException(typeof(MoreThanOneDefaultVerbException))]
         public void DefaultVerb_MoreThanOnce_Exception()
         {
             new Parser<Sample_38>();
+        }
+
+        [Test]
+        public void ValidateExpression_TwoInts_Pass()
+        {
+            Parser.Run<Sample_40>(new[]
+            {   
+                "foo1",
+                "-p1:5",
+                "-p2:3",
+            });
+        }
+
+        [Test]
+        [ExpectedException(typeof(ValidationException))]
+        public void ValidateExpression_TwoInts_Fail()
+        {
+            Parser.Run<Sample_40>(new[]
+            {
+                "foo1",
+                "-p1:1",
+                "-p2:3",
+            });
+        }
+
+        [Test]
+        [ExpectedException(typeof(ValidationException))]
+        public void ValidateExpression_TwoInts_TwoValidators_Fail()
+        {
+            Parser.Run<Sample_40>(new[]
+            {
+                "foo2",
+                "-p1:8",
+                "-p2:3",
+            });
+        }
+
+        [Test]
+        public void ValidateExpression_TwoInts_TwoValidators_Pass()
+        {
+            Parser.Run<Sample_40>(new[]
+            {
+                "foo2",
+                "-p1:11",
+                "-p2:3",
+            });
+        }
+
+        [Test]
+        public void ValidateExpression_String_Pass()
+        {
+            Parser.Run<Sample_40>(new[]
+            {
+                "foo3",
+                "-str:def",
+            });
+        }
+
+        [Test]
+        public void ValidateExpression_String_DifferentCase_Pass()
+        {
+            Parser.Run<Sample_40>(new[]
+            {
+                "foo3",
+                "-str:DEF",
+            });
+        }
+
+        [Test]
+        [ExpectedException(typeof(ValidationException))]
+        public void ValidateExpression_String_DifferentCase_Fail()
+        {
+            Parser.Run<Sample_40>(new[]
+            {
+                "foo5",
+                "-str:DEF",
+            });
+        }
+
+        [Test]
+        [ExpectedException(typeof(ValidationException))]
+        public void ValidateExpression_String_Like_Fail()
+        {
+            Parser.Run<Sample_40>(new[]
+            {
+                "foo4",
+                "-str:blah",
+            });
+        }
+
+        [Test]
+        public void ValidateExpression_String_Like_Pass()
+        {
+            Parser.Run<Sample_40>(new[]
+            {
+                "foo4",
+                "-str:blahfoo",
+            });
         }
     }
 }

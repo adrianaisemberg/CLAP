@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using CLAP;
 using CLAP.Validation;
-using System.Reflection;
 
 namespace Tests
 {
@@ -666,6 +666,40 @@ namespace Tests
             [DirectoryExists]
             [PathExists]
             int x)
+        {
+        }
+    }
+
+    public class Sample_40 : BaseSample
+    {
+        [Verb]
+        [ValidateExpression("p1 > p2")]
+        public static void Foo1(int p1, int p2)
+        {
+        }
+
+        [Verb]
+        [ValidateExpression("p1 > p2")]
+        [ValidateExpression("p1 > 10")]
+        public static void Foo2(int p1, int p2)
+        {
+        }
+
+        [Verb]
+        [ValidateExpression("str in ('abc','def')")]
+        public static void Foo3(string str)
+        {
+        }
+
+        [Verb]
+        [ValidateExpression("str in ('abc','def')", CaseSensitive = true)]
+        public static void Foo5(string str)
+        {
+        }
+
+        [Verb]
+        [ValidateExpression("str like '*foo'")]
+        public static void Foo4(string str)
         {
         }
     }
