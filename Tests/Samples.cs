@@ -656,7 +656,7 @@ namespace Tests
     public class All_Validations_Sample
     {
         [Verb]
-        [Expression("")]
+        [Validate("")]
         public static void Foo(
             [MoreThan(1)]
             [MoreOrEqualTo(1)]
@@ -674,32 +674,32 @@ namespace Tests
     public class Sample_40 : BaseSample
     {
         [Verb]
-        [Expression("p1 > p2")]
+        [Validate("p1 > p2")]
         public static void Foo1(int p1, int p2)
         {
         }
 
         [Verb]
-        [Expression("p1 > p2")]
-        [Expression("p1 > 10")]
+        [Validate("p1 > p2")]
+        [Validate("p1 > 10")]
         public static void Foo2(int p1, int p2)
         {
         }
 
         [Verb]
-        [Expression("str in ('abc','def')")]
+        [Validate("str in ('abc','def')")]
         public static void Foo3(string str)
         {
         }
 
         [Verb]
-        [Expression("str in ('abc','def')", CaseSensitive = true)]
+        [Validate("str in ('abc','def')", CaseSensitive = true)]
         public static void Foo5(string str)
         {
         }
 
         [Verb]
-        [Expression("str like '*foo'")]
+        [Validate("str like '*foo'")]
         public static void Foo4(string str)
         {
         }
@@ -710,7 +710,7 @@ namespace Tests
         }
 
         [Global]
-        [Expression("num > 10")]
+        [Validate("num > 10")]
         public static void Boing(int num)
         {
         }

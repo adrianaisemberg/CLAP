@@ -35,7 +35,7 @@ namespace ConsoleTest
         }
 
         [Verb]
-        [Expression("num1 + num2 >= num3")]
+        [Validate("num1 + num2 >= num3")]
         public static void Zoo(int num1, int num2, int num3)
         {
         }
@@ -47,7 +47,7 @@ namespace ConsoleTest
         }
 
         [Global]
-        [Expression("num > 100")]
+        [Validate("num > 100")]
         public static void Pong(int num)
         {
         }
