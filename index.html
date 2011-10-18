@@ -47,7 +47,7 @@
             <div id="left">
                 <a href="#what" class="menu_item selected">INTRO</a>
                 <a href="#using" class="menu_item">GETTING STARTED</a>
-                <a href="#download" class="menu_item"><b>DOWNLOAD</b></a>
+                <a href="#download" class="menu_item"><strong>DOWNLOAD</strong></a>
                 <a href="#attributes" class="menu_item">ATTRIBUTES</a>
                 <div class="sub_menu" menu_id="#attributes">
                     <a href="#attribute_verb" class="sub_menu_item">Verb</a>
@@ -67,8 +67,13 @@
                     <a href="#validation_fileexists" class="sub_menu_item">FileExists</a>
                     <a href="#validation_directoryexists" class="sub_menu_item">DirectoryExists</a>
                     <a href="#validation_pathexists" class="sub_menu_item">PathExists</a>
+                    <a href="#validation_expression" class="sub_menu_item">Expression <span class="highlight"><strong>(new!)</strong></span></a>
                 </div>
                 <a href="#custom_validation" class="menu_item">CUSTOM VALIDATION</a><span class="grumbler" text="Lots of features here" angle="50" distance="100" showAfter="18000" hideAfter="3000"></span>
+                <div class="sub_menu" menu_id="#custom_validation">
+                    <a href="#custom_validation_single" class="sub_menu_item">Single Parameter</a>
+                    <a href="#custom_validation_multiple" class="sub_menu_item">Multiple Parameters</a>
+                </div>
                 <a href="#expressions" class="menu_item">EXPRESSIONS</a>
                 <div class="sub_menu" menu_id="#expressions">
                     <a href="#expressions_empty" class="sub_menu_item">Empty Handlers</a>
@@ -159,7 +164,7 @@ C:\> <span class="commandline">myexe foo -bar:Ass! -count:10</span><span class="
                     <h3>Installing CLAP using NuGet</h3>
                     <p>If you have NuGet installed, steps 1-2 can be skipped.</p>
                     <p>Either find CLAP from the NuGet manager, or run the following command from NuGet's console:</p>
-                    <p class="console"><b>PM></b> Install-Package clap</p>
+                    <p class="console"><strong>PM></strong> Install-Package clap</p>
                 </div>
                 <div sectionid="#attributes" class="content">
                     <h3>Attributes</h3>
@@ -578,95 +583,253 @@ C:\> <span class="commandline">myexe foo -bar:Ass! -count:10</span><span class="
                         </div>
                     </div>
                     </div>
+                    <div class="attribute_wrapper" id="validation_expression">
+                        <div class="attribute">
+                        <div class="attribute_name code">Expression</div>
+                        <div class="attribute_description">
+                            <p>Validates all the arguments against an SQL expression.</p>
+                            <p><em>Notice that this is a multiple parameters validator so it is placed over the verb instead of the parameter</em></p>
+                            <p>
+                                See MSDN documentation regarding SQL Expressions:<br />
+                                <a href="http://msdn.microsoft.com/en-us/library/system.data.datacolumn.expression.aspx">
+                                    http://msdn.microsoft.com/en-us/library/system.data.datacolumn.expression.aspx
+                                </a>
+                            </p>
+                        </div>
+                        <div class="attribute_samples">
+                            <h3>Examples:</h3>
+                            <pre class="brush: csharp, highlight: 4">
+                                class Program
+                                {
+                                    [Verb]
+                                    [Expression("num1 > num2")]
+                                    public static void Foo1(int num1, int num2)
+                                    {
+                                    }
+
+                                    [Verb]
+                                    [Expression("num1 > num2 AND num2 > 100")]
+                                    public static void Foo2(int num1, int num2)
+                                    {
+                                    }
+
+                                    [Verb]
+                                    [Expression("name LIKE 'John*'", CaseSensitive = true)]
+                                    public static void Foo3(string name)
+                                    {
+                                    }
+
+                                    [Verb]
+                                    [Expression("name IN ('ping','pong')")]
+                                    public static void Foo4(string name)
+                                    {
+                                    }
+
+                                    [Verb]
+                                    [Expression("num1 + num2 >= num3")]
+                                    public static void Foo5(int num1, int num2, int num3)
+                                    {
+                                    }
+                                }
+                            </pre>
+                        </div>
+                    </div>
+                </div>
                 </div>
                 <div sectionid="#custom_validation" class="content">
                     <h3>Custom Validation</h3>
-                    <p>CLAP comes with a set of built-in validation attributes, however,
-                    additional custom validation attributes can be easily implemented and used.</p>
-                    <h2>Creating a custom validator</h2>
-                    <p>Creating a custom validator requires implementing a validator class that implementes the IParameterValidator interface
-                    and a validation attribute class that derives from ValidationAttribute.</p>
-                    <h3>1. Implement the IParameterValidator interface</h3>
-                    <p>Create a class and implement the following method:</p>
-                    <p class="code">void Validate(ParameterInfo parameter, object value);</p>
-                    <h3>Example:</h3>
-                    <pre class="brush: csharp, highlight: 10">
-                        class LengthValidator : IParameterValidator
-                        {
-                            public int Length { get; private set; }
-
-                            public LengthValidator(int length)
-                            {
-                                Length = length;
-                            }
-
-                            public void Validate(ParameterInfo parameter, object value)
-                            {
-                                var str = (string)value;
-
-                                if (str.Length &lt; Length)
+                    <p>
+                        CLAP comes with a set of built-in validation attributes, however,
+                        additional custom validation attributes can be easily implemented and used.
+                    </p>
+                    <div class="attribute_wrapper" id="custom_validation_single">
+                        <div class="attribute">
+                        <div class="attribute_name code">ValidationAttribute, IParameterValidator</div>
+                        <div class="attribute_description">
+                            <p>A single parameter custom validation</p>
+                        </div>
+                        <div class="attribute_samples">
+                            <p>Start with implementing the <span class="code">IParameterValidator</span> interface:</p>
+                            <pre class="brush: csharp, highlight: [1,10]">
+                                class LengthValidator : IParameterValidator
                                 {
-                                    throw new ValidationException(
-                                        string.Format("Length should be at least {0}", Length));
+                                    public int Length { get; private set; }
+
+                                    public LengthValidator(int length)
+                                    {
+                                        Length = length;
+                                    }
+
+                                    public void Validate(ParameterInfo parameter, object value)
+                                    {
+                                        var str = (string)value;
+
+                                        if (str.Length &lt; Length)
+                                        {
+                                            throw new ValidationException(
+                                                string.Format("Length should be at least {0}", Length));
+                                        }
+                                    }
                                 }
-                            }
-                        }
-                    </pre>
-                    <p>
-                        Notice that the <span class="highlight code">parameter</span> argument is not used in this example.
-                        The important part is the actual value being validated. The additional
-                        <span class="code">parameter</span> argument is provided in case validation needs to be against 
-                        reflected information about the parameter type, or, if that information is required for creating a
-                        validation error message.<br/>
-                        Anyway, it is provided and can be ignored.
-                    </p>
-                    <h3>2. Derive from ValidationAttribute</h3>
-                    <p>
-                        Create a class that derives from ValidationAttribute and returns an 
-                        instance of the validator class (from the previous step) from the GetValidator() method.
-                    </p>
-                    <h3>Example:</h3>
-                    <pre class="brush: csharp, highlight: [2,13]">
-                        [AttributeUsage(AttributeTargets.Parameter)]
-                        class LengthAtLeastAttribute : ValidationAttribute
-                        {
-                            public int Length { get; private set; }
+                            </pre>
+                            <p>
+                                Notice that the <span class="highlight code">parameter</span> argument is not used in this example.
+                                The important part is the actual value being validated. The additional
+                                <span class="code">parameter</span> argument is provided in case validation needs to be against 
+                                reflected information about the parameter type, or, if that information is required for creating a
+                                validation error message.<br/>
+                                Anyway, it is provided and can be ignored.
+                            </p>
+                            <p>Then implement the attribute by deriving from <span class="code">ValidationAttribute</span>:</p>
+                            <pre class="brush: csharp, highlight: [2,13]">
+                                [AttributeUsage(AttributeTargets.Parameter)]
+                                class LengthAtLeastAttribute : ValidationAttribute
+                                {
+                                    public int Length { get; private set; }
 
-                            public LengthAtLeastAttribute(int length)
-                            {
-                                Length = length;
-                            }
+                                    public LengthAtLeastAttribute(int length)
+                                    {
+                                        Length = length;
+                                    }
 
-                            public override IParameterValidator GetValidator()
-                            {
-                                return new LengthValidator(Length);
-                            }
+                                    public override IParameterValidator GetValidator()
+                                    {
+                                        return new LengthValidator(Length);
+                                    }
                             
-                            public override string Description
-                            {
-                                get
-                                {
-                                    return string.Format("Length is at least {0}", Length);
+                                    public override string Description
+                                    {
+                                        get
+                                        {
+                                            return string.Format("Length is at least {0}", Length);
+                                        }
+                                    }
                                 }
-                            }
-                        }
-                    </pre>
-                    <p>
-                        In this example, the attribute is used to validate that an input string has a length of
-                        at least a specified number of characters.
-                        For example:
-                        <pre class="brush: csharp, highlight: [2,7]">
-                            [Verb]
-                            public static void Foo([LengthAtLeast(10)] string text)
-                            {
-                            }
-                        </pre>
-                        The <span class="code">text</span> argument must be at least 10 characters long, otherwise,
-                        an exception will be thrown.
-                    </p>
-                    <p>
-                        The <span class="code">Description</span> property is used when generating the help string.
-                    </p>
+                            </pre>
+                            <p>
+                                In this example, the attribute is used to validate that an input string has a length of
+                                at least a specified number of characters.
+                                For example:
+                                <pre class="brush: csharp, highlight: [2,7]">
+                                    [Verb]
+                                    public static void Foo([LengthAtLeast(10)] string text)
+                                    {
+                                    }
+                                </pre>
+                                The <span class="code">text</span> argument must be at least 10 characters long, otherwise,
+                                an exception will be thrown.
+                            </p>
+                            <p>
+                                The <span class="code">Description</span> property is used when generating the help string.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                    <div class="attribute_wrapper" id="custom_validation_multiple">
+                        <div class="attribute">
+                        <div class="attribute_name code">ParametersValidationAttribute, IParametersValidator</div>
+                        <div class="attribute_description">
+                            <p>Multiple parameters custom validation.</p>
+                            <p>Single parameters validators are used to validate parameters against their own values.</p>
+                            <p>
+                                With multiple parameters validatiors we can validate the values of all the parameters at once.<br/>
+                                This allows us to validate dependencies between parameters or even complex scenarios.
+                            </p>
+                            <p><em>Notice that multiple parameters validations are executed <strong>after</strong> all the single validators.</em></p>
+                        </div>
+                        <div class="attribute_samples">
+                            <p>Start with implementing the <span class="code">IParametersValidator</span> interface:</p>
+                            <h3>Example:</h3>
+                            <p>Having the following verb:</p>
+                            <pre class="brush: csharp, highlight: [1,10]">
+                                [Verb]
+                                public void Foo(int[] numbers, string[] names)
+                                {
+                                    for (int i = 0; i < numbers.Length; i++)
+                                    {
+                                        Console.WriteLine("{0}:{1}", numbers[i], names[i]);
+                                    }
+                                }
+                            </pre>
+                            <p>We want to validate that both input arrays contain the same number of items.</p>
+                            <p>
+                                Using single parameter validators is impossible to validate such a scenario.
+                                We will use a custom multiple validator.
+                            </p>
+                            <pre class="brush: csharp, highlight: 3">
+                                private class SameLengthValidator : IParametersValidator
+                                {
+                                    public void Validate(ParameterInfoAndValue[] parameters)
+                                    {
+                                        // At this point - we already know that all the parameters
+                                        // have a value that matches their types.
+                                        // This validator works only for arrays so we'll add
+                                        // a simple assertion for that.
+                                        //
+                                        Debug.Assert(parameters.All(p => p.Value is Array));
+
+                                        // Cast them all to arrays
+                                        //
+                                        var arrays = parameters.Select(p => p.Value).Cast&lt;Array>();
+
+                                        // Take the first length
+                                        //
+                                        var length = arrays.First().Length;
+
+                                        // Validate that all arrays have the same length
+                                        //
+                                        if (!arrays.All(a => a.Length == length))
+                                        {
+                                            throw new ValidationException(
+                                                "Not all arrays have the same length.");
+                                        }
+                                    }
+                                }
+                            </pre>
+                            <p>Then implement the attribute by deriving from <span class="code">ParametersValidationAttribute</span>:</p>
+                            <pre class="brush: csharp, highlight: [2,6]">
+                                [AttributeUsage(AttributeTargets.Method)]
+                                public class SameLengthAttribute : ParametersValidationAttribute
+                                {
+                                    public override IParametersValidator GetValidator()
+                                    {
+                                        return new SameLengthValidator();
+                                    }
+
+                                    public override string Description
+                                    {
+                                        get { return "Validate that all arrays are of the same length"; }
+                                    }
+                                }
+                            </pre>
+                            <p>Now we can use the validation attribute:</p>
+                            <pre class="brush: csharp, highlight: 2">
+                                [Verb]
+                                [SameLength]
+                                public void Foo(int[] numbers, string[] names)
+                                {
+                                    for (int i = 0; i < numbers.Length; i++)
+                                    {
+                                        Console.WriteLine("{0}:{1}", numbers[i], names[i]);
+                                    }
+                                }
+                            </pre>
+                            <p>And if the arrays are not of the same length - a validation exception will be thrown:</p>
+                        <pre class="console">
+<span class="commandline">> myexe foo -numbers:1,2,3 -names:a,b</span>
+CLAP.ValidationException: Not all arrays have the same length.
+
+</pre>                            
+                        <pre class="console">
+<span class="commandline">> myexe foo -numbers:1,2,3 -names:a,b,c</span>
+1:a
+2:b
+3:c
+
+</pre>                            
+                        </div>
+                    </div>
+                </div>
                 </div>
                 <div sectionid="#expressions" class="content">
                     <h3>Expressions</h3>
@@ -1022,7 +1185,7 @@ Hello CLAP</pre>
     55</pre>
                         <p>
                             Notice that all names, including the verbs and parameters,
-                            are <b>case-insensitive</b> but enum values are <b>case-sensitive</b>.
+                            are <strong>case-insensitive</strong> but enum values are <strong>case-sensitive</strong>.
                         </p>
                     </div>
                 </div>
@@ -1031,8 +1194,8 @@ Hello CLAP</pre>
                     <p>Two options to get CLAP:</p>
                     <ul>
                         <li>
-                            <p>Using <b>NuGet</b> is the best option:</p>
-                            <p class="console"><b>PM></b> Install-Package clap</p>
+                            <p>Using <strong>NuGet</strong> is the best option:</p>
+                            <p class="console"><strong>PM></strong> Install-Package clap</p>
                             <p>More info about NuGet: <a href="http://nuget.org/" target="_blank">nuget.org</a></p>
                         </li>
                         <li>
