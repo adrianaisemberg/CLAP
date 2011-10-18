@@ -656,6 +656,7 @@ namespace Tests
     public class All_Validations_Sample
     {
         [Verb]
+        [Expression("")]
         public static void Foo(
             [MoreThan(1)]
             [MoreOrEqualTo(1)]
@@ -700,6 +701,17 @@ namespace Tests
         [Verb]
         [Expression("str like '*foo'")]
         public static void Foo4(string str)
+        {
+        }
+
+        [Verb]
+        public static void Dummy()
+        {
+        }
+
+        [Global]
+        [Expression("num > 10")]
+        public static void Boing(int num)
         {
         }
     }

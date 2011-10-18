@@ -45,6 +45,12 @@ namespace ConsoleTest
         {
             Console.WriteLine(h);
         }
+
+        [Global]
+        [Expression("num > 100")]
+        public static void Pong(int num)
+        {
+        }
     }
 
     class BaseApp
@@ -585,7 +591,7 @@ namespace ConsoleTest
 
         public override string Description
         {
-            get { return "Validate that all arrays are of the same length"; }
+            get { return "All arrays are of the same length"; }
         }
 
         private class SameLengthValidator : IParametersValidator
