@@ -347,6 +347,19 @@ namespace CLAP
                     sb.AppendFormat(" {0}", verb.Description);
                 }
 
+                if (verb.MethodInfo.HasAttribute<ParametersValidationAttribute>())
+                {
+                    sb.AppendLine();
+                    sb.AppendLine("Validation:");
+
+                    var validators = verb.MethodInfo.GetAttributes<ParametersValidationAttribute>();
+
+                    foreach (var validator in validators)
+                    {
+                        sb.AppendLine("- {0}".FormatWith(validator.Description));
+                    }
+                }
+
                 sb.AppendLine();
 
                 var parameters = GetParameters(verb.MethodInfo);
@@ -372,6 +385,18 @@ namespace CLAP
                 foreach (var handler in definedGlobals)
                 {
                     sb.AppendLine(" -{0}".FormatWith(GetDefinedGlobalHelpString(handler)));
+
+                    if (handler.HasAttribute<ParametersValidationAttribute>())
+                    {
+                        var validators = handler.GetAttributes<ParametersValidationAttribute>();
+
+                        sb.AppendLine("  Validation:");
+
+                        foreach (var validator in validators)
+                        {
+                            sb.AppendLine("  {0}".FormatWith(validator.Description));
+                        }
+                    }
                 }
             }
 
@@ -873,6 +898,20 @@ namespace CLAP
                                 foreach (var validator in validators)
                                 {
                                     validator.Validate(p, value);
+                                }
+                            }
+
+                            if (method.HasAttribute<ParametersValidationAttribute>())
+                            {
+                                var validators = method.GetAttributes<ParametersValidationAttribute>().
+                                    Select(a => a.GetValidator());
+
+                                foreach (var validator in validators)
+                                {
+                                    validator.Validate(new[]
+                                    {
+                                        new ParameterInfoAndValue(p, value),
+                                    });
                                 }
                             }
 

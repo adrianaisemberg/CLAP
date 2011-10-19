@@ -1347,5 +1347,26 @@ namespace Tests
                 "-str:blahfoo",
             });
         }
+
+        [Test]
+        public void ValidateExpression_Global_Pass()
+        {
+            Parser.Run<Sample_40>(new[]
+            {
+                "dummy",
+                "-boing:20",
+            });
+        }
+
+        [Test]
+        [ExpectedException(typeof(ValidationException))]
+        public void ValidateExpression_Global_Fail()
+        {
+            Parser.Run<Sample_40>(new[]
+            {
+                "dummy",
+                "-boing:5",
+            });
+        }
     }
 }
