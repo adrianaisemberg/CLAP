@@ -1368,5 +1368,20 @@ namespace Tests
                 "-boing:5",
             });
         }
+
+        [Test]
+        public void InterceptorTest()
+        {
+            const string method1 = "foo1";
+            const string method2 = "foo2";
+
+            var sample = new InterceptorSample();
+
+            Parser.Run(new[] { method1 }, sample);
+            Parser.Run(new[] { method2 }, sample);
+
+            Assert.AreEqual(method1, sample.Invoked[0]);
+            Assert.AreEqual(method2, sample.Invoked[1]);
+        }
     }
 }

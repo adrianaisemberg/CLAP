@@ -716,6 +716,30 @@ namespace Tests
         }
     }
 
+    public class InterceptorSample : BaseSample
+    {
+        public InterceptorSample()
+        {
+            Invoked = new List<string>();
+        }
+
+        [Verb]
+        public void Foo1(string str)
+        { }
+
+        [Verb]
+        public void Foo2(string str)
+        { }
+
+        public IList<string> Invoked { get; private set; }
+
+        [VerbInterceptor]
+        public void Intercept(IVerbInvocation invocation)
+        {
+            Invoked.Add(invocation.Verb);
+        }
+    }
+
     public enum Case
     {
         Upper,
