@@ -100,11 +100,6 @@ namespace CLAP
             }
         }
 
-        public static string ToSafeString(this object obj)
-        {
-            return ToSafeString(obj, string.Empty);
-        }
-
         public static string ToSafeString(this object obj, string nullValue)
         {
             return obj == null ? nullValue : obj.ToString();

@@ -13,7 +13,7 @@ namespace CLAP.Validation
     /// For full documentation, see MSDN:
     /// http://msdn.microsoft.com/en-us/library/system.data.datacolumn.expression.aspx
     /// </remarks>
-    public sealed class ExpressionAttribute : ParametersValidationAttribute
+    public sealed class ValidateAttribute : ParametersValidationAttribute
     {
         /// <summary>
         /// The expression to validate
@@ -34,7 +34,7 @@ namespace CLAP.Validation
         /// http://msdn.microsoft.com/en-us/library/system.data.datacolumn.expression.aspx
         /// </remarks>
         /// <param name="expression">The expression to validate</param>
-        public ExpressionAttribute(string expression)
+        public ValidateAttribute(string expression)
         {
             Expression = expression;
         }
@@ -69,14 +69,20 @@ namespace CLAP.Validation
 
                 table.CaseSensitive = CaseSensitive;
 
+                // create a column for each parameter giving its name and type
+                //
                 table.Columns.AddRange(
                     parameters.Select(
                         p => new DataColumn(
                                 p.Parameter.Name,
                                 p.Parameter.ParameterType)).ToArray());
 
+                // create one row with all the values
+                //
                 table.Rows.Add(parameters.Select(p => p.Value).ToArray());
 
+                // run the expression
+                //
                 var selected = table.Select(Expression);
 
                 if (!selected.Any())

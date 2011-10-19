@@ -35,7 +35,7 @@ namespace ConsoleTest
         }
 
         [Verb]
-        [Expression("num1 + num2 >= num3")]
+        [Validate("num1 + num2 >= num3")]
         public static void Zoo(int num1, int num2, int num3)
         {
         }
@@ -44,6 +44,12 @@ namespace ConsoleTest
         public static void Help(string h)
         {
             Console.WriteLine(h);
+        }
+
+        [Global]
+        [Validate("num > 100")]
+        public static void Pong(int num)
+        {
         }
     }
 
@@ -585,7 +591,7 @@ namespace ConsoleTest
 
         public override string Description
         {
-            get { return "Validate that all arrays are of the same length"; }
+            get { return "All arrays are of the same length"; }
         }
 
         private class SameLengthValidator : IParametersValidator
