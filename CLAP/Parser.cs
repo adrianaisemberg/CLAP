@@ -81,158 +81,16 @@ namespace CLAP
 
                 var verb = firstArg;
 
-                // a flag, in case there is no verb
-                //
-                var noVerb = false;
-
-                // find the method by the given verb
-                //
-                var typeVerbs = GetVerbs();
-
-                var method = typeVerbs.FirstOrDefault(v => v.Names.Contains(verb.ToLowerInvariant()));
-
-                // if no method is found - a default must exist
-                //
-                if (method == null)
+                var invocation = BuildVerbInvocation(verb, obj, args);
+                var interceptor = GetVerbInterceptor();
+                if (interceptor == null)
                 {
-                    // if there is a verb input but no method was found - throw
-                    if (verb != null && !s_prefixes.Any(p => p.Equals(verb[0].ToString())))
-                    {
-                        throw new MissingVerbException(verb);
-                    }
-
-                    method = typeVerbs.FirstOrDefault(v => v.IsDefault);
-
-                    // no default - error
-                    //
-                    if (method == null)
-                    {
-                        throw new MissingDefaultVerbException();
-                    }
-
-                    noVerb = true;
+                    invocation.Proceed();
                 }
-
-                // if there is a verb - skip the first arg
-                //
-                var inputArgs = MapArguments(noVerb ? args : args.Skip(1));
-
-                HandleGlobals(inputArgs, obj);
-
-                // a list of the available parameters
-                //
-                var list = GetParameters(method.MethodInfo);
-
-                // the actual refelcted parameters
-                //
-                var methodParameters = method.MethodInfo.GetParameters();
-
-                // a list of values, used when invoking the method
-                //
-                var parameters = new List<object>();
-
-                foreach (var p in methodParameters)
+                else
                 {
-                    var parameter = list.First(param => param.ParameterInfo == p);
-                    var names = parameter.Names;
-
-                    // according to the parameter names, try to find a match from the input
-                    //
-                    var inputKey = names.FirstOrDefault(n => inputArgs.ContainsKey(n));
-
-                    // the input value
-                    //
-                    string stringValue = null;
-
-                    // the actual value, converted to the relevant parameter type
-                    //
-                    object value = null;
-
-                    // if no input was found that matches this parameter
-                    //
-                    if (inputKey == null)
-                    {
-                        if (parameter.Required)
-                        {
-                            throw new MissingRequiredArgumentException(verb, p.Name);
-                        }
-
-                        // the default is the value
-                        //
-                        value = parameter.Default;
-
-                        // convert the default value, if different from parameter's value (guid, for example)
-                        //
-                        if (value is string && !(p.ParameterType == typeof(string)))
-                        {
-                            value = GetValueForParameter(p.ParameterType, "{DEFAULT}", (string)value);
-                        }
-                    }
-                    else
-                    {
-                        stringValue = inputArgs[inputKey];
-
-                        // remove it so later we'll see which ones were not handled
-                        //
-                        inputArgs.Remove(inputKey);
-                    }
-
-                    if (value == null && inputKey != null)
-                    {
-                        value = GetValueForParameter(p.ParameterType, inputKey, stringValue);
-                    }
-
-                    // validation
-                    //
-                    // each parameter:
-                    //
-                    if (value != null && p.HasAttribute<ValidationAttribute>())
-                    {
-                        var validators = p.GetAttributes<ValidationAttribute>().Select(a => a.GetValidator());
-
-                        // all validators must pass
-                        //
-                        foreach (var validator in validators)
-                        {
-                            validator.Validate(p, value);
-                        }
-                    }
-
-                    // we have a valid value - add it to the list of parameters
-                    //
-                    parameters.Add(value);
+                    interceptor.MethodInfo.Invoke(obj, new object[] { invocation });
                 }
-
-                // validate all parameters
-                //
-                if (method.MethodInfo.HasAttribute<ParametersValidationAttribute>())
-                {
-                    var validators = method.MethodInfo.GetAttributes<ParametersValidationAttribute>().Select(a => a.GetValidator());
-
-                    var parametersAndValues = new List<ParameterInfoAndValue>();
-
-                    methodParameters.Each((p, i) =>
-                    {
-                        parametersAndValues.Add(new ParameterInfoAndValue(p, parameters[i]));
-                    });
-
-                    // all validators must pass
-                    //
-                    foreach (var validator in validators)
-                    {
-                        validator.Validate(parametersAndValues.ToArray());
-                    }
-                }
-
-                if (inputArgs.Any())
-                {
-                    throw new UnhandledParametersException(inputArgs);
-                }
-
-
-                // invoke the method with the list of parameters
-                //
-                method.MethodInfo.Invoke(obj, parameters.ToArray());
             }
             catch (TargetInvocationException tex)
             {
@@ -255,6 +113,164 @@ namespace CLAP
                     throw;
                 }
             }
+        }
+
+        private IVerbInvocation BuildVerbInvocation(string verb, object obj, IEnumerable<string> args)
+        {
+
+            // a flag, in case there is no verb
+            //
+            var noVerb = false;
+
+            // find the method by the given verb
+            //
+            var typeVerbs = GetVerbs();
+
+            var method = typeVerbs.FirstOrDefault(v => v.Names.Contains(verb.ToLowerInvariant()));
+
+            // if no method is found - a default must exist
+            //
+            if (method == null)
+            {
+                // if there is a verb input but no method was found - throw
+                if (verb != null && !s_prefixes.Any(p => p.Equals(verb[0].ToString())))
+                {
+                    throw new MissingVerbException(verb);
+                }
+
+                method = typeVerbs.FirstOrDefault(v => v.IsDefault);
+
+                // no default - error
+                //
+                if (method == null)
+                {
+                    throw new MissingDefaultVerbException();
+                }
+
+                noVerb = true;
+            }
+
+            // if there is a verb - skip the first arg
+            //
+            var inputArgs = MapArguments(noVerb ? args : args.Skip(1));
+
+            HandleGlobals(inputArgs, obj);
+
+            // a list of the available parameters
+            //
+            var list = GetParameters(method.MethodInfo);
+
+            // the actual refelcted parameters
+            //
+            var methodParameters = method.MethodInfo.GetParameters();
+
+            // a list of values, used when invoking the method
+            //
+            var parameters = new List<object>();
+
+            foreach (var p in methodParameters)
+            {
+                var parameter = list.First(param => param.ParameterInfo == p);
+                var names = parameter.Names;
+
+                // according to the parameter names, try to find a match from the input
+                //
+                var inputKey = names.FirstOrDefault(n => inputArgs.ContainsKey(n));
+
+                // the input value
+                //
+                string stringValue = null;
+
+                // the actual value, converted to the relevant parameter type
+                //
+                object value = null;
+
+                // if no input was found that matches this parameter
+                //
+                if (inputKey == null)
+                {
+                    if (parameter.Required)
+                    {
+                        throw new MissingRequiredArgumentException(verb, p.Name);
+                    }
+
+                    // the default is the value
+                    //
+                    value = parameter.Default;
+
+                    // convert the default value, if different from parameter's value (guid, for example)
+                    //
+                    if (value is string && !(p.ParameterType == typeof (string)))
+                    {
+                        value = GetValueForParameter(p.ParameterType, "{DEFAULT}", (string) value);
+                    }
+                }
+                else
+                {
+                    stringValue = inputArgs[inputKey];
+
+                    // remove it so later we'll see which ones were not handled
+                    //
+                    inputArgs.Remove(inputKey);
+                }
+
+                if (value == null && inputKey != null)
+                {
+                    value = GetValueForParameter(p.ParameterType, inputKey, stringValue);
+                }
+
+                // validation
+                //
+                // each parameter:
+                //
+                if (value != null && p.HasAttribute<ValidationAttribute>())
+                {
+                    var validators = p.GetAttributes<ValidationAttribute>().Select(a => a.GetValidator());
+
+                    // all validators must pass
+                    //
+                    foreach (var validator in validators)
+                    {
+                        validator.Validate(p, value);
+                    }
+                }
+
+                // we have a valid value - add it to the list of parameters
+                //
+                parameters.Add(value);
+            }
+
+            // validate all parameters
+            //
+            if (method.MethodInfo.HasAttribute<ParametersValidationAttribute>())
+            {
+                var validators = method.MethodInfo.GetAttributes<ParametersValidationAttribute>().Select(a => a.GetValidator());
+
+                var parametersAndValues = new List<ParameterInfoAndValue>();
+
+                methodParameters.Each((p, i) => { parametersAndValues.Add(new ParameterInfoAndValue(p, parameters[i])); });
+
+                // all validators must pass
+                //
+                foreach (var validator in validators)
+                {
+                    validator.Validate(parametersAndValues.ToArray());
+                }
+            }
+
+            if (inputArgs.Any())
+            {
+                throw new UnhandledParametersException(inputArgs);
+            }
+
+            var invocation = new DefaultVerbInvocation() { Verb = verb, TargetObject = obj, VerbMethod = method, VerbParameters = parameters, InputArgs = inputArgs };
+            return invocation;
+        }
+
+        private Method GetVerbInterceptor()
+        {
+            var method = typeof(T).GetMethodsWith<VerbInterceptorAttribute>().FirstOrDefault();
+            return method == null ? null : new Method(method);
         }
 
         /// <summary>
@@ -748,6 +764,12 @@ namespace CLAP
             Debug.Assert(defaultVerbs.Count() <= 1);
 
             return verbMethods;
+        }
+
+        private Method GetMethod(string verb)
+        {
+            var m = GetVerbs().FirstOrDefault(v => v.Names.Contains(verb.ToLowerInvariant()));
+            return m;
         }
 
         /// <summary>

@@ -7,7 +7,7 @@ namespace CLAP
     /// <summary>
     /// A method descriptor
     /// </summary>
-    internal sealed class Method
+    public sealed class Method
     {
         #region Properties
 
@@ -53,6 +53,8 @@ namespace CLAP
             MethodInfo = method;
 
             var verbAttribute = method.GetAttribute<VerbAttribute>();
+            if (verbAttribute == null)
+                return;
 
             Description = verbAttribute.Description;
             IsDefault = verbAttribute.IsDefault;
