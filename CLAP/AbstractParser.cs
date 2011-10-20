@@ -15,6 +15,31 @@ namespace CLAP
         public virtual void Run(string[] args) { }
 
         /// <summary>
+        /// Registers a parameter name to handle the help string
+        /// </summary>
+        public virtual void RegisterHelpHandler(string names, Action<string> helpHandler) { }
+
+        /// <summary>
+        /// Registers an empty help handler
+        /// </summary>
+        public virtual void RegisterEmptyHelpHandler(Action<string> handler) { }
+
+        /// <summary>
+        /// Registers an empty handler
+        /// </summary>
+        public virtual void RegisterEmptyHandler(Action handler) { }
+
+        /// <summary>
+        /// Registers an error handler
+        /// </summary>
+        public virtual void RegisterErrorHandler(Action<Exception> handler) { }
+
+        /// <summary>
+        /// Registers an error handler
+        /// </summary>
+        public virtual void RegisterErrorHandler(Action<Exception> handler, bool rethrow) { }
+
+        /// <summary>
         /// Registers an action to a global parameter name
         /// </summary>
         public virtual void RegisterParameterHandler(string names, Action action) { }

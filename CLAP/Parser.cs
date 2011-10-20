@@ -436,12 +436,12 @@ namespace CLAP
         /// </summary>
         /// <param name="names">The parameter name</param>
         /// <param name="helpHandler">The help string handler. For example: help => Console.WriteLine(help)</param>
-        public void RegisterHelpHandler(string names, Action<string> helpHandler)
+        public override void RegisterHelpHandler(string names, Action<string> helpHandler)
         {
             RegisterHelpHandlerInternal(names, helpHandler);
         }
 
-        public void RegisterEmptyHelpHandler(Action<string> handler)
+        public override void RegisterEmptyHelpHandler(Action<string> handler)
         {
             if (m_registeredEmptyHandler != null)
             {
@@ -456,7 +456,7 @@ namespace CLAP
             };
         }
 
-        public void RegisterEmptyHandler(Action handler)
+        public override void RegisterEmptyHandler(Action handler)
         {
             if (m_registeredEmptyHandler != null)
             {
@@ -466,12 +466,12 @@ namespace CLAP
             m_registeredEmptyHandler = handler;
         }
 
-        public void RegisterErrorHandler(Action<Exception> handler)
+        public override void RegisterErrorHandler(Action<Exception> handler)
         {
             RegisterErrorHandler(handler, false);
         }
 
-        public void RegisterErrorHandler(Action<Exception> handler, bool rethrow)
+        public override void RegisterErrorHandler(Action<Exception> handler, bool rethrow)
         {
             if (m_registeredErrorHandler != null)
             {
