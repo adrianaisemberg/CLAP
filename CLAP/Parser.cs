@@ -22,6 +22,7 @@ namespace CLAP
         private readonly static string[] s_prefixes = new[] { "/", "-" };
 
         private readonly Dictionary<string, GlobalParameterHandler> m_globalRegisteredHandlers;
+        private Action<IVerbInvocation> m_registeredInterceptor;
 
         private Dictionary<string, Action<string>> m_registeredHelpHandlers;
         private Action m_registeredEmptyHandler;
@@ -82,14 +83,11 @@ namespace CLAP
                 var verb = firstArg;
 
                 var invocation = BuildVerbInvocation(verb, obj, args);
-                var interceptor = GetVerbInterceptor();
-                if (interceptor == null)
+                Debug.Assert(invocation != null);
+
+                if(!InvokeInterceptor(obj, invocation))
                 {
                     invocation.Proceed();
-                }
-                else
-                {
-                    interceptor.MethodInfo.Invoke(obj, new object[] { invocation });
                 }
             }
             catch (TargetInvocationException tex)
@@ -113,6 +111,24 @@ namespace CLAP
                     throw;
                 }
             }
+        }
+
+        private bool InvokeInterceptor(object obj, IVerbInvocation invocation)
+        {
+            if (m_registeredInterceptor != null)
+            {
+                m_registeredInterceptor(invocation);
+                return true;
+            }
+
+            var interceptor = GetVerbInterceptor();
+            if (interceptor != null)
+            {
+                interceptor.Invoke(obj, new object[] { invocation });
+                return true;
+            }
+
+            return false;
         }
 
         private IVerbInvocation BuildVerbInvocation(string verb, object obj, IEnumerable<string> args)
@@ -263,14 +279,13 @@ namespace CLAP
                 throw new UnhandledParametersException(inputArgs);
             }
 
-            var invocation = new DefaultVerbInvocation() { Verb = verb, TargetObject = obj, VerbMethod = method, VerbParameters = parameters, InputArgs = inputArgs };
+            var invocation = new DefaultVerbInvocation(verb, method, parameters, obj);
             return invocation;
         }
 
-        private Method GetVerbInterceptor()
+        private MethodInfo GetVerbInterceptor()
         {
-            var method = typeof(T).GetMethodsWith<VerbInterceptorAttribute>().FirstOrDefault();
-            return method == null ? null : new Method(method);
+            return typeof(T).GetMethodsWith<VerbInterceptorAttribute>().FirstOrDefault();
         }
 
         /// <summary>
@@ -315,6 +330,19 @@ namespace CLAP
                 names,
                 action,
                 description);
+        }
+
+        /// <summary>
+        /// Registers a verb interceptor
+        /// </summary>
+        /// <param name="interceptor">verb interceptor delegate</param>
+        public void RegisterInterceptor(Action<IVerbInvocation> interceptor)
+        {
+            var attrInterceptor = GetVerbInterceptor();
+            if (attrInterceptor != null)
+                throw new MoreThanOneVerbInterceptorException();
+
+            m_registeredInterceptor = interceptor;
         }
 
         /// <summary>
@@ -484,6 +512,29 @@ namespace CLAP
                 throw new MoreThanOneEmptyHandlerException();
             }
 
+            // no more than one verb interceptor
+            //
+            var definedInterceptors = typeof(T).GetMethodsWith<VerbInterceptorAttribute>().ToList();
+
+            if (definedInterceptors.Count() > 1)
+            {
+                throw new MoreThanOneVerbInterceptorException();
+            }
+
+            if (definedInterceptors.Count == 1)
+            {
+                var methodInfo = definedInterceptors[0];
+                var parms = methodInfo.GetParameters();
+                if (parms.Length != 1)
+                {
+                    throw new InvalidVerbInterceptorException();
+                }
+
+                if(parms[0].ParameterType != typeof(IVerbInvocation))
+                {
+                    throw new InvalidVerbInterceptorException();
+                }
+            }
         }
 
         private void RegisterParameterHandlerInternal<TParameter>(string names, Action<TParameter> action, string description)
@@ -789,12 +840,6 @@ namespace CLAP
             Debug.Assert(defaultVerbs.Count() <= 1);
 
             return verbMethods;
-        }
-
-        private Method GetMethod(string verb)
-        {
-            var m = GetVerbs().FirstOrDefault(v => v.Names.Contains(verb.ToLowerInvariant()));
-            return m;
         }
 
         /// <summary>

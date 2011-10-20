@@ -53,8 +53,6 @@ namespace CLAP
             MethodInfo = method;
 
             var verbAttribute = method.GetAttribute<VerbAttribute>();
-            if (verbAttribute == null)
-                return;
 
             Description = verbAttribute.Description;
             IsDefault = verbAttribute.IsDefault;

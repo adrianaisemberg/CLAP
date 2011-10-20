@@ -718,25 +718,124 @@ namespace Tests
 
     public class InterceptorSample : BaseSample
     {
+        public IList<string> Intercepted { get; private set; }
+        public IList<string> Invoked { get; private set; }
+
         public InterceptorSample()
         {
+            Intercepted = new List<string>();
             Invoked = new List<string>();
         }
 
         [Verb]
         public void Foo1(string str)
-        { }
+        {
+            Invoked.Add("Foo1:" + str);
+        }
 
         [Verb]
         public void Foo2(string str)
-        { }
-
-        public IList<string> Invoked { get; private set; }
+        {
+            Invoked.Add("Foo2:" + str);
+        }
 
         [VerbInterceptor]
         public void Intercept(IVerbInvocation invocation)
         {
-            Invoked.Add(invocation.Verb);
+            Intercepted.Add(invocation.Verb);
+            invocation.Proceed();
+        }
+    }
+
+    public class MultipleInterceptorSample : BaseSample
+    {
+        [Verb]
+        public void Foo(string str)
+        { }
+
+        [VerbInterceptor]
+        public void Intercept1(IVerbInvocation invocation)
+        { }
+
+        [VerbInterceptor] // second interceptor results in error
+        public void Intercept2(IVerbInvocation invocation)
+        { }
+    }
+
+    public class InvalidInterceptorSample : BaseSample
+    {
+        [Verb]
+        public void Foo(string str)
+        { }
+
+        [VerbInterceptor]
+        public void Intercept(int wrong)
+        { }
+    }
+
+    public class InterceptorBaseSample : BaseSample
+    {
+        public IList<string> Intercepted { get; private set; }
+
+        public InterceptorBaseSample()
+        {
+            Intercepted = new List<string>();
+        }
+
+        [VerbInterceptor]
+        public void Intercept(IVerbInvocation invocation)
+        {
+            Intercepted.Add(invocation.Verb);
+            invocation.Proceed();
+        }
+    }
+
+    public class VerbWithInterceptorBaseSample : InterceptorBaseSample
+    {
+        public IList<string> Invoked { get; private set; }
+
+        public VerbWithInterceptorBaseSample()
+        {
+            Invoked = new List<string>();
+        }
+
+        [Verb]
+        public void Foo(string str)
+        {
+            Invoked.Add("Foo:" + str);
+        }
+    }
+
+    public class VerbBaseSample : BaseSample
+    {
+        public IList<string> Invoked { get; private set; }
+
+        public VerbBaseSample()
+        {
+            Invoked = new List<string>();
+        }
+
+        [Verb]
+        public void Foo(string str)
+        {
+            Invoked.Add("Foo:" + str);
+        }
+    }
+
+    public class InterceptorWithVerbBaseSample : VerbBaseSample
+    {
+        public IList<string> Intercepted { get; private set; }
+
+        public InterceptorWithVerbBaseSample()
+        {
+            Intercepted = new List<string>();
+        }
+
+        [VerbInterceptor]
+        public void Intercept(IVerbInvocation invocation)
+        {
+            Intercepted.Add(invocation.Verb);
+            invocation.Proceed();
         }
     }
 

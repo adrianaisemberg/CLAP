@@ -76,7 +76,8 @@
     <Compile Include="EmptyAttribute.cs" />
     <Compile Include="Exceptions.cs" />
     <Compile Include="GlobalAttribute.cs" />
-    <Compile Include="IVerbInvocationInterceptor.cs" />
+    <Compile Include="IVerbInvocation.cs" />
+    <Compile Include="DefaultVerbInvocation.cs" />
     <Compile Include="Method.cs" />
     <Compile Include="Parameter.cs" />
     <Compile Include="ParameterAttribute.cs" />
