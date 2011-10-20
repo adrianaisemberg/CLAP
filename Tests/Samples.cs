@@ -743,6 +743,7 @@ namespace Tests
         public void Intercept(IVerbInvocation invocation)
         {
             Intercepted.Add(invocation.Verb);
+            invocation.Proceed();
         }
     }
 
