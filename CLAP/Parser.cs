@@ -13,7 +13,7 @@ namespace CLAP
     /// <summary>
     /// A command-line arguments parser
     /// </summary>
-    public sealed class Parser<T>
+    public sealed class Parser<T> : AbstractParser
     {
         #region Fields
 
@@ -48,12 +48,12 @@ namespace CLAP
 
         #region Public Methods
 
-        public void Run(string[] args)
+        public override void Run(string[] args)
         {
             RunInternal(args, null);
         }
 
-        public void Run(string[] args, object obj)
+        public override void Run(string[] args, object obj)
         {
             RunInternal(args, obj);
         }
@@ -291,7 +291,7 @@ namespace CLAP
         /// <summary>
         /// Registers an action to a global parameter name
         /// </summary>
-        public void RegisterParameterHandler(string names, Action action)
+        public override void RegisterParameterHandler(string names, Action action)
         {
             RegisterParameterHandler(
                 names,
@@ -302,7 +302,7 @@ namespace CLAP
         /// <summary>
         /// Registers an action to a global parameter name
         /// </summary>
-        public void RegisterParameterHandler(string names, Action action, string description)
+        public override void RegisterParameterHandler(string names, Action action, string description)
         {
             RegisterParameterHandler(
                 names,
@@ -313,7 +313,7 @@ namespace CLAP
         /// <summary>
         /// Registers an action to a global parameter name
         /// </summary>
-        public void RegisterParameterHandler<TParameter>(string names, Action<TParameter> action)
+        public override void RegisterParameterHandler<TParameter>(string names, Action<TParameter> action)
         {
             RegisterParameterHandler(
                 names,
@@ -324,7 +324,7 @@ namespace CLAP
         /// <summary>
         /// Registers an action to a global parameter name
         /// </summary>
-        public void RegisterParameterHandler<TParameter>(string names, Action<TParameter> action, string description)
+        public override void RegisterParameterHandler<TParameter>(string names, Action<TParameter> action, string description)
         {
             RegisterParameterHandlerInternal(
                 names,
@@ -336,7 +336,7 @@ namespace CLAP
         /// Registers a verb interceptor
         /// </summary>
         /// <param name="interceptor">verb interceptor delegate</param>
-        public void RegisterInterceptor(Action<IVerbInvocation> interceptor)
+        public override void RegisterInterceptor(Action<IVerbInvocation> interceptor)
         {
             var attrInterceptor = GetVerbInterceptor();
             if (attrInterceptor != null)
