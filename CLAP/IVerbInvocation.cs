@@ -24,9 +24,14 @@ namespace CLAP
         ReadOnlyCollection<object> VerbParameters { get; }
 
         /// <summary>
+        /// List of raw input parameters
+        /// </summary>
+        ReadOnlyCollection<string> InputArgs { get; }
+
+        /// <summary>
         /// Dictionary of input parameters by name
         /// </summary>
-        IDictionary<string, string> InputArgs { get; }
+        IDictionary<string, string> InputDictionary { get; }
 
         /// <summary>
         /// Object associated with the method.  This will be
