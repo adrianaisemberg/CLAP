@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
 namespace CLAP
@@ -21,6 +22,11 @@ namespace CLAP
         /// List of parameter values passed to the method
         /// </summary>
         ReadOnlyCollection<object> VerbParameters { get; }
+
+        /// <summary>
+        /// Dictionary of input parameters by name
+        /// </summary>
+        IDictionary<string, string> InputArgs { get; }
 
         /// <summary>
         /// Object associated with the method.  This will be

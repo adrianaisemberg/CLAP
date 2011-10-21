@@ -168,7 +168,8 @@ namespace CLAP
 
             // if there is a verb - skip the first arg
             //
-            var inputArgs = MapArguments(noVerb ? args : args.Skip(1));
+            var originalArgs = MapArguments(noVerb ? args : args.Skip(1));
+            var inputArgs = originalArgs.ToDictionary(arg => arg.Key, arg => arg.Value);
 
             HandleGlobals(inputArgs, obj);
 
@@ -279,7 +280,7 @@ namespace CLAP
                 throw new UnhandledParametersException(inputArgs);
             }
 
-            var invocation = new DefaultVerbInvocation(verb, method, parameters, obj);
+            var invocation = new DefaultVerbInvocation(verb, method, parameters, obj, originalArgs);
             return invocation;
         }
 
