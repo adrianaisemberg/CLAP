@@ -299,11 +299,13 @@ namespace Tests
         }
 
         [Verb]
+        [Validate("str like 'foo*'")]
         public void Print2([Parameter(Required = true)]string str)
         {
         }
 
         [Global]
+        [Validate("x not like 'foo*'")]
         public void Foo(string x)
         {
             Printer.Print(x);
@@ -713,6 +715,24 @@ namespace Tests
         [Validate("num > 10")]
         public static void Boing(int num)
         {
+        }
+    }
+
+    public class Sample_41 : BaseSample
+    {
+        public Dictionary<string, object> Values { get; private set; }
+
+        [Verb(IsDefault = true)]
+        public void Foo(string str, int num, bool b, Case c, int[] numbers)
+        {
+            Values = new Dictionary<string, object>
+            {
+                { "str", str },
+                { "num", num},
+                { "b", b },
+                { "c", c },
+                { "numbers", numbers },
+            };
         }
     }
 

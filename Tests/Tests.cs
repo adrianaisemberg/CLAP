@@ -1368,5 +1368,84 @@ namespace Tests
                 "-boing:5",
             });
         }
+
+        [Test]
+        public void Execute_WithFileInput_String()
+        {
+            var s = new Sample_41();
+
+            FileSystemHelper.FileHandler = new FileSystemMock { ReturnValue = "kicks ass!" };
+
+            Parser.Run(new[]
+            {
+                "-@str=some_dummy_file"
+            }, s);
+
+            Assert.AreEqual("kicks ass!", s.Values["str"]);
+        }
+
+        [Test]
+        public void Execute_WithFileInput_Int()
+        {
+            var s = new Sample_41();
+
+            FileSystemHelper.FileHandler = new FileSystemMock { ReturnValue = "567" };
+
+            Parser.Run(new[]
+            {
+                "-@num=some_dummy_file"
+            }, s);
+
+            Assert.AreEqual(567, s.Values["num"]);
+        }
+
+        [Test]
+        public void Execute_WithFileInput_Bool()
+        {
+            var s = new Sample_41();
+
+            FileSystemHelper.FileHandler = new FileSystemMock { ReturnValue = "false" };
+
+            Parser.Run(new[]
+            {
+                "-@b=some_dummy_file"
+            }, s);
+
+            Assert.AreEqual(false, s.Values["b"]);
+        }
+
+        [Test]
+        public void Execute_WithFileInput_Enum()
+        {
+            var s = new Sample_41();
+
+            FileSystemHelper.FileHandler = new FileSystemMock { ReturnValue = "Unchanged" };
+
+            Parser.Run(new[]
+            {
+                "-@c=some_dummy_file"
+            }, s);
+
+            Assert.AreEqual(Case.Unchanged, s.Values["c"]);
+        }
+
+        [Test]
+        public void Execute_WithFileInput_Array()
+        {
+            var s = new Sample_41();
+
+            FileSystemHelper.FileHandler = new FileSystemMock { ReturnValue = "301,7,99" };
+
+            Parser.Run(new[]
+            {
+                "-@numbers=some_dummy_file"
+            }, s);
+
+            var arr = (int[])s.Values["numbers"];
+            Assert.AreEqual(3, arr.Length);
+            Assert.AreEqual(301, arr[0]);
+            Assert.AreEqual(7, arr[1]);
+            Assert.AreEqual(99, arr[2]);
+        }
     }
 }

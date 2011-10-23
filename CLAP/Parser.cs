@@ -6,6 +6,7 @@ using System.Text;
 
 #if !FW2
 using System.Linq;
+
 #endif
 
 namespace CLAP
@@ -20,6 +21,7 @@ namespace CLAP
         // The possible prefixes of a parameter
         //
         private readonly static string[] s_prefixes = new[] { "/", "-" };
+        private readonly static string s_fileInputPrefix = "@";
 
         private readonly Dictionary<string, GlobalParameterHandler> m_globalRegisteredHandlers;
 
@@ -159,9 +161,7 @@ namespace CLAP
 
             // a list of values, used when invoking the method
             //
-            var parameterValues = new List<object>();
-
-            CreateParameterValues(verb, inputArgs, paremetersList, methodParameters, parameterValues);
+            var parameterValues = CreateParameterValues(verb, inputArgs, paremetersList, methodParameters);
 
             ValidateVerbInput(method, methodParameters, parameterValues);
 
@@ -199,13 +199,14 @@ namespace CLAP
             }
         }
 
-        private void CreateParameterValues(
+        private List<object> CreateParameterValues(
             string verb,
             Dictionary<string, string> inputArgs,
             IEnumerable<Parameter> list,
-            ParameterInfo[] methodParameters,
-            List<object> parameters)
+            ParameterInfo[] methodParameters)
         {
+            var parameters = new List<object>();
+
             foreach (var p in methodParameters)
             {
                 var parameter = list.First(param => param.ParameterInfo == p);
@@ -275,6 +276,8 @@ namespace CLAP
                 //
                 parameters.Add(value);
             }
+
+            return parameters;
         }
 
         /// <summary>
@@ -737,7 +740,9 @@ namespace CLAP
                     throw new MissingArgumentPrefixException(arg, string.Join(",", s_prefixes));
                 }
 
-                var parts = arg.Substring(1).Split(new[] { '=', ':' }, 2, StringSplitOptions.RemoveEmptyEntries);
+                var prefix = arg.Substring(1);
+
+                var parts = prefix.Split(new[] { '=', ':' }, 2, StringSplitOptions.RemoveEmptyEntries);
                 var name = parts[0].ToLowerInvariant();
 
                 string valueString = null;
@@ -748,6 +753,17 @@ namespace CLAP
                 if (parts.Length > 1)
                 {
                     valueString = parts[1];
+
+                    // if it has a file input prefix - remove it
+                    //
+                    if (name.StartsWith(s_fileInputPrefix))
+                    {
+                        name = name.Substring(1);
+
+                        // the value is replaced with the content of the input file
+                        //
+                        valueString = FileSystemHelper.ReadAllText(valueString);
+                    }
                 }
 
                 map.Add(name, valueString);

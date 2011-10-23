@@ -72,6 +72,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ErrorAttribute.cs" />
+    <Compile Include="FileSystemHelper.cs" />
     <Compile Include="FW2Stuff.cs" />
     <Compile Include="EmptyAttribute.cs" />
     <Compile Include="Exceptions.cs" />
