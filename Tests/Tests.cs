@@ -226,12 +226,23 @@ namespace Tests
             var printer = new Printer();
             var sample = new Sample_08 { Printer = printer };
 
+            // array
+            //
             Execute(sample, "print /messages:a,b,c /prefix:test_");
 
             Assert.AreEqual(3, printer.PrintedTexts.Count);
             Assert.AreEqual("test_a", printer.PrintedTexts[0]);
             Assert.AreEqual("test_b", printer.PrintedTexts[1]);
             Assert.AreEqual("test_c", printer.PrintedTexts[2]);
+
+            // JSON
+            //
+            Execute(sample, "print /messages:['a','b','c'] /prefix:test_");
+
+            Assert.AreEqual(6, printer.PrintedTexts.Count);
+            Assert.AreEqual("test_a", printer.PrintedTexts[3]);
+            Assert.AreEqual("test_b", printer.PrintedTexts[4]);
+            Assert.AreEqual("test_c", printer.PrintedTexts[5]);
         }
 
         [Test]
@@ -251,12 +262,23 @@ namespace Tests
             var printer = new Printer();
             var sample = new Sample_08 { Printer = printer };
 
+            // array
+            //
             Execute(sample, "printnumbers /numbers:1,2,3 /prefix:test_");
 
             Assert.AreEqual(3, printer.PrintedTexts.Count);
             Assert.AreEqual("test_1", printer.PrintedTexts[0]);
             Assert.AreEqual("test_2", printer.PrintedTexts[1]);
             Assert.AreEqual("test_3", printer.PrintedTexts[2]);
+
+            // JSON
+            //
+            Execute(sample, "printnumbers /numbers:[1,2,3] /prefix:test_");
+
+            Assert.AreEqual(6, printer.PrintedTexts.Count);
+            Assert.AreEqual("test_1", printer.PrintedTexts[3]);
+            Assert.AreEqual("test_2", printer.PrintedTexts[4]);
+            Assert.AreEqual("test_3", printer.PrintedTexts[5]);
         }
 
         [Test]
@@ -276,11 +298,21 @@ namespace Tests
             var printer = new Printer();
             var sample = new Sample_08 { Printer = printer };
 
+            // using array convertion
+            //
             Execute(sample, "printenums /enums:Upper,Lower /prefix:test_");
 
             Assert.AreEqual(2, printer.PrintedTexts.Count);
             Assert.AreEqual("test_Upper", printer.PrintedTexts[0]);
             Assert.AreEqual("test_Lower", printer.PrintedTexts[1]);
+
+            // using JSON deserialization
+            //
+            Execute(sample, "printenums /enums:['Upper','Lower'] /prefix:test_");
+
+            Assert.AreEqual(4, printer.PrintedTexts.Count);
+            Assert.AreEqual("test_Upper", printer.PrintedTexts[2]);
+            Assert.AreEqual("test_Lower", printer.PrintedTexts[3]);
         }
 
         [Test]
@@ -1446,6 +1478,49 @@ namespace Tests
             Assert.AreEqual(301, arr[0]);
             Assert.AreEqual(7, arr[1]);
             Assert.AreEqual(99, arr[2]);
+        }
+
+        [Test]
+        public void ComplexType_JsonDeserialized_MyType()
+        {
+            var s = new Sample_42();
+
+            Parser.Run(new[]
+            {
+                "-t:{ Number: 56, Name: 'blah' }", 
+            }, s);
+
+            Assert.AreEqual(56, s.TheType.Number);
+            Assert.AreEqual("blah", s.TheType.Name);
+        }
+
+        [Test]
+        public void ComplexType_JsonDeserialized_MultiArray()
+        {
+            var s = new Sample_42();
+
+            Parser.Run(new[]
+            {
+                "bar",
+                "-arr:[[1,2,3],[4,5,6],[7,8]]", 
+            }, s);
+
+            Assert.AreEqual(3, s.Array.Length);
+
+            var arr0 = s.Array[0];
+            var arr1 = s.Array[1];
+            var arr2 = s.Array[2];
+
+            Assert.AreEqual(1, arr0[0]);
+            Assert.AreEqual(2, arr0[1]);
+            Assert.AreEqual(3, arr0[2]);
+
+            Assert.AreEqual(4, arr1[0]);
+            Assert.AreEqual(5, arr1[1]);
+            Assert.AreEqual(6, arr1[2]);
+
+            Assert.AreEqual(7, arr2[0]);
+            Assert.AreEqual(8, arr2[1]);
         }
     }
 }

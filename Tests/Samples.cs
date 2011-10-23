@@ -736,10 +736,35 @@ namespace Tests
         }
     }
 
+
+    public class Sample_42 : BaseSample
+    {
+        public MyType TheType { get; private set; }
+        public int[][] Array { get; private set; }
+
+        [Verb(IsDefault = true)]
+        public void Foo(MyType t)
+        {
+            TheType = t;
+        }
+
+        [Verb]
+        public void Bar(int[][] arr)
+        {
+            Array = arr;
+        }
+    }
+
     public enum Case
     {
         Upper,
         Lower,
         Unchanged,
+    }
+
+    public class MyType
+    {
+        public int Number { get; set; }
+        public string Name { get; set; }
     }
 }
