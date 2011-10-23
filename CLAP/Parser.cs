@@ -122,7 +122,10 @@ namespace CLAP
             //
             if (method == null)
             {
-                // if there is a verb input but no method was found - throw
+                // if there is a verb input but no method was found
+                // AND
+                // the first arg is not an input argument (doesn't start with "-" etc)
+                //
                 if (verb != null && !s_prefixes.Any(p => p.Equals(verb[0].ToString())))
                 {
                     throw new MissingVerbException(verb);
