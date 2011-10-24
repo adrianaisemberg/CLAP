@@ -438,12 +438,10 @@ C:\> <span class="commandline">myexe foo -bar=Ass! -count=10</span><span class="
                     </p>
                     <p>
                         Passing the content of a file to a parameter is by adding a <span class="code highlight">@</span> 
-                        after the parameter's prefix
-                        (either <span class="code highlight">-</span> or <span class="code highlight">/</span>),
-                        using the following syntax:
+                        after the parameter name using the following syntax:
                     </p>
                     <p>
-                        <span class="code highlight">-@param=<em>file_path</em></span>
+                        <span class="code highlight">-param@=<em>file_path</em></span>
                     </p>
                     <div class="note">
                         <h4><span class="code">:</span> vs <span class="code">=</span></h4>
@@ -460,10 +458,10 @@ C:\> <span class="commandline">myexe foo -bar=Ass! -count=10</span><span class="
                     <h4>For example:</h4>
 
                     <pre class="console">
-<span class="commandline">> myexe -@persons=..\data\persons.txt</span></pre>
+<span class="commandline">> myexe -persons@=..\data\persons.txt</span></pre>
                     <p>Keep in mind that if the path contains spaces - you'll have to add quotation marks, as in:</p>
                     <pre class="console">
-<span class="commandline">> myexe -@persons="c:\input data\persons.txt"</span></pre>
+<span class="commandline">> myexe -persons@="c:\input data\persons.txt"</span></pre>
                 </div>
                 <div sectionid="#custom_types" class="content">
                     <h3>Custom Types</h3>
@@ -529,7 +527,7 @@ C:\> <span class="commandline">myexe foo -bar=Ass! -count=10</span><span class="
                         put it in a file and pass the file as an input:
                     </p>
                     <pre class="console">
-<span class="commandline">> myexe saveperson -@p=..\data\person.txt</span></pre>
+<span class="commandline">> myexe saveperson -p@=..\data\person.txt</span></pre>
                     <p>Collections are also supported, as in the following example:</p>
                     <pre class="brush: csharp">
                         [Verb]
