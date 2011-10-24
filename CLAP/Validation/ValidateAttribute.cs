@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Data;
 using System.Linq;
-using CLAP;
 
 namespace CLAP.Validation
 {
@@ -13,6 +12,7 @@ namespace CLAP.Validation
     /// For full documentation, see MSDN:
     /// http://msdn.microsoft.com/en-us/library/system.data.datacolumn.expression.aspx
     /// </remarks>
+    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class, AllowMultiple = true)]
     public sealed class ValidateAttribute : ParametersValidationAttribute
     {
         /// <summary>

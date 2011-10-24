@@ -1495,6 +1495,20 @@ namespace Tests
         }
 
         [Test]
+        public void ComplexType_JsonDeserialized_MyType_AsGlobal()
+        {
+            var s = new Sample_42();
+
+            Parser.Run(new[]
+            {
+                "-glob:{ Number: 881, Name: 'balooloo' }", 
+            }, s);
+
+            Assert.AreEqual(881, s.TheType_Global.Number);
+            Assert.AreEqual("balooloo", s.TheType_Global.Name);
+        }
+
+        [Test]
         public void ComplexType_JsonDeserialized_MultiArray()
         {
             var s = new Sample_42();

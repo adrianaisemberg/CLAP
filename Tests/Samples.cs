@@ -740,6 +740,7 @@ namespace Tests
     public class Sample_42 : BaseSample
     {
         public MyType TheType { get; private set; }
+        public MyType TheType_Global { get; private set; }
         public int[][] Array { get; private set; }
 
         [Verb(IsDefault = true)]
@@ -752,6 +753,12 @@ namespace Tests
         public void Bar(int[][] arr)
         {
             Array = arr;
+        }
+
+        [Global]
+        public void Glob(MyType t)
+        {
+            TheType_Global = t;
         }
     }
 
