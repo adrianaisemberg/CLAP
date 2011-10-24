@@ -29,9 +29,14 @@ namespace CLAP
         ReadOnlyCollection<string> InputArgs { get; }
 
         /// <summary>
-        /// Dictionary of input parameters by name
+        /// Dictionary of all input parameters by name
         /// </summary>
-        IDictionary<string, string> InputDictionary { get; }
+        Dictionary<string, string> InputDictionary { get; }
+
+        /// <summary>
+        /// Dictionary of input parameters that are not associated with the verb
+        /// </summary>
+        Dictionary<string, string> UnusedDictionary { get; }
 
         /// <summary>
         /// Object associated with the method.  This will be

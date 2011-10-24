@@ -321,6 +321,10 @@ namespace CLAP
 
                 if(!InvokeInterceptor(obj, invocation))
                 {
+                    if (invocation.UnusedDictionary.Any())
+                    {
+                        throw new UnhandledParametersException(invocation.UnusedDictionary);
+                    }
                     invocation.Proceed();
                 }
             }
@@ -422,12 +426,8 @@ namespace CLAP
 
             ValidateVerbInput(method, methodParameters, parameterValues);
 
-            if (inputArgs.Any())
-            {
-                throw new UnhandledParametersException(inputArgs);
-            }
 
-            var invocation = new DefaultVerbInvocation(verb, method, parameterValues, obj, originalArgs, argDict);
+            var invocation = new DefaultVerbInvocation(verb, method, parameterValues, obj, originalArgs, argDict, inputArgs);
             return invocation;
         }
 
