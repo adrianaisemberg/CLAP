@@ -1,6 +1,6 @@
 var played;
 $(function(){
-    $("a.menu_item").click(function(){
+    $("a.menu_item, a.link").click(function(){
         selectLink($(this));
         window.scrollTo(0,0);
     });
@@ -64,7 +64,11 @@ function play(){
 function selectLink(link){
     $(".content:visible").hide();
     var href = link.attr("href");
-
+    
+    // replace the source link with the menu link of the same href
+    //
+    link = $("#left").find("a[href='" + href + "']");
+    
     // hide all grumbles when navigating
     //
     if (href != "#what")

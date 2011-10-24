@@ -31,7 +31,7 @@
     <div id="container">
         <div id="header">CLAP: .NET Command-Line Auto-Parser</div>
         <a href="http://github.com/adrianaisemberg/CLAP" target="_blank">
-            <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://a248.e.akamai.net/assets.github.com/img/e6bef7a091f5f3138b8cd40bc3e114258dd68ddf/687474703a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f7265645f6161303030302e706e67" alt="Fork me on GitHub">
+            <img style="position: fixed; top: 0; right: 0; border: 0;" src="images/fork-me-on-github.png" alt="Fork me on GitHub"/>
         </a>
         <div id="share">
             <!-- AddThis Button BEGIN -->
@@ -60,6 +60,8 @@
                     <a href="#attribute_help" class="sub_menu_item">Help</a>
                     <a href="#attribute_global" class="sub_menu_item">Global</a>
                 </div>
+                <a href="#file_input" class="menu_item">FILE INPUT</a>
+                <a href="#custom_types" class="menu_item">CUSTOM TYPES</a>
                 <a href="#validation" class="menu_item">VALIDATION</a>
                 <div class="sub_menu" menu_id="#validation">
                     <a href="#validation_lessthan" class="sub_menu_item">LessThan</a>
@@ -121,7 +123,7 @@
                         </pre>
                     </div>
                     <pre class="console seq" timeout="13000">
-C:\> <span class="commandline">myexe foo -bar:Ass! -count:10</span><span class="grumbler" text="Parsing is automatic!" angle="30" distance="5" showAfter="14000" hideAfter="3000"></span>
+C:\> <span class="commandline">myexe foo -bar=Ass! -count=10</span><span class="grumbler" text="Parsing is automatic!" angle="30" distance="5" showAfter="14000" hideAfter="3000"></span>
 <span class="seq" timeout="16000">This parser kicks Ass!</span>
 <span class="seq" timeout="16100">This parser kicks Ass!</span>
 <span class="seq" timeout="16200">This parser kicks Ass!</span>
@@ -226,11 +228,12 @@ C:\> <span class="commandline">myexe foo -bar:Ass! -count:10</span><span class="
                             <ul>
                                 <li>String</li>
                                 <li>Numeric (int, float etc)</li>
-                                <li>Boolean (can also used as switches: <span class="code highlight">-p:true</span> is the same as <span class="code highlight">-p</span>)</li>
+                                <li>Boolean (can also used as switches: <span class="code highlight">-p=true</span> is the same as <span class="code highlight">-p</span>)</li>
                                 <li>Enums</li>
                                 <li>Guid</li>
                                 <li>Uri</li>
                                 <li>Arrays of all the above (as CSV)</li>
+                                <li><strong>Any other type as a JSON string</strong>. See <a class="link" href="#file_input">File Input</a></li>
                             </ul>
                         </div>
                         <div class="attribute_properties">
@@ -422,186 +425,322 @@ C:\> <span class="commandline">myexe foo -bar:Ass! -count:10</span><span class="
                     </div>
                     </div>
                 </div>
+                <div sectionid="#file_input" class="content">
+                    <h3>File Input</h3>
+                    <p>
+                        In-addition to passing values to parameters in the regular way (<span class="code">-param=value</span>),
+                        CLAP supports passing the content of text files as input to parameters.
+                    </p>
+                    <p>
+                        A good motivation for using this feature is when using a custom class as an input argument.
+                        A custom class requires a JSON string as an argument value and passing such a string is easier within
+                        a text file.
+                    </p>
+                    <p>
+                        Passing the content of a file to a parameter is by adding a <span class="code highlight">@</span> 
+                        after the parameter's prefix
+                        (either <span class="code highlight">-</span> or <span class="code highlight">/</span>),
+                        using the following syntax:
+                    </p>
+                    <p>
+                        <span class="code highlight">-@param=<em>file_path</em></span>
+                    </p>
+                    <div class="note">
+                        <h4><span class="code">:</span> vs <span class="code">=</span></h4>
+                        <p>
+                            As a parameter-value separator, CLAP supports both <span class="code highlight">:</span> and 
+                            <span class="code highlight">=</span>.
+                        </p>
+                        <p>
+                            It is better to use <span class="code highlight">=</span> because the console (cmd.exe) does not
+                            support tab-completion after the <span class="code highlight">:</span> character.
+                            Tab-completion is supported when using the <span class="code highlight">=</span> character.
+                        </p>
+                    </div>
+                    <h4>For example:</h4>
+
+                    <pre class="console">
+<span class="commandline">> myexe -@persons=..\data\persons.txt</span></pre>
+                    <p>Keep in mind that if the path contains spaces - you'll have to add quotation marks, as in:</p>
+                    <pre class="console">
+<span class="commandline">> myexe -@persons="c:\input data\persons.txt"</span></pre>
+                </div>
+                <div sectionid="#custom_types" class="content">
+                    <h3>Custom Types</h3>
+                    <p>
+                        Primitive types are converted from strings and are easily handled by CLAP.
+                    </p>
+                    <p>
+                        In-addition to primitive types, enums and single-dimention arrays, CLAP also supports
+                        any type you can represent using a JSON string.
+                    </p>
+                    <h4>Example</h4>
+                    <p>Suppose we have the following class which contains several properties and a list of another class:</p>
+                    <pre class="brush: csharp">
+                        public class Person
+                        {
+                            public int Age { get; set; }
+                            public string Name { get; set; }
+                            public string Email { get; set; }
+                            public List&lt;PhoneNumber> PhoneNumbers { get; set; }
+                        }
+
+                        public class PhoneNumber
+                        {
+                            public string Type { get; set; }
+                            public string Number { get; set; }
+                        }
+                    </pre>
+                    <p>We can now create a verb that accepts an instance of that class:</p>
+                    <pre class="brush: csharp">
+                        [Verb]
+                        public static void SavePerson(Person p)
+                        {
+                            // do something with the Person instance
+                        }
+                    </pre>
+                    <p>
+                        Now we can pass an instance of a Person class from the command-line.
+                        We need a JSON representation of such an instance:
+                    </p>
+                    <pre class="brush: csharp">
+                        {
+                            Age: 34,
+                            Name: 'Adrian Aisemberg',
+                            Email: 'adrianaisemberg@gmail.com',
+                            PhoneNumbers: [
+                                {
+                                    Type: 'Home',
+                                    Number: '001-2232322'
+                                },
+                                {
+                                    Type: 'Mobile',
+                                    Number: '002-7787787'
+                                },
+                                {
+                                    Type: 'Office',
+                                    Number: '003-4463565'
+                                }
+                            ]
+                        }
+                    </pre>
+                    <p>
+                        Instead of passing this whole string (in a single line) directly from the command-line, we better
+                        put it in a file and pass the file as an input:
+                    </p>
+                    <pre class="console">
+<span class="commandline">> myexe saveperson -@p=..\data\person.txt</span></pre>
+                    <p>Collections are also supported, as in the following example:</p>
+                    <pre class="brush: csharp">
+                        [Verb]
+                        public static void SavePersons(IEnumerable&lt;Person> p)
+                        {
+                            // do something with the Persons collection
+                        }
+                    </pre>
+                    <p>A collection of Persons as a JSON string looks like this:</p>
+                    <pre class="brush: csharp">
+                        [{
+                            Age: 34,
+                            Name: 'Adrian Aisemberg',
+                            Email: 'adrianaisemberg@gmail.com',
+                            PhoneNumbers: [
+                                { Type: 'Home', Number: '001-2232322' },
+                                { Type: 'Mobile', Number: '002-7787787' }
+                                { Type: 'Office', Number: '003-4463565' }
+                            ]
+                        },
+                        {
+                            Age: 5,
+                            Name: 'Yuval Aisemberg',
+                            Email: 'yuval@email.com',
+                            PhoneNumbers: [
+                                { Type: 'Home', Number: '001-2232322' }
+                                { Type: 'Mobile', Number: '002-9918172' }
+                            ]
+                        }]
+                    </pre>
+                </div>
                 <div sectionid="#validation" class="content">
                     <h3>Validation</h3>
                     <p>Validation attributes validate the input before executing the verb.</p>
                     <p>CLAP comes with some built-in validation attributes and custom validation can be easily implemented.</p>
                     <div class="attribute_wrapper" id="validation_lessthan">
                         <div class="attribute">
-                        <div class="attribute_name code">LessThan(double number)</div>
-                        <div class="attribute_description">
-                            <p>Validates that a numeric value is less than a specified value.</p>
-                        </div>
-                        <div class="attribute_samples">
-                            <h3>Example:</h3>
-                            <pre class="brush: csharp, highlight: 4">
-                                class Program
-                                {
-                                    [Verb]
-                                    public static void Foo([LessThan(10)] int count)
+                            <div class="attribute_name code">LessThan(double number)</div>
+                            <div class="attribute_description">
+                                <p>Validates that a numeric value is less than a specified value.</p>
+                            </div>
+                            <div class="attribute_samples">
+                                <h3>Example:</h3>
+                                <pre class="brush: csharp, highlight: 4">
+                                    class Program
                                     {
+                                        [Verb]
+                                        public static void Foo([LessThan(10)] int count)
+                                        {
+                                        }
                                     }
-                                }
-                            </pre>
+                                </pre>
+                            </div>
                         </div>
-                    </div>
                     </div>
                     <div class="attribute_wrapper" id="validation_lessorequalto">
                         <div class="attribute">
-                        <div class="attribute_name code">LessOrEqualTo(double number)</div>
-                        <div class="attribute_description">
-                            <p>Validates that a numeric value is less or equals a specified value.</p>
-                        </div>
-                        <div class="attribute_samples">
-                            <h3>Example:</h3>
-                            <pre class="brush: csharp, highlight: 4">
-                                class Program
-                                {
-                                    [Verb]
-                                    public static void Foo([LessOrEqualTo(30.5)] double angle)
+                            <div class="attribute_name code">LessOrEqualTo(double number)</div>
+                            <div class="attribute_description">
+                                <p>Validates that a numeric value is less or equals a specified value.</p>
+                            </div>
+                            <div class="attribute_samples">
+                                <h3>Example:</h3>
+                                <pre class="brush: csharp, highlight: 4">
+                                    class Program
                                     {
+                                        [Verb]
+                                        public static void Foo([LessOrEqualTo(30.5)] double angle)
+                                        {
+                                        }
                                     }
-                                }
-                            </pre>
+                                </pre>
+                            </div>
                         </div>
-                    </div>
                     </div>
                     <div class="attribute_wrapper" id="validation_morethan">
                         <div class="attribute">
-                        <div class="attribute_name code">MoreThan(double number)</div>
-                        <div class="attribute_description">
-                            <p>Validates that a numeric value is more than a specified value.</p>
-                        </div>
-                        <div class="attribute_samples">
-                            <h3>Example:</h3>
-                            <pre class="brush: csharp, highlight: 4">
-                                class Program
-                                {
-                                    [Verb]
-                                    public static void Foo([MoreThan(10)] int count)
+                            <div class="attribute_name code">MoreThan(double number)</div>
+                            <div class="attribute_description">
+                                <p>Validates that a numeric value is more than a specified value.</p>
+                            </div>
+                            <div class="attribute_samples">
+                                <h3>Example:</h3>
+                                <pre class="brush: csharp, highlight: 4">
+                                    class Program
                                     {
+                                        [Verb]
+                                        public static void Foo([MoreThan(10)] int count)
+                                        {
+                                        }
                                     }
-                                }
-                            </pre>
+                                </pre>
+                            </div>
                         </div>
-                    </div>
                     </div>
                     <div class="attribute_wrapper" id="validation_moreorequalto">
                         <div class="attribute">
-                        <div class="attribute_name code">MoreOrEqualTo(double number)</div>
-                        <div class="attribute_description">
-                            <p>Validates that a numeric value is more or equals a specified value.</p>
-                        </div>
-                        <div class="attribute_samples">
-                            <h3>Example:</h3>
-                            <pre class="brush: csharp, highlight: 4">
-                                class Program
-                                {
-                                    [Verb]
-                                    public static void Foo([MoreOrEqualTo(30.5)] double angle)
+                            <div class="attribute_name code">MoreOrEqualTo(double number)</div>
+                            <div class="attribute_description">
+                                <p>Validates that a numeric value is more or equals a specified value.</p>
+                            </div>
+                            <div class="attribute_samples">
+                                <h3>Example:</h3>
+                                <pre class="brush: csharp, highlight: 4">
+                                    class Program
                                     {
+                                        [Verb]
+                                        public static void Foo([MoreOrEqualTo(30.5)] double angle)
+                                        {
+                                        }
                                     }
-                                }
-                            </pre>
+                                </pre>
+                            </div>
                         </div>
-                    </div>
                     </div>
                     <div class="attribute_wrapper" id="validation_regexmatches">
                         <div class="attribute">
-                        <div class="attribute_name code">RegexMatches(string pattern)</div>
-                        <div class="attribute_description">
-                            <p>Validates that a string value matches a specified regular-expression.</p>
-                        </div>
-                        <div class="attribute_samples">
-                            <h3>Example:</h3>
-                            <pre class="brush: csharp, highlight: 4">
-                                class Program
-                                {
-                                    [Verb]
-                                    public static void Foo([RegexMatches(@"[0-9a-zA-Z]*")] string name)
+                            <div class="attribute_name code">RegexMatches(string pattern)</div>
+                            <div class="attribute_description">
+                                <p>Validates that a string value matches a specified regular-expression.</p>
+                            </div>
+                            <div class="attribute_samples">
+                                <h3>Example:</h3>
+                                <pre class="brush: csharp, highlight: 4">
+                                    class Program
                                     {
+                                        [Verb]
+                                        public static void Foo([RegexMatches(@"[0-9a-zA-Z]*")] string name)
+                                        {
+                                        }
                                     }
-                                }
-                            </pre>
+                                </pre>
+                            </div>
                         </div>
-                    </div>
                     </div>
                     <div class="attribute_wrapper" id="validation_fileexists">
                         <div class="attribute">
-                        <div class="attribute_name code">FileExists</div>
-                        <div class="attribute_description">
-                            <p>Validates that a file exists.</p>
-                        </div>
-                        <div class="attribute_samples">
-                            <h3>Example:</h3>
-                            <pre class="brush: csharp, highlight: 4">
-                                class Program
-                                {
-                                    [Verb]
-                                    public static void Foo([FileExists] string filePath)
+                            <div class="attribute_name code">FileExists</div>
+                            <div class="attribute_description">
+                                <p>Validates that a file exists.</p>
+                            </div>
+                            <div class="attribute_samples">
+                                <h3>Example:</h3>
+                                <pre class="brush: csharp, highlight: 4">
+                                    class Program
                                     {
+                                        [Verb]
+                                        public static void Foo([FileExists] string filePath)
+                                        {
+                                        }
                                     }
-                                }
-                            </pre>
+                                </pre>
+                            </div>
                         </div>
-                    </div>
                     </div>
                     <div class="attribute_wrapper" id="validation_directoryexists">
                         <div class="attribute">
-                        <div class="attribute_name code">DirectoryExists</div>
-                        <div class="attribute_description">
-                            <p>Validates that a directory exists.</p>
-                        </div>
-                        <div class="attribute_samples">
-                            <h3>Example:</h3>
-                            <pre class="brush: csharp, highlight: 4">
-                                class Program
-                                {
-                                    [Verb]
-                                    public static void Foo([DirectoryExists] string path)
+                            <div class="attribute_name code">DirectoryExists</div>
+                            <div class="attribute_description">
+                                <p>Validates that a directory exists.</p>
+                            </div>
+                            <div class="attribute_samples">
+                                <h3>Example:</h3>
+                                <pre class="brush: csharp, highlight: 4">
+                                    class Program
                                     {
+                                        [Verb]
+                                        public static void Foo([DirectoryExists] string path)
+                                        {
+                                        }
                                     }
-                                }
-                            </pre>
+                                </pre>
+                            </div>
                         </div>
-                    </div>
                     </div>
                     <div class="attribute_wrapper" id="validation_pathexists">
                         <div class="attribute">
-                        <div class="attribute_name code">PathExists</div>
-                        <div class="attribute_description">
-                            <p>Validates that a file or a directory exists.</p>
-                        </div>
-                        <div class="attribute_samples">
-                            <h3>Example:</h3>
-                            <pre class="brush: csharp, highlight: 4">
-                                class Program
-                                {
-                                    [Verb]
-                                    public static void Foo([PathExists] string path)
+                            <div class="attribute_name code">PathExists</div>
+                            <div class="attribute_description">
+                                <p>Validates that a file or a directory exists.</p>
+                            </div>
+                            <div class="attribute_samples">
+                                <h3>Example:</h3>
+                                <pre class="brush: csharp, highlight: 4">
+                                    class Program
                                     {
+                                        [Verb]
+                                        public static void Foo([PathExists] string path)
+                                        {
+                                        }
                                     }
-                                }
-                            </pre>
+                                </pre>
+                            </div>
                         </div>
-                    </div>
                     </div>
                     <div class="attribute_wrapper" id="validation_expression">
                         <div class="attribute">
-                        <div class="attribute_name code">Validate(Expression)</div>
-                        <div class="attribute_description">
-                            <p>Validates all the arguments against an SQL expression.</p>
-                            <p><em>Notice that this is a multiple parameters validator so it is placed over the Verb (or Global) instead of the parameter</em></p>
-                            <p>
+                            <div class="attribute_name code">Validate(Expression)</div>
+                            <div class="attribute_description">
+                                <p>Validates all the arguments against an SQL expression.</p>
+                                <p><em>Notice that this is a multiple parameters validator so it is placed over the Verb (or Global) instead of the parameter</em></p>
+                                                    <p>
                                 See MSDN documentation regarding SQL Expressions:<br />
-                                <a href="http://msdn.microsoft.com/en-us/library/system.data.datacolumn.expression.aspx">
+                                <a href="http://msdn.microsoft.com/en-us/library/system.data.datacolumn.expression.aspx" target="_blank">
                                     http://msdn.microsoft.com/en-us/library/system.data.datacolumn.expression.aspx
                                 </a>
                             </p>
-                        </div>
-                        <div class="attribute_samples">
-                            <h3>Examples:</h3>
-                            <pre class="brush: csharp, highlight: 4">
+                            </div>
+                            <div class="attribute_samples">
+                                <h3>Examples:</h3>
+                                                                                                                                                    <pre class="brush: csharp, highlight: 4">
                                 class Program
                                 {
                                     [Verb]
@@ -635,9 +774,9 @@ C:\> <span class="commandline">myexe foo -bar:Ass! -count:10</span><span class="
                                     }
                                 }
                             </pre>
+                            </div>
                         </div>
                     </div>
-                </div>
                 </div>
                 <div sectionid="#custom_validation" class="content">
                     <h3>Custom Validation</h3>
@@ -819,12 +958,12 @@ C:\> <span class="commandline">myexe foo -bar:Ass! -count:10</span><span class="
                             </pre>
                             <p>And if the arrays are not of the same length - a validation exception will be thrown:</p>
                         <pre class="console">
-<span class="commandline">> myexe foo -numbers:1,2,3 -names:a,b</span>
+<span class="commandline">> myexe foo -numbers=1,2,3 -names=a,b</span>
 CLAP.ValidationException: Not all arrays have the same length.
 
 </pre>                            
                         <pre class="console">
-<span class="commandline">> myexe foo -numbers:1,2,3 -names:a,b,c</span>
+<span class="commandline">> myexe foo -numbers=1,2,3 -names=a,b,c</span>
 1:a
 2:b
 3:c
@@ -1008,12 +1147,12 @@ CLAP.ValidationException: Not all arrays have the same length.
                             <p>This will launch the debugger when the user enters either <span class="code highlight">-d</span> or <span class="code highlight">-debug</span>.</p>
                             <p>
                                 In-addition, when using <span class="code highlight">-p</span> or <span class="code highlight">-pause</span>,
-                                the execution will pause for the specified seconds, for example: <span class="code highlight">-p:5</span>.
+                                the execution will pause for the specified seconds, for example: <span class="code highlight">-p=5</span>.
                             </p>
                             <p>
                                 Arguments are handled in the input order.<br />
-                                For example, entering <span class="code highlight">-d -p:5</span> will first trigger the debugger and will then pause.<br />
-                                Entering <span class="code highlight">-p:5 -d</span> will first pause and then trigger the debugger.
+                                For example, entering <span class="code highlight">-d -p=5</span> will first trigger the debugger and will then pause.<br />
+                                Entering <span class="code highlight">-p=5 -d</span> will first pause and then trigger the debugger.
                             </p>
                         </div>
                     </div>
@@ -1150,14 +1289,14 @@ CLAP.ValidationException: Not all arrays have the same length.
                         </ol>
                         <p>Sample run:</p>
                         <pre class="console">
-<span class="commandline">> myexe hello -n:CLAP -c:5</span>
+<span class="commandline">> myexe hello -n=CLAP -c=5</span>
 Hello CLAP
 Hello CLAP
 Hello CLAP
 Hello CLAP
 Hello CLAP</pre>
                         <pre class="console">
-<span class="commandline">> myexe cart -numbers:1,5,8 -names:a,g,u,t</span>
+<span class="commandline">> myexe cart -numbers=1,5,8 -names=a,g,u,t</span>
 1:a
 1:g
 1:u
@@ -1171,7 +1310,7 @@ Hello CLAP</pre>
 8:u
 8:t</pre>
                         <pre class="console">
-<span class="commandline">> myexe count -start:1 -end:55 -p:0.1 -align:Left</span>
+<span class="commandline">> myexe count -start=1 -end=55 -p=0.1 -align=Left</span>
 1
 2
 3
@@ -1179,7 +1318,7 @@ Hello CLAP</pre>
 ...
 55</pre>
                         <pre class="console">
-<span class="commandline">> myexe count -start:10 -end:55 -p:0.1 -align:Right</span>
+<span class="commandline">> myexe count -start=10 -end=55 -p=0.1 -align=Right</span>
     10
     11
     12

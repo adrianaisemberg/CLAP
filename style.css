@@ -74,14 +74,14 @@ li
 
 .console, .console *
 {
-    color: white;
+    color: #FFFDAB;
     font-family: "Consolas", "Bitstream Vera Sans Mono", "Courier New", Courier, monospace;
     font-size: 14px;
 }
 
 .commandline
 {
-    color: #FFFDAB;
+    color: white;
 }
 
 #intro_code
@@ -195,10 +195,15 @@ h2
     border-bottom: 1px solid #2768B1;
 }
 
-.content h4
+h4
 {
-    margin: 5px 0;
+    margin: 10px 0 5px;
     padding-bottom: 3px;
+}
+
+h4 + p
+{
+    margin-top: 7px;
 }
 
 .attribute_name
@@ -297,4 +302,16 @@ h2
 #share:hover
 {
     opacity: 1;
+}
+
+.note
+{
+    border: 1px solid #BBD1E8;
+    padding: 0 10px;
+}
+
+.note h4
+{
+    padding-bottom: 3px;
+    border-bottom: 1px solid #2768B1;
 }
