@@ -1620,7 +1620,7 @@ namespace Tests
 
             Parser.Run(new[]
             {
-                "-@str=some_dummy_file"
+                "-str@=some_dummy_file"
             }, s);
 
             Assert.AreEqual("kicks ass!", s.Values["str"]);
@@ -1635,7 +1635,7 @@ namespace Tests
 
             Parser.Run(new[]
             {
-                "-@num=some_dummy_file"
+                "-num@=some_dummy_file"
             }, s);
 
             Assert.AreEqual(567, s.Values["num"]);
@@ -1650,7 +1650,7 @@ namespace Tests
 
             Parser.Run(new[]
             {
-                "-@b=some_dummy_file"
+                "-b@=some_dummy_file"
             }, s);
 
             Assert.AreEqual(false, s.Values["b"]);
@@ -1665,7 +1665,7 @@ namespace Tests
 
             Parser.Run(new[]
             {
-                "-@c=some_dummy_file"
+                "-c@=some_dummy_file"
             }, s);
 
             Assert.AreEqual(Case.Unchanged, s.Values["c"]);
@@ -1680,7 +1680,7 @@ namespace Tests
 
             Parser.Run(new[]
             {
-                "-@numbers=some_dummy_file"
+                "-numbers@=some_dummy_file"
             }, s);
 
             var arr = (int[])s.Values["numbers"];

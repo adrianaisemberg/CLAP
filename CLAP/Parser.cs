@@ -21,7 +21,7 @@ namespace CLAP
         // The possible prefixes of a parameter
         //
         private readonly static string[] s_prefixes = new[] { "/", "-" };
-        private readonly static string s_fileInputPrefix = "@";
+        private readonly static string s_fileInputSuffix = "@";
 
         private readonly Dictionary<string, GlobalParameterHandler> m_globalRegisteredHandlers;
 
@@ -782,11 +782,11 @@ namespace CLAP
                 {
                     valueString = parts[1];
 
-                    // if it has a file input prefix - remove it
+                    // if it has a file input suffix - remove it
                     //
-                    if (name.StartsWith(s_fileInputPrefix))
+                    if (name.EndsWith(s_fileInputSuffix))
                     {
-                        name = name.Substring(1);
+                        name = name.Substring(0, name.Length - 1);
 
                         // the value is replaced with the content of the input file
                         //
