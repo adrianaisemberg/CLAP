@@ -730,7 +730,7 @@ C:\> <span class="commandline">myexe foo -bar:Ass! -count:10</span><span class="
                 </div>
                     <div class="attribute_wrapper" id="custom_validation_multiple">
                         <div class="attribute">
-                        <div class="attribute_name code">ParametersValidationAttribute, IParametersValidator</div>
+                        <div class="attribute_name code">ParametersValidationAttribute, IInfoValidator&lt;ParameterInfo></div>
                         <div class="attribute_description">
                             <p>Multiple parameters custom validation.</p>
                             <p>Single parameters validators are used to validate parameters against their own values.</p>
@@ -741,7 +741,7 @@ C:\> <span class="commandline">myexe foo -bar:Ass! -count:10</span><span class="
                             <p><em>Notice that multiple parameters validations are executed <strong>after</strong> all the single validators.</em></p>
                         </div>
                         <div class="attribute_samples">
-                            <p>Start with implementing the <span class="code">IParametersValidator</span> interface:</p>
+                            <p>Start with implementing the <span class="code">IInfoValidator&lt;ParameterInfo></span> interface:</p>
                             <h3>Example:</h3>
                             <p>Having the following verb:</p>
                             <pre class="brush: csharp, highlight: [1,10]">
@@ -760,9 +760,9 @@ C:\> <span class="commandline">myexe foo -bar:Ass! -count:10</span><span class="
                                 We will use a custom multiple validator.
                             </p>
                             <pre class="brush: csharp, highlight: 3">
-                                private class SameLengthValidator : IParametersValidator
+                                private class SameLengthValidator : IInfoValidator&lt;ParameterInfo>
                                 {
-                                    public void Validate(ParameterInfoAndValue[] parameters)
+                                    public void Validate(InfoAndValue&lt;ParameterInfo>[] parameters)
                                     {
                                         // At this point - we already know that all the parameters
                                         // have a value that matches their types.
@@ -794,7 +794,7 @@ C:\> <span class="commandline">myexe foo -bar:Ass! -count:10</span><span class="
                                 [AttributeUsage(AttributeTargets.Method)]
                                 public class SameLengthAttribute : ParametersValidationAttribute
                                 {
-                                    public override IParametersValidator GetValidator()
+                                    public override IInfoValidator&lt;ParameterInfo> GetValidator()
                                     {
                                         return new SameLengthValidator();
                                     }
