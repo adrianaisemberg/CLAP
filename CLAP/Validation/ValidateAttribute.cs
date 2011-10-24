@@ -15,6 +15,8 @@ namespace CLAP.Validation
     [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class, AllowMultiple = true)]
     public sealed class ValidateAttribute : ParametersValidationAttribute
     {
+        #region Properties
+
         /// <summary>
         /// The expression to validate
         /// </summary>
@@ -24,6 +26,18 @@ namespace CLAP.Validation
         /// Whether to use case-sensitive comparison when validating the expression
         /// </summary>
         public bool CaseSensitive { get; set; }
+
+        public override string Description
+        {
+            get
+            {
+                return "Matches expression: '{0}'".FormatWith(Expression);
+            }
+        }
+
+        #endregion Properties
+
+        #region Constructors
 
         /// <summary>
         /// Validates all the parameters against an expression
@@ -39,18 +53,18 @@ namespace CLAP.Validation
             Expression = expression;
         }
 
+        #endregion Constructors
+
+        #region Methods
+
         public override IParametersValidator GetValidator()
         {
             return new ParametersExpressionValidator(Expression, CaseSensitive);
         }
 
-        public override string Description
-        {
-            get
-            {
-                return "Matches expression: '{0}'".FormatWith(Expression);
-            }
-        }
+        #endregion Methods
+
+        #region Types
 
         private class ParametersExpressionValidator : IParametersValidator
         {
@@ -96,5 +110,7 @@ namespace CLAP.Validation
                 }
             }
         }
+
+        #endregion Types
     }
 }

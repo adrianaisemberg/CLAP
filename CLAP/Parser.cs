@@ -59,6 +59,191 @@ namespace CLAP
             TryRunInternal(args, obj);
         }
 
+        /// <summary>
+        /// Registers an action to a global parameter name
+        /// </summary>
+        public void RegisterParameterHandler(string names, Action action)
+        {
+            RegisterParameterHandler(
+                names,
+                new Action<bool>(delegate { action(); }),
+                null);
+        }
+
+        /// <summary>
+        /// Registers an action to a global parameter name
+        /// </summary>
+        public void RegisterParameterHandler(string names, Action action, string description)
+        {
+            RegisterParameterHandler(
+                names,
+                new Action<bool>(delegate { action(); }),
+                description);
+        }
+
+        /// <summary>
+        /// Registers an action to a global parameter name
+        /// </summary>
+        public void RegisterParameterHandler<TParameter>(string names, Action<TParameter> action)
+        {
+            RegisterParameterHandler(
+                names,
+                action,
+                null);
+        }
+
+        /// <summary>
+        /// Registers an action to a global parameter name
+        /// </summary>
+        public void RegisterParameterHandler<TParameter>(string names, Action<TParameter> action, string description)
+        {
+            RegisterParameterHandlerInternal(
+                names,
+                action,
+                description);
+        }
+
+        /// <summary>
+        /// Returns a help string
+        /// </summary>
+        public string GetHelpString()
+        {
+            var verbs = GetVerbs();
+
+            if (verbs.None())
+            {
+                return string.Empty;
+            }
+
+            var sb = new StringBuilder();
+
+            foreach (var verb in verbs)
+            {
+                sb.AppendLine();
+
+                sb.Append(verb.Names.StringJoin("/")).Append(":");
+
+                if (verb.IsDefault)
+                {
+                    sb.Append(" [Default]");
+                }
+
+                if (!string.IsNullOrEmpty(verb.Description))
+                {
+                    sb.AppendFormat(" {0}", verb.Description);
+                }
+
+                if (verb.MethodInfo.HasAttribute<ParametersValidationAttribute>())
+                {
+                    sb.AppendLine();
+                    sb.AppendLine("Validation:");
+
+                    var validators = verb.MethodInfo.GetAttributes<ParametersValidationAttribute>();
+
+                    foreach (var validator in validators)
+                    {
+                        sb.AppendLine("- {0}".FormatWith(validator.Description));
+                    }
+                }
+
+                sb.AppendLine();
+
+                var parameters = GetParameters(verb.MethodInfo);
+
+                foreach (var p in parameters)
+                {
+                    sb.AppendLine(" -{0}: {1}".FormatWith(p.Names.StringJoin("/"), GetParameterOption(p)));
+                }
+            }
+
+            var definedGlobals = GetDefinedGlobals();
+
+            if (m_globalRegisteredHandlers.Any() || definedGlobals.Any())
+            {
+                sb.AppendLine();
+                sb.AppendLine("Global parameters:");
+
+                foreach (var handler in m_globalRegisteredHandlers.Values)
+                {
+                    sb.AppendLine(" -{0}: {1} [{2}]".FormatWith(handler.Name, handler.Desription, handler.Type.Name));
+                }
+
+                foreach (var handler in definedGlobals)
+                {
+                    sb.AppendLine(" -{0}".FormatWith(GetDefinedGlobalHelpString(handler)));
+
+                    if (handler.HasAttribute<ParametersValidationAttribute>())
+                    {
+                        var validators = handler.GetAttributes<ParametersValidationAttribute>();
+
+                        sb.AppendLine("  Validation:");
+
+                        foreach (var validator in validators)
+                        {
+                            sb.AppendLine("  {0}".FormatWith(validator.Description));
+                        }
+                    }
+                }
+            }
+
+            return sb.ToString();
+        }
+
+        /// <summary>
+        /// Registers a parameter name to handle the help string
+        /// </summary>
+        /// <param name="names">The parameter name</param>
+        /// <param name="helpHandler">The help string handler. For example: help => Console.WriteLine(help)</param>
+        public void RegisterHelpHandler(string names, Action<string> helpHandler)
+        {
+            RegisterHelpHandlerInternal(names, helpHandler);
+        }
+
+        public void RegisterEmptyHelpHandler(Action<string> handler)
+        {
+            if (m_registeredEmptyHandler != null)
+            {
+                throw new MoreThanOneEmptyHandlerException();
+            }
+
+            var help = GetHelpString();
+
+            m_registeredEmptyHandler = delegate
+            {
+                handler(help);
+            };
+        }
+
+        public void RegisterEmptyHandler(Action handler)
+        {
+            if (m_registeredEmptyHandler != null)
+            {
+                throw new MoreThanOneEmptyHandlerException();
+            }
+
+            m_registeredEmptyHandler = handler;
+        }
+
+        public void RegisterErrorHandler(Action<Exception> handler)
+        {
+            RegisterErrorHandler(handler, false);
+        }
+
+        public void RegisterErrorHandler(Action<Exception> handler, bool rethrow)
+        {
+            if (m_registeredErrorHandler != null)
+            {
+                throw new MoreThanOneErrorHandlerException();
+            }
+
+            m_registeredErrorHandler = handler;
+            m_registeredErrorHandlerRethrow = rethrow;
+        }
+
+        #endregion Public Methods
+
+        #region Private Methods
+
         private void TryRunInternal(string[] args, object obj)
         {
             try
@@ -280,191 +465,6 @@ namespace CLAP
             return parameters;
         }
 
-        /// <summary>
-        /// Registers an action to a global parameter name
-        /// </summary>
-        public void RegisterParameterHandler(string names, Action action)
-        {
-            RegisterParameterHandler(
-                names,
-                new Action<bool>(delegate { action(); }),
-                null);
-        }
-
-        /// <summary>
-        /// Registers an action to a global parameter name
-        /// </summary>
-        public void RegisterParameterHandler(string names, Action action, string description)
-        {
-            RegisterParameterHandler(
-                names,
-                new Action<bool>(delegate { action(); }),
-                description);
-        }
-
-        /// <summary>
-        /// Registers an action to a global parameter name
-        /// </summary>
-        public void RegisterParameterHandler<TParameter>(string names, Action<TParameter> action)
-        {
-            RegisterParameterHandler(
-                names,
-                action,
-                null);
-        }
-
-        /// <summary>
-        /// Registers an action to a global parameter name
-        /// </summary>
-        public void RegisterParameterHandler<TParameter>(string names, Action<TParameter> action, string description)
-        {
-            RegisterParameterHandlerInternal(
-                names,
-                action,
-                description);
-        }
-
-        /// <summary>
-        /// Returns a help string
-        /// </summary>
-        public string GetHelpString()
-        {
-            var verbs = GetVerbs();
-
-            if (verbs.None())
-            {
-                return string.Empty;
-            }
-
-            var sb = new StringBuilder();
-
-            foreach (var verb in verbs)
-            {
-                sb.AppendLine();
-
-                sb.Append(verb.Names.StringJoin("/")).Append(":");
-
-                if (verb.IsDefault)
-                {
-                    sb.Append(" [Default]");
-                }
-
-                if (!string.IsNullOrEmpty(verb.Description))
-                {
-                    sb.AppendFormat(" {0}", verb.Description);
-                }
-
-                if (verb.MethodInfo.HasAttribute<ParametersValidationAttribute>())
-                {
-                    sb.AppendLine();
-                    sb.AppendLine("Validation:");
-
-                    var validators = verb.MethodInfo.GetAttributes<ParametersValidationAttribute>();
-
-                    foreach (var validator in validators)
-                    {
-                        sb.AppendLine("- {0}".FormatWith(validator.Description));
-                    }
-                }
-
-                sb.AppendLine();
-
-                var parameters = GetParameters(verb.MethodInfo);
-
-                foreach (var p in parameters)
-                {
-                    sb.AppendLine(" -{0}: {1}".FormatWith(p.Names.StringJoin("/"), GetParameterOption(p)));
-                }
-            }
-
-            var definedGlobals = GetDefinedGlobals();
-
-            if (m_globalRegisteredHandlers.Any() || definedGlobals.Any())
-            {
-                sb.AppendLine();
-                sb.AppendLine("Global parameters:");
-
-                foreach (var handler in m_globalRegisteredHandlers.Values)
-                {
-                    sb.AppendLine(" -{0}: {1} [{2}]".FormatWith(handler.Name, handler.Desription, handler.Type.Name));
-                }
-
-                foreach (var handler in definedGlobals)
-                {
-                    sb.AppendLine(" -{0}".FormatWith(GetDefinedGlobalHelpString(handler)));
-
-                    if (handler.HasAttribute<ParametersValidationAttribute>())
-                    {
-                        var validators = handler.GetAttributes<ParametersValidationAttribute>();
-
-                        sb.AppendLine("  Validation:");
-
-                        foreach (var validator in validators)
-                        {
-                            sb.AppendLine("  {0}".FormatWith(validator.Description));
-                        }
-                    }
-                }
-            }
-
-            return sb.ToString();
-        }
-
-        /// <summary>
-        /// Registers a parameter name to handle the help string
-        /// </summary>
-        /// <param name="names">The parameter name</param>
-        /// <param name="helpHandler">The help string handler. For example: help => Console.WriteLine(help)</param>
-        public void RegisterHelpHandler(string names, Action<string> helpHandler)
-        {
-            RegisterHelpHandlerInternal(names, helpHandler);
-        }
-
-        public void RegisterEmptyHelpHandler(Action<string> handler)
-        {
-            if (m_registeredEmptyHandler != null)
-            {
-                throw new MoreThanOneEmptyHandlerException();
-            }
-
-            var help = GetHelpString();
-
-            m_registeredEmptyHandler = delegate
-            {
-                handler(help);
-            };
-        }
-
-        public void RegisterEmptyHandler(Action handler)
-        {
-            if (m_registeredEmptyHandler != null)
-            {
-                throw new MoreThanOneEmptyHandlerException();
-            }
-
-            m_registeredEmptyHandler = handler;
-        }
-
-        public void RegisterErrorHandler(Action<Exception> handler)
-        {
-            RegisterErrorHandler(handler, false);
-        }
-
-        public void RegisterErrorHandler(Action<Exception> handler, bool rethrow)
-        {
-            if (m_registeredErrorHandler != null)
-            {
-                throw new MoreThanOneErrorHandlerException();
-            }
-
-            m_registeredErrorHandler = handler;
-            m_registeredErrorHandlerRethrow = rethrow;
-        }
-
-        #endregion Public Methods
-
-        #region Private Methods
-
         private void Validate()
         {
             // no more than one default verb
@@ -628,7 +628,11 @@ namespace CLAP
             {
                 try
                 {
-                    return Serialization.Deserialize(stringValue, parameterType);
+                    var obj = Serialization.Deserialize(stringValue, parameterType);
+
+                    // validate
+
+                    return obj;
                 }
                 catch (Exception ex)
                 {
