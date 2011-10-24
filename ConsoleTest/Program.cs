@@ -1,10 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Reflection;
+using System.Threading;
 using CLAP;
 using CLAP.Validation;
-using System.Threading;
-using System.Linq;
 
 namespace ConsoleTest
 {
@@ -49,6 +50,22 @@ namespace ConsoleTest
         [Global]
         [Validate("num > 100")]
         public static void Pong(int num)
+        {
+        }
+
+        [Global(Aliases = "d")]
+        public static void Debug()
+        {
+            Debugger.Launch();
+        }
+
+        [Verb(Aliases = "save")]
+        public static void SavePerson(Person p)
+        {
+        }
+
+        [Verb]
+        public static void SavePersons(IEnumerable<Person> p)
         {
         }
     }
@@ -621,6 +638,22 @@ namespace ConsoleTest
                 }
             }
         }
+    }
+
+
+
+    public class Person
+    {
+        public int Age { get; set; }
+        public string Name { get; set; }
+        public string Email { get; set; }
+        public List<PhoneNumber> PhoneNumbers { get; set; }
+    }
+
+    public class PhoneNumber
+    {
+        public string Type { get; set; }
+        public string Number { get; set; }
     }
 }
 

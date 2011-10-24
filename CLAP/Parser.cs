@@ -630,34 +630,43 @@ namespace CLAP
                 {
                     return Serialization.Deserialize(stringValue, parameterType);
                 }
-                catch // can't deserialize - try converting
+                catch (Exception ex)
                 {
-                    // if array
-                    if (parameterType.IsArray)
+                    // can't deserialize - try converting
+                    //
+                    try
                     {
-                        var stringValues = stringValue.CommaSplit();
+                        // if array
+                        if (parameterType.IsArray)
+                        {
+                            var stringValues = stringValue.CommaSplit();
 
-                        // The type of the array element
-                        //
-                        var type = parameterType.GetElementType();
+                            // The type of the array element
+                            //
+                            var type = parameterType.GetElementType();
 
-                        // Create a generic instance of the ConvertToArray method
-                        //
-                        var convertToArrayMethod = GetType().GetMethod(
-                                "ConvertToArray",
-                                BindingFlags.NonPublic | BindingFlags.Static).
-                            MakeGenericMethod(type);
+                            // Create a generic instance of the ConvertToArray method
+                            //
+                            var convertToArrayMethod = GetType().GetMethod(
+                                    "ConvertToArray",
+                                    BindingFlags.NonPublic | BindingFlags.Static).
+                                MakeGenericMethod(type);
 
-                        // Run the array converter
-                        //
-                        return convertToArrayMethod.Invoke(null, new[] { stringValues });
+                            // Run the array converter
+                            //
+                            return convertToArrayMethod.Invoke(null, new[] { stringValues });
+                        }
+                        // if there is an input value
+                        else if (stringValue != null)
+                        {
+                            // convert the string value to the relevant parameter type
+                            //
+                            return ConvertString(stringValue, parameterType);
+                        }
                     }
-                    // if there is an input value
-                    else if (stringValue != null)
+                    catch // use the JSON exception
                     {
-                        // convert the string value to the relevant parameter type
-                        //
-                        return ConvertString(stringValue, parameterType);
+                        throw new TypeConvertionException(stringValue, parameterType, ex);
                     }
                 }
             }
@@ -678,28 +687,21 @@ namespace CLAP
         /// </summary>
         private static object ConvertString(string value, Type type)
         {
-            try
+            if (type.IsEnum)
             {
-                if (type.IsEnum)
-                {
-                    return Enum.Parse(type, value);
-                }
-                else if (type == typeof(Guid))
-                {
-                    return string.IsNullOrEmpty(value) ? (object)null : new Guid(value);
-                }
-                else if (type == typeof(Uri))
-                {
-                    return string.IsNullOrEmpty(value) ? (object)null : new Uri(Environment.ExpandEnvironmentVariables(value));
-                }
-                else
-                {
-                    return Convert.ChangeType(value, type);
-                }
+                return Enum.Parse(type, value);
             }
-            catch (Exception ex)
+            else if (type == typeof(Guid))
             {
-                throw new TypeConvertionException(value, type, ex);
+                return string.IsNullOrEmpty(value) ? (object)null : new Guid(value);
+            }
+            else if (type == typeof(Uri))
+            {
+                return string.IsNullOrEmpty(value) ? (object)null : new Uri(Environment.ExpandEnvironmentVariables(value));
+            }
+            else
+            {
+                return Convert.ChangeType(value, type);
             }
         }
 
