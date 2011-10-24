@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data;
 using System.Linq;
+using System.Reflection;
 
 namespace CLAP.Validation
 {
@@ -13,7 +14,7 @@ namespace CLAP.Validation
     /// http://msdn.microsoft.com/en-us/library/system.data.datacolumn.expression.aspx
     /// </remarks>
     [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class, AllowMultiple = true)]
-    public sealed class ValidateAttribute : ParametersValidationAttribute
+    public sealed class ValidateAttribute : Attribute, IValidation<ParameterInfo>, IValidation<PropertyInfo>
     {
         #region Properties
 
@@ -27,7 +28,7 @@ namespace CLAP.Validation
         /// </summary>
         public bool CaseSensitive { get; set; }
 
-        public override string Description
+        public string Description
         {
             get
             {
@@ -57,60 +58,16 @@ namespace CLAP.Validation
 
         #region Methods
 
-        public override IParametersValidator GetValidator()
+        IInfoValidator<PropertyInfo> IValidation<PropertyInfo>.GetValidator()
+        {
+            throw new NotImplementedException();
+        }
+
+        IInfoValidator<ParameterInfo> IValidation<ParameterInfo>.GetValidator()
         {
             return new ParametersExpressionValidator(Expression, CaseSensitive);
         }
 
         #endregion Methods
-
-        #region Types
-
-        private class ParametersExpressionValidator : IParametersValidator
-        {
-            public string Expression { get; private set; }
-            public bool CaseSensitive { get; private set; }
-
-            internal ParametersExpressionValidator(string expression, bool caseSensitive)
-            {
-                Expression = expression;
-                CaseSensitive = caseSensitive;
-            }
-
-            public void Validate(ParameterInfoAndValue[] parameters)
-            {
-                var table = new DataTable();
-
-                table.CaseSensitive = CaseSensitive;
-
-                // create a column for each parameter giving its name and type
-                //
-                table.Columns.AddRange(
-                    parameters.Select(
-                        p => new DataColumn(
-                                p.Parameter.Name,
-                                p.Parameter.ParameterType)).ToArray());
-
-                // create one row with all the values
-                //
-                table.Rows.Add(parameters.Select(p => p.Value).ToArray());
-
-                // run the expression
-                //
-                var selected = table.Select(Expression);
-
-                if (!selected.Any())
-                {
-                    throw new ValidationException(string.Format("Expression failed validation: '{0}' for arguments: [{1}]",
-                        Expression,
-                        parameters.Select(
-                            p => "{0}={1}".FormatWith(
-                                p.Parameter.Name,
-                                p.Value.ToSafeString("<NULL>"))).StringJoin(", ")));
-                }
-            }
-        }
-
-        #endregion Types
     }
 }

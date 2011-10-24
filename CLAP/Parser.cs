@@ -133,12 +133,12 @@ namespace CLAP
                     sb.AppendFormat(" {0}", verb.Description);
                 }
 
-                if (verb.MethodInfo.HasAttribute<ParametersValidationAttribute>())
+                var validators = verb.MethodInfo.GetInterfaceAttributes<IValidation<ParameterInfo>>();
+
+                if (validators.Any())
                 {
                     sb.AppendLine();
                     sb.AppendLine("Validation:");
-
-                    var validators = verb.MethodInfo.GetAttributes<ParametersValidationAttribute>();
 
                     foreach (var validator in validators)
                     {
@@ -172,10 +172,10 @@ namespace CLAP
                 {
                     sb.AppendLine(" -{0}".FormatWith(GetDefinedGlobalHelpString(handler)));
 
-                    if (handler.HasAttribute<ParametersValidationAttribute>())
-                    {
-                        var validators = handler.GetAttributes<ParametersValidationAttribute>();
+                    var validators = handler.GetInterfaceAttributes<IValidation<ParameterInfo>>();
 
+                    if (validators.Any())
+                    {
                         sb.AppendLine("  Validation:");
 
                         foreach (var validator in validators)
@@ -364,15 +364,15 @@ namespace CLAP
         {
             // validate all parameters
             //
-            if (method.MethodInfo.HasAttribute<ParametersValidationAttribute>())
-            {
-                var validators = method.MethodInfo.GetAttributes<ParametersValidationAttribute>().Select(a => a.GetValidator());
+            var validators = method.MethodInfo.GetInterfaceAttributes<IValidation<ParameterInfo>>().Select(a => a.GetValidator());
 
-                var parametersAndValues = new List<ParameterInfoAndValue>();
+            if (validators.Any())
+            {
+                var parametersAndValues = new List<InfoAndValue<ParameterInfo>>();
 
                 methodParameters.Each((p, i) =>
                 {
-                    parametersAndValues.Add(new ParameterInfoAndValue(p, parameterValues[i]));
+                    parametersAndValues.Add(new InfoAndValue<ParameterInfo>(p, parameterValues[i]));
                 });
 
                 // all validators must pass
@@ -929,28 +929,25 @@ namespace CLAP
                             //
                             if (value != null && p.HasAttribute<ValidationAttribute>())
                             {
-                                var validators = p.GetAttributes<ValidationAttribute>().Select(a => a.GetValidator());
+                                var parameterValidators = p.GetAttributes<ValidationAttribute>().Select(a => a.GetValidator());
 
                                 // all validators must pass
                                 //
-                                foreach (var validator in validators)
+                                foreach (var validator in parameterValidators)
                                 {
                                     validator.Validate(p, value);
                                 }
                             }
 
-                            if (method.HasAttribute<ParametersValidationAttribute>())
-                            {
-                                var validators = method.GetAttributes<ParametersValidationAttribute>().
-                                    Select(a => a.GetValidator());
+                            var validators = method.GetInterfaceAttributes<IValidation<ParameterInfo>>().
+                                Select(a => a.GetValidator());
 
-                                foreach (var validator in validators)
+                            foreach (var validator in validators)
+                            {
+                                validator.Validate(new[]
                                 {
-                                    validator.Validate(new[]
-                                    {
-                                        new ParameterInfoAndValue(p, value),
-                                    });
-                                }
+                                    new InfoAndValue<ParameterInfo>(p, value),
+                                });
                             }
 
                             method.Invoke(obj, new[] { value });

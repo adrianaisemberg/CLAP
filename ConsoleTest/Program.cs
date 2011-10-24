@@ -601,19 +601,19 @@ namespace ConsoleTest
 
     public class SameLengthAttribute : ParametersValidationAttribute
     {
-        public override IParametersValidator GetValidator()
-        {
-            return new SameLengthValidator();
-        }
-
         public override string Description
         {
             get { return "All arrays are of the same length"; }
         }
 
-        private class SameLengthValidator : IParametersValidator
+        public override IInfoValidator<ParameterInfo> GetValidator()
         {
-            public void Validate(ParameterInfoAndValue[] parameters)
+            return new SameLengthValidator();
+        }
+
+        private class SameLengthValidator : IInfoValidator<ParameterInfo>
+        {
+            public void Validate(InfoAndValue<ParameterInfo>[] parameters)
             {
                 // At this point - we already know that all the parameters have a value
                 // that matches their types.

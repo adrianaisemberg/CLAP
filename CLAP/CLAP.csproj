@@ -81,13 +81,16 @@
     <Compile Include="Method.cs" />
     <Compile Include="Parameter.cs" />
     <Compile Include="ParameterAttribute.cs" />
-    <Compile Include="ParametersValidationAttribute.cs" />
+    <Compile Include="ParametersExpressionValidator.cs" />
     <Compile Include="Parser.cs" />
+    <Compile Include="IValidation.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Serialization.cs" />
+    <Compile Include="TypeValidator.cs" />
     <Compile Include="Utils.cs" />
     <Compile Include="ValidationAttribute.cs" />
     <Compile Include="HelpAttribute.cs" />
+    <Compile Include="ParametersValidationAttribute.cs" />
     <Compile Include="Validation\PathExistsAttribute.cs" />
     <Compile Include="Validation\DirectoryExistsAttribute.cs" />
     <Compile Include="Validation\FileExistsAttribute.cs" />
