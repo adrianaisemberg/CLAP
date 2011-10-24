@@ -1,10 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Reflection;
+using System.Threading;
 using CLAP;
 using CLAP.Validation;
-using System.Threading;
-using System.Linq;
 
 namespace ConsoleTest
 {
@@ -49,6 +50,22 @@ namespace ConsoleTest
         [Global]
         [Validate("num > 100")]
         public static void Pong(int num)
+        {
+        }
+
+        [Global(Aliases = "d")]
+        public static void Debug()
+        {
+            Debugger.Launch();
+        }
+
+        [Verb(Aliases = "save")]
+        public static void SavePerson(Person p)
+        {
+        }
+
+        [Verb]
+        public static void SavePersons(IEnumerable<Person> p)
         {
         }
     }
@@ -584,19 +601,19 @@ namespace ConsoleTest
 
     public class SameLengthAttribute : ParametersValidationAttribute
     {
-        public override IParametersValidator GetValidator()
-        {
-            return new SameLengthValidator();
-        }
-
         public override string Description
         {
             get { return "All arrays are of the same length"; }
         }
 
-        private class SameLengthValidator : IParametersValidator
+        public override IInfoValidator<ParameterInfo> GetValidator()
         {
-            public void Validate(ParameterInfoAndValue[] parameters)
+            return new SameLengthValidator();
+        }
+
+        private class SameLengthValidator : IInfoValidator<ParameterInfo>
+        {
+            public void Validate(InfoAndValue<ParameterInfo>[] parameters)
             {
                 // At this point - we already know that all the parameters have a value
                 // that matches their types.
@@ -621,6 +638,22 @@ namespace ConsoleTest
                 }
             }
         }
+    }
+
+
+
+    public class Person
+    {
+        public int Age { get; set; }
+        public string Name { get; set; }
+        public string Email { get; set; }
+        public List<PhoneNumber> PhoneNumbers { get; set; }
+    }
+
+    public class PhoneNumber
+    {
+        public string Type { get; set; }
+        public string Number { get; set; }
     }
 }
 

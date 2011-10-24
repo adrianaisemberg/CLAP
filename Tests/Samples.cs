@@ -299,11 +299,13 @@ namespace Tests
         }
 
         [Verb]
+        [Validate("str like 'foo*'")]
         public void Print2([Parameter(Required = true)]string str)
         {
         }
 
         [Global]
+        [Validate("x not like 'foo*'")]
         public void Foo(string x)
         {
             Printer.Print(x);
@@ -839,10 +841,60 @@ namespace Tests
         }
     }
 
+    public class Sample_41 : BaseSample
+    {
+        public Dictionary<string, object> Values { get; private set; }
+
+        [Verb(IsDefault = true)]
+        public void Foo(string str, int num, bool b, Case c, int[] numbers)
+        {
+            Values = new Dictionary<string, object>
+            {
+                { "str", str },
+                { "num", num},
+                { "b", b },
+                { "c", c },
+                { "numbers", numbers },
+            };
+        }
+    }
+
+
+    public class Sample_42 : BaseSample
+    {
+        public MyType TheType { get; private set; }
+        public MyType TheType_Global { get; private set; }
+        public int[][] Array { get; private set; }
+
+        [Verb(IsDefault = true)]
+        public void Foo(MyType t)
+        {
+            TheType = t;
+        }
+
+        [Verb]
+        public void Bar(int[][] arr)
+        {
+            Array = arr;
+        }
+
+        [Global]
+        public void Glob(MyType t)
+        {
+            TheType_Global = t;
+        }
+    }
+
     public enum Case
     {
         Upper,
         Lower,
         Unchanged,
+    }
+
+    public class MyType
+    {
+        public int Number { get; set; }
+        public string Name { get; set; }
     }
 }

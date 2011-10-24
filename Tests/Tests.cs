@@ -11,18 +11,19 @@ namespace Tests
     [TestFixture]
     public class Tests
     {
-        private void Execute<T>(T obj, String cmd)
-        {
-            Parser.Run(cmd.Split(' '), obj);
-        }
-
         [Test]
         public void Execute_Verb()
         {
             var printer = new Printer();
             var sample = new Sample_02 { Printer = printer };
 
-            Execute(sample, "print /c=5 /msg=test /prefix=hello_");
+            Parser.Run(new[]
+            {
+                "print",
+                "/c=5",
+                "/msg=test",
+                "/prefix=hello_",
+            }, sample);
 
             Assert.AreEqual(5, printer.PrintedTexts.Count);
             Assert.IsTrue(printer.PrintedTexts.All(t => t.Equals("hello_test")));
@@ -34,7 +35,12 @@ namespace Tests
             var printer = new Printer();
             var sample = new Sample_02 { Printer = printer };
 
-            Execute(sample, "/c=5 /msg=test /prefix=hello_");
+            Parser.Run(new[]
+            {
+                "/c=5",
+                "/msg=test",
+                "/prefix=hello_",
+            }, sample);
 
             Assert.AreEqual(5, printer.PrintedTexts.Count);
             Assert.IsTrue(printer.PrintedTexts.All(t => t.Equals("hello_test")));
@@ -46,7 +52,13 @@ namespace Tests
             var printer = new Printer();
             var sample = new Sample_02 { Printer = printer };
 
-            Execute(sample, "/c=5 /msg=test /prefix=hello_ /u");
+            Parser.Run(new[]
+            {
+                "/c=5",
+                "/msg=test",
+                "/prefix=hello_",
+                "/u",
+            }, sample);
 
             Assert.AreEqual(5, printer.PrintedTexts.Count);
             Assert.IsTrue(printer.PrintedTexts.All(t => t.Equals("HELLO_TEST")));
@@ -58,7 +70,13 @@ namespace Tests
             var printer = new Printer();
             var sample = new Sample_04 { Printer = printer };
 
-            Execute(sample, "/count=5 /msg=test /prefix=hello_ /c:Upper");
+            Parser.Run(new[]
+            {
+                "/count=5",
+                "/msg=test",
+                "/prefix=hello_",
+                "/c:Upper",
+            }, sample);
 
             Assert.AreEqual(5, printer.PrintedTexts.Count);
             Assert.IsTrue(printer.PrintedTexts.All(t => t.Equals("HELLO_TEST")));
@@ -70,7 +88,12 @@ namespace Tests
             var printer = new Printer();
             var sample = new Sample_06 { Printer = printer };
 
-            Execute(sample, "/count=5 /msg=test /prefix=hello_");
+            Parser.Run(new[]
+            {
+                "/count=5",
+                "/msg=test",
+                "/prefix=hello_",
+            }, sample);
 
             Assert.AreEqual(5, printer.PrintedTexts.Count);
             Assert.IsTrue(printer.PrintedTexts.All(t => t.Equals("hello_test")));
@@ -84,7 +107,10 @@ namespace Tests
                 var printer = new Printer();
                 var sample = new Sample_05 { Printer = printer };
 
-                Execute(sample, "p");
+                Parser.Run(new[]
+                {
+                    "p",
+                }, sample);
 
                 Assert.Fail();
             }
@@ -101,18 +127,32 @@ namespace Tests
             var printer = new Printer();
             var sample = new Sample_02 { Printer = printer };
 
-            Execute(sample, "print /c=5 /msg= /prefix=hello_");
+            Parser.Run(new[]
+            {
+                "print",
+                "/c=5",
+                "/msg=",
+                "/prefix=hello_",
+            }, sample);
         }
 
         [Test]
         public void Validation_MoreThan()
         {
             var sample = new ValidationSample_01();
-            Execute(sample, "morethan5 /n=10");
+            Parser.Run(new[]
+            {
+                "morethan5",
+                "/n=10",
+            }, sample);
 
             try
             {
-                Execute(sample, "morethan5 /n=1");
+                Parser.Run(new[]
+                {
+                    "morethan5",
+                    "/n=1",
+                }, sample);
 
                 Assert.Fail();
             }
@@ -125,12 +165,26 @@ namespace Tests
         public void Validation_MoreOrEqualTo()
         {
             var sample = new ValidationSample_01();
-            Execute(sample, "moreorequalto10 /n=10");
-            Execute(sample, "moreorequalto10 /n=11");
+
+            Parser.Run(new[]
+            {
+                "moreorequalto10",
+                "/n=10",
+            }, sample);
+
+            Parser.Run(new[]
+            {
+                "moreorequalto10",
+                "/n=11",
+            }, sample);
 
             try
             {
-                Execute(sample, "moreorequalto10 /n=9");
+                Parser.Run(new[]
+                {
+                    "moreorequalto10",
+                    "/n=9",
+                }, sample);
 
                 Assert.Fail();
             }
@@ -143,11 +197,20 @@ namespace Tests
         public void Validation_LessThan()
         {
             var sample = new ValidationSample_01();
-            Execute(sample, "lessthan20 /n=10");
+
+            Parser.Run(new[]
+            {
+                "lessthan20",
+                "/n=10",
+            }, sample);
 
             try
             {
-                Execute(sample, "lessthan20 /n=20");
+                Parser.Run(new[]
+                {
+                    "lessthan20",
+                    "/n=20",
+                }, sample);
 
                 Assert.Fail();
             }
@@ -160,12 +223,26 @@ namespace Tests
         public void Validation_LessOrEqualTo()
         {
             var sample = new ValidationSample_01();
-            Execute(sample, "lessorequalto30 /n=10");
-            Execute(sample, "lessorequalto30 /n=30");
+
+            Parser.Run(new[]
+            {
+                "lessorequalto30",
+                "/n=10",
+            }, sample);
+
+            Parser.Run(new[]
+            {
+                "lessorequalto30",
+                "/n=30",
+            }, sample);
 
             try
             {
-                Execute(sample, "lessorequalto30 /n=40");
+                Parser.Run(new[]
+                {
+                    "lessorequalto30",
+                    "/n=40",
+                }, sample);
 
                 Assert.Fail();
             }
@@ -178,12 +255,26 @@ namespace Tests
         public void Validation_RegexMatchesEmail()
         {
             var sample = new ValidationSample_01();
-            Execute(sample, "regexmatchesemail /text=name@email.com");
-            Execute(sample, "regexmatchesemail /text=more@some.email.co.il");
+
+            Parser.Run(new[]
+            {
+                "regexmatchesemail",
+                "/text=name@email.com",
+            }, sample);
+
+            Parser.Run(new[]
+            {
+                "regexmatchesemail",
+                "/text=more@some.email.co.il",
+            }, sample);
 
             try
             {
-                Execute(sample, "regexmatchesemail /text=no_email");
+                Parser.Run(new[]
+                {
+                    "regexmatchesemail",
+                    "/text=no_email",
+                }, sample);
 
                 Assert.Fail();
             }
@@ -198,7 +289,11 @@ namespace Tests
             var printer = new Printer();
             var sample = new Sample_07 { Printer = printer };
 
-            Execute(sample, "print /prefix:hello");
+            Parser.Run(new[]
+            {
+                "print",
+                "/prefix:hello",
+            }, sample);
 
             Assert.AreEqual(1, printer.PrintedTexts.Count);
             Assert.AreEqual("HELLO", printer.PrintedTexts[0]);
@@ -212,7 +307,11 @@ namespace Tests
                 var printer = new Printer();
                 var sample = new Sample_07 { Printer = printer };
 
-                Execute(sample, "print /message:world");
+                Parser.Run(new[]
+                {
+                    "print",
+                    "/message:world",
+                }, sample);
 
                 Assert.Fail();
             }
@@ -227,12 +326,33 @@ namespace Tests
             var printer = new Printer();
             var sample = new Sample_08 { Printer = printer };
 
-            Execute(sample, "print /messages:a,b,c /prefix:test_");
+            // array
+            //
+            Parser.Run(new[]
+            {
+                "print",
+                "/messages:a,b,c",
+                "/prefix:test_",
+            }, sample);
 
             Assert.AreEqual(3, printer.PrintedTexts.Count);
             Assert.AreEqual("test_a", printer.PrintedTexts[0]);
             Assert.AreEqual("test_b", printer.PrintedTexts[1]);
             Assert.AreEqual("test_c", printer.PrintedTexts[2]);
+
+            // JSON
+            //
+            Parser.Run(new[]
+            {
+                "print",
+                "/messages:['a','b','c']",
+                "/prefix:test_"
+            }, sample);
+
+            Assert.AreEqual(6, printer.PrintedTexts.Count);
+            Assert.AreEqual("test_a", printer.PrintedTexts[3]);
+            Assert.AreEqual("test_b", printer.PrintedTexts[4]);
+            Assert.AreEqual("test_c", printer.PrintedTexts[5]);
         }
 
         [Test]
@@ -241,7 +361,11 @@ namespace Tests
             var printer = new Printer();
             var sample = new Sample_08 { Printer = printer };
 
-            Execute(sample, "print /prefix:test_");
+            Parser.Run(new[]
+            {
+                "print",
+                "/prefix:test_",
+            }, sample);
 
             Assert.AreEqual(0, printer.PrintedTexts.Count);
         }
@@ -252,12 +376,33 @@ namespace Tests
             var printer = new Printer();
             var sample = new Sample_08 { Printer = printer };
 
-            Execute(sample, "printnumbers /numbers:1,2,3 /prefix:test_");
+            // array
+            //
+            Parser.Run(new[]
+            {
+                "printnumbers",
+                "/numbers:1,2,3",
+                "/prefix:test_",
+            }, sample);
 
             Assert.AreEqual(3, printer.PrintedTexts.Count);
             Assert.AreEqual("test_1", printer.PrintedTexts[0]);
             Assert.AreEqual("test_2", printer.PrintedTexts[1]);
             Assert.AreEqual("test_3", printer.PrintedTexts[2]);
+
+            // JSON
+            //
+            Parser.Run(new[]
+            {
+                "printnumbers",
+                "/numbers:[1,2,3]",
+                "/prefix:test_",
+            }, sample);
+
+            Assert.AreEqual(6, printer.PrintedTexts.Count);
+            Assert.AreEqual("test_1", printer.PrintedTexts[3]);
+            Assert.AreEqual("test_2", printer.PrintedTexts[4]);
+            Assert.AreEqual("test_3", printer.PrintedTexts[5]);
         }
 
         [Test]
@@ -266,7 +411,11 @@ namespace Tests
             var printer = new Printer();
             var sample = new Sample_08 { Printer = printer };
 
-            Execute(sample, "printnumbers /prefix:test_");
+            Parser.Run(new[]
+            {
+                "printnumbers",
+                "/prefix:test_",
+            }, sample);
 
             Assert.AreEqual(0, printer.PrintedTexts.Count);
         }
@@ -277,11 +426,31 @@ namespace Tests
             var printer = new Printer();
             var sample = new Sample_08 { Printer = printer };
 
-            Execute(sample, "printenums /enums:Upper,Lower /prefix:test_");
+            // using array convertion
+            //
+            Parser.Run(new[]
+            {
+                "printenums",
+                "/enums:Upper,Lower",
+                "/prefix:test_",
+            }, sample);
 
             Assert.AreEqual(2, printer.PrintedTexts.Count);
             Assert.AreEqual("test_Upper", printer.PrintedTexts[0]);
             Assert.AreEqual("test_Lower", printer.PrintedTexts[1]);
+
+            // using JSON deserialization
+            //
+            Parser.Run(new[]
+            {
+                "printenums",
+                "/enums:['Upper','Lower']",
+                "/prefix:test_",
+            }, sample);
+
+            Assert.AreEqual(4, printer.PrintedTexts.Count);
+            Assert.AreEqual("test_Upper", printer.PrintedTexts[2]);
+            Assert.AreEqual("test_Lower", printer.PrintedTexts[3]);
         }
 
         [Test]
@@ -290,7 +459,11 @@ namespace Tests
             var printer = new Printer();
             var sample = new Sample_08 { Printer = printer };
 
-            Execute(sample, "printenums /prefix:test_");
+            Parser.Run(new[]
+            {
+                "printenums",
+                "/prefix:test_",
+            }, sample);
 
             Assert.AreEqual(0, printer.PrintedTexts.Count);
         }
@@ -671,7 +844,13 @@ namespace Tests
             var printer = new Printer();
             var sample = new Sample_02 { Printer = printer };
 
-            Execute(sample, "print *c=5 /msg=test /prefix=hello_");
+            Parser.Run(new[]
+            {
+                "print",
+                "*c=5",
+                "/msg=test",
+                "/prefix=hello_",
+            }, sample);
         }
 
         [Test]
@@ -853,15 +1032,38 @@ namespace Tests
         public void Validation_FileExists()
         {
             var sample = new ValidationSample_01();
-            Execute(sample, @"fileexists /path=c:\windows\system32\cmd.exe");
-            Execute(sample, @"fileexists /path=%WINDIR%\system32\cmd.exe");
 
-            Execute(sample, @"urifileexists /path=c:\windows\system32\cmd.exe");
-            Execute(sample, @"urifileexists /path=%WINDIR%\system32\cmd.exe");
+            Parser.Run(new[]
+            {
+                "fileexists",
+                @"/path=c:\windows\system32\cmd.exe",
+            }, sample);
+
+            Parser.Run(new[]
+            {
+                "fileexists",
+                @"/path=%WINDIR%\system32\cmd.exe",
+            }, sample);
+
+            Parser.Run(new[]
+            {
+                "urifileexists",
+                @"/path=c:\windows\system32\cmd.exe",
+            }, sample);
+
+            Parser.Run(new[]
+            {
+                "urifileexists",
+                @"/path=%WINDIR%\system32\cmd.exe",
+            }, sample);
 
             try
             {
-                Execute(sample, @"fileexists /path=y:\{B2C97314-4C55-4EB9-9049-63BB65AC980A}.{6E8698D0-4CFA-4ACB-8AA3-26476F490228}");
+                Parser.Run(new[]
+                {
+                    "fileexists",
+                    @"/path=y:\{B2C97314-4C55-4EB9-9049-63BB65AC980A}.{6E8698D0-4CFA-4ACB-8AA3-26476F490228}",
+                }, sample);
 
                 Assert.Fail();
             }
@@ -871,7 +1073,11 @@ namespace Tests
 
             try
             {
-                Execute(sample, @"urifileexists /path=y:\{B2C97314-4C55-4EB9-9049-63BB65AC980A}.{6E8698D0-4CFA-4ACB-8AA3-26476F490228}");
+                Parser.Run(new[]
+                { 
+                    "urifileexists",
+                    @"/path=y:\{B2C97314-4C55-4EB9-9049-63BB65AC980A}.{6E8698D0-4CFA-4ACB-8AA3-26476F490228}",
+                }, sample);
 
                 Assert.Fail();
             }
@@ -884,15 +1090,38 @@ namespace Tests
         public void Validation_DirectoryExists()
         {
             var sample = new ValidationSample_01();
-            Execute(sample, @"directoryexists /path=c:\windows\system32");
-            Execute(sample, @"directoryexists /path=%WINDIR%\system32");
 
-            Execute(sample, @"uridirectoryexists /path=c:\windows\system32");
-            Execute(sample, @"uridirectoryexists /path=%WINDIR%\system32");
+            Parser.Run(new[]
+            {
+                "directoryexists",
+                @"/path=c:\windows\system32",
+            }, sample);
+
+            Parser.Run(new[]
+            {
+                "directoryexists",
+                @"/path=%WINDIR%\system32",
+            }, sample);
+
+            Parser.Run(new[]
+            {
+                "uridirectoryexists",
+                @"/path=c:\windows\system32",
+            }, sample);
+
+            Parser.Run(new[]
+            {
+                "uridirectoryexists",
+                @"/path=%WINDIR%\system32",
+            }, sample);
 
             try
             {
-                Execute(sample, @"directoryexists /path=y:\{B2C97314-4C55-4EB9-9049-63BB65AC980A}.{6E8698D0-4CFA-4ACB-8AA3-26476F490228}");
+                Parser.Run(new[]
+                {
+                    "directoryexists",
+                    @"/path=y:\{B2C97314-4C55-4EB9-9049-63BB65AC980A}.{6E8698D0-4CFA-4ACB-8AA3-26476F490228}",
+                }, sample);
 
                 Assert.Fail();
             }
@@ -902,7 +1131,11 @@ namespace Tests
 
             try
             {
-                Execute(sample, @"uridirectoryexists /path=y:\{B2C97314-4C55-4EB9-9049-63BB65AC980A}.{6E8698D0-4CFA-4ACB-8AA3-26476F490228}");
+                Parser.Run(new[]
+                {
+                    "uridirectoryexists",
+                    @"/path=y:\{B2C97314-4C55-4EB9-9049-63BB65AC980A}.{6E8698D0-4CFA-4ACB-8AA3-26476F490228}",
+                }, sample);
 
                 Assert.Fail();
             }
@@ -915,19 +1148,24 @@ namespace Tests
         public void Validation_PathExists()
         {
             var sample = new ValidationSample_01();
-            Execute(sample, @"pathexists /path=c:\windows\system32");
-            Execute(sample, @"pathexists /path=%WINDIR%\system32");
-            Execute(sample, @"pathexists /path=c:\windows\system32\cmd.exe");
-            Execute(sample, @"pathexists /path=%WINDIR%\system32\cmd.exe");
 
-            Execute(sample, @"uripathexists /path=c:\windows\system32\cmd.exe");
-            Execute(sample, @"uripathexists /path=%WINDIR%\system32\cmd.exe");
-            Execute(sample, @"uripathexists /path=c:\windows\system32");
-            Execute(sample, @"uripathexists /path=%WINDIR%\system32");
+            Parser.Run(new[] { "pathexists", @"/path=c:\windows\system32" }, sample);
+            Parser.Run(new[] { "pathexists", @"/path=%WINDIR%\system32" }, sample);
+            Parser.Run(new[] { "pathexists", @"/path=c:\windows\system32\cmd.exe" }, sample);
+            Parser.Run(new[] { "pathexists", @"/path=%WINDIR%\system32\cmd.exe" }, sample);
+
+            Parser.Run(new[] { "uripathexists", @"/path=c:\windows\system32\cmd.exe" }, sample);
+            Parser.Run(new[] { "uripathexists", @"/path=%WINDIR%\system32\cmd.exe" }, sample);
+            Parser.Run(new[] { "uripathexists", @"/path=c:\windows\system32" }, sample);
+            Parser.Run(new[] { "uripathexists", @"/path=%WINDIR%\system32" }, sample);
 
             try
             {
-                Execute(sample, @"pathexists /path=y:\{B2C97314-4C55-4EB9-9049-63BB65AC980A}.{6E8698D0-4CFA-4ACB-8AA3-26476F490228}");
+                Parser.Run(new[]
+                {
+                    "pathexists",
+                    @"/path=y:\{B2C97314-4C55-4EB9-9049-63BB65AC980A}.{6E8698D0-4CFA-4ACB-8AA3-26476F490228}",
+                }, sample);
 
                 Assert.Fail();
             }
@@ -937,7 +1175,11 @@ namespace Tests
 
             try
             {
-                Execute(sample, @"uripathexists /path=y:\{B2C97314-4C55-4EB9-9049-63BB65AC980A}.{6E8698D0-4CFA-4ACB-8AA3-26476F490228}");
+                Parser.Run(new[]
+                {
+                    "uripathexists",
+                    @"/path=y:\{B2C97314-4C55-4EB9-9049-63BB65AC980A}.{6E8698D0-4CFA-4ACB-8AA3-26476F490228}",
+                }, sample);
 
                 Assert.Fail();
             }
@@ -1457,5 +1699,139 @@ namespace Tests
             Assert.AreEqual("print", list[0]);
         }
 
+        public void Execute_WithFileInput_String()
+        {
+            var s = new Sample_41();
+
+            FileSystemHelper.FileHandler = new FileSystemMock { ReturnValue = "kicks ass!" };
+
+            Parser.Run(new[]
+            {
+                "-@str=some_dummy_file"
+            }, s);
+
+            Assert.AreEqual("kicks ass!", s.Values["str"]);
+        }
+
+        [Test]
+        public void Execute_WithFileInput_Int()
+        {
+            var s = new Sample_41();
+
+            FileSystemHelper.FileHandler = new FileSystemMock { ReturnValue = "567" };
+
+            Parser.Run(new[]
+            {
+                "-@num=some_dummy_file"
+            }, s);
+
+            Assert.AreEqual(567, s.Values["num"]);
+        }
+
+        [Test]
+        public void Execute_WithFileInput_Bool()
+        {
+            var s = new Sample_41();
+
+            FileSystemHelper.FileHandler = new FileSystemMock { ReturnValue = "false" };
+
+            Parser.Run(new[]
+            {
+                "-@b=some_dummy_file"
+            }, s);
+
+            Assert.AreEqual(false, s.Values["b"]);
+        }
+
+        [Test]
+        public void Execute_WithFileInput_Enum()
+        {
+            var s = new Sample_41();
+
+            FileSystemHelper.FileHandler = new FileSystemMock { ReturnValue = "Unchanged" };
+
+            Parser.Run(new[]
+            {
+                "-@c=some_dummy_file"
+            }, s);
+
+            Assert.AreEqual(Case.Unchanged, s.Values["c"]);
+        }
+
+        [Test]
+        public void Execute_WithFileInput_Array()
+        {
+            var s = new Sample_41();
+
+            FileSystemHelper.FileHandler = new FileSystemMock { ReturnValue = "301,7,99" };
+
+            Parser.Run(new[]
+            {
+                "-@numbers=some_dummy_file"
+            }, s);
+
+            var arr = (int[])s.Values["numbers"];
+            Assert.AreEqual(3, arr.Length);
+            Assert.AreEqual(301, arr[0]);
+            Assert.AreEqual(7, arr[1]);
+            Assert.AreEqual(99, arr[2]);
+        }
+
+        [Test]
+        public void ComplexType_JsonDeserialized_MyType()
+        {
+            var s = new Sample_42();
+
+            Parser.Run(new[]
+            {
+                "-t:{ Number: 56, Name: 'blah' }", 
+            }, s);
+
+            Assert.AreEqual(56, s.TheType.Number);
+            Assert.AreEqual("blah", s.TheType.Name);
+        }
+
+        [Test]
+        public void ComplexType_JsonDeserialized_MyType_AsGlobal()
+        {
+            var s = new Sample_42();
+
+            Parser.Run(new[]
+            {
+                "-glob:{ Number: 881, Name: 'balooloo' }", 
+            }, s);
+
+            Assert.AreEqual(881, s.TheType_Global.Number);
+            Assert.AreEqual("balooloo", s.TheType_Global.Name);
+        }
+
+        [Test]
+        public void ComplexType_JsonDeserialized_MultiArray()
+        {
+            var s = new Sample_42();
+
+            Parser.Run(new[]
+            {
+                "bar",
+                "-arr:[[1,2,3],[4,5,6],[7,8]]", 
+            }, s);
+
+            Assert.AreEqual(3, s.Array.Length);
+
+            var arr0 = s.Array[0];
+            var arr1 = s.Array[1];
+            var arr2 = s.Array[2];
+
+            Assert.AreEqual(1, arr0[0]);
+            Assert.AreEqual(2, arr0[1]);
+            Assert.AreEqual(3, arr0[2]);
+
+            Assert.AreEqual(4, arr1[0]);
+            Assert.AreEqual(5, arr1[1]);
+            Assert.AreEqual(6, arr1[2]);
+
+            Assert.AreEqual(7, arr2[0]);
+            Assert.AreEqual(8, arr2[1]);
+        }
     }
 }

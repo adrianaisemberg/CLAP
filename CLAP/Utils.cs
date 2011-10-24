@@ -36,6 +36,13 @@ namespace CLAP
             return atts;
         }
 
+        public static IEnumerable<T> GetInterfaceAttributes<T>(this MethodInfo method)
+        {
+            return method.GetCustomAttributes(true).
+                Where(a => a.GetType().GetInterfaces().Contains(typeof(T))).
+                Cast<T>();
+        }
+
         public static IEnumerable<T> GetAttributes<T>(this MethodInfo method) where T : Attribute
         {
             var atts = Attribute.GetCustomAttributes(method, typeof(T)).Cast<T>();
@@ -43,9 +50,21 @@ namespace CLAP
             return atts;
         }
 
+        public static IEnumerable<T> GetAttributes<T>(this Type type) where T : Attribute
+        {
+            var atts = Attribute.GetCustomAttributes(type, typeof(T)).Cast<T>();
+
+            return atts;
+        }
+
         public static bool HasAttribute<T>(this MethodInfo method) where T : Attribute
         {
             return Attribute.IsDefined(method, typeof(T));
+        }
+
+        public static bool HasAttribute<T>(this Type type) where T : Attribute
+        {
+            return Attribute.IsDefined(type, typeof(T));
         }
 
         public static bool HasAttribute<T>(this ParameterInfo parameter) where T : Attribute

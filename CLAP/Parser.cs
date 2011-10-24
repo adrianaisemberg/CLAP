@@ -6,6 +6,7 @@ using System.Text;
 
 #if !FW2
 using System.Linq;
+
 #endif
 
 namespace CLAP
@@ -20,6 +21,7 @@ namespace CLAP
         // The possible prefixes of a parameter
         //
         private readonly static string[] s_prefixes = new[] { "/", "-" };
+        private readonly static string s_fileInputPrefix = "@";
 
         private readonly Dictionary<string, GlobalParameterHandler> m_globalRegisteredHandlers;
         private Action<IVerbInvocation> m_registeredInterceptor;
@@ -50,12 +52,244 @@ namespace CLAP
 
         public override void Run(string[] args)
         {
-            RunInternal(args, null);
+            TryRunInternal(args, null);
         }
 
         public override void Run(string[] args, object obj)
         {
-            RunInternal(args, obj);
+            TryRunInternal(args, obj);
+        }
+
+        /// <summary>
+        /// Registers an action to a global parameter name
+        /// </summary>
+        public override void RegisterParameterHandler(string names, Action action)
+        {
+            RegisterParameterHandler(
+                names,
+                new Action<bool>(delegate { action(); }),
+                null);
+        }
+
+        /// <summary>
+        /// Registers an action to a global parameter name
+        /// </summary>
+        public override void RegisterParameterHandler(string names, Action action, string description)
+        {
+            RegisterParameterHandler(
+                names,
+                new Action<bool>(delegate { action(); }),
+                description);
+        }
+
+        /// <summary>
+        /// Registers an action to a global parameter name
+        /// </summary>
+        public override void RegisterParameterHandler<TParameter>(string names, Action<TParameter> action)
+        {
+            RegisterParameterHandler(
+                names,
+                action,
+                null);
+        }
+
+        /// <summary>
+        /// Registers an action to a global parameter name
+        /// </summary>
+        public override void RegisterParameterHandler<TParameter>(string names, Action<TParameter> action, string description)
+        {
+            RegisterParameterHandlerInternal(
+                names,
+                action,
+                description);
+        }
+
+        /// <summary>
+        /// Registers a verb interceptor
+        /// </summary>
+        /// <param name="interceptor">verb interceptor delegate</param>
+        public override void RegisterInterceptor(Action<IVerbInvocation> interceptor)
+        {
+            var attrInterceptor = GetVerbInterceptor();
+            if (attrInterceptor != null)
+                throw new MoreThanOneVerbInterceptorException();
+
+            m_registeredInterceptor = interceptor;
+        }
+
+        private MethodInfo GetVerbInterceptor()
+        {
+            return typeof(T).GetMethodsWith<VerbInterceptorAttribute>().FirstOrDefault();
+        }
+
+        /// <summary>
+        /// Returns a help string
+        /// </summary>
+        public string GetHelpString()
+        {
+            var verbs = GetVerbs();
+
+            if (verbs.None())
+            {
+                return string.Empty;
+            }
+
+            var sb = new StringBuilder();
+
+            foreach (var verb in verbs)
+            {
+                sb.AppendLine();
+
+                sb.Append(verb.Names.StringJoin("/")).Append(":");
+
+                if (verb.IsDefault)
+                {
+                    sb.Append(" [Default]");
+                }
+
+                if (!string.IsNullOrEmpty(verb.Description))
+                {
+                    sb.AppendFormat(" {0}", verb.Description);
+                }
+
+                var validators = verb.MethodInfo.GetInterfaceAttributes<IValidation<ParameterInfo>>();
+
+                if (validators.Any())
+                {
+                    sb.AppendLine();
+                    sb.AppendLine("Validation:");
+
+                    foreach (var validator in validators)
+                    {
+                        sb.AppendLine("- {0}".FormatWith(validator.Description));
+                    }
+                }
+
+                sb.AppendLine();
+
+                var parameters = GetParameters(verb.MethodInfo);
+
+                foreach (var p in parameters)
+                {
+                    sb.AppendLine(" -{0}: {1}".FormatWith(p.Names.StringJoin("/"), GetParameterOption(p)));
+                }
+            }
+
+            var definedGlobals = GetDefinedGlobals();
+
+            if (m_globalRegisteredHandlers.Any() || definedGlobals.Any())
+            {
+                sb.AppendLine();
+                sb.AppendLine("Global parameters:");
+
+                foreach (var handler in m_globalRegisteredHandlers.Values)
+                {
+                    sb.AppendLine(" -{0}: {1} [{2}]".FormatWith(handler.Name, handler.Desription, handler.Type.Name));
+                }
+
+                foreach (var handler in definedGlobals)
+                {
+                    sb.AppendLine(" -{0}".FormatWith(GetDefinedGlobalHelpString(handler)));
+
+                    var validators = handler.GetInterfaceAttributes<IValidation<ParameterInfo>>();
+
+                    if (validators.Any())
+                    {
+                        sb.AppendLine("  Validation:");
+
+                        foreach (var validator in validators)
+                        {
+                            sb.AppendLine("  {0}".FormatWith(validator.Description));
+                        }
+                    }
+                }
+            }
+
+            return sb.ToString();
+        }
+
+        /// <summary>
+        /// Registers a parameter name to handle the help string
+        /// </summary>
+        /// <param name="names">The parameter name</param>
+        /// <param name="helpHandler">The help string handler. For example: help => Console.WriteLine(help)</param>
+        public override void RegisterHelpHandler(string names, Action<string> helpHandler)
+        {
+            RegisterHelpHandlerInternal(names, helpHandler);
+        }
+
+        public override void RegisterEmptyHelpHandler(Action<string> handler)
+        {
+            if (m_registeredEmptyHandler != null)
+            {
+                throw new MoreThanOneEmptyHandlerException();
+            }
+
+            var help = GetHelpString();
+
+            m_registeredEmptyHandler = delegate
+            {
+                handler(help);
+            };
+        }
+
+        public override void RegisterEmptyHandler(Action handler)
+        {
+            if (m_registeredEmptyHandler != null)
+            {
+                throw new MoreThanOneEmptyHandlerException();
+            }
+
+            m_registeredEmptyHandler = handler;
+        }
+
+        public override void RegisterErrorHandler(Action<Exception> handler)
+        {
+            RegisterErrorHandler(handler, false);
+        }
+
+        public override void RegisterErrorHandler(Action<Exception> handler, bool rethrow)
+        {
+            if (m_registeredErrorHandler != null)
+            {
+                throw new MoreThanOneErrorHandlerException();
+            }
+
+            m_registeredErrorHandler = handler;
+            m_registeredErrorHandlerRethrow = rethrow;
+        }
+
+        #endregion Public Methods
+
+        #region Private Methods
+
+        private void TryRunInternal(string[] args, object obj)
+        {
+            try
+            {
+                RunInternal(args, obj);
+            }
+            catch (TargetInvocationException tex)
+            {
+                if (tex.InnerException != null)
+                {
+                    var rethrow = HandleError(tex.InnerException, obj);
+
+                    if (rethrow)
+                    {
+                        throw;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                var rethrow = HandleError(ex, obj);
+
+                if (rethrow)
+                {
+                    throw;
+                }
+            }
         }
 
         private void RunInternal(string[] args, object obj)
@@ -176,7 +410,7 @@ namespace CLAP
 
             // a list of the available parameters
             //
-            var list = GetParameters(method.MethodInfo);
+            var paremetersList = GetParameters(method.MethodInfo);
 
             // the actual refelcted parameters
             //
@@ -184,6 +418,49 @@ namespace CLAP
 
             // a list of values, used when invoking the method
             //
+            var parameterValues = CreateParameterValues(verb, inputArgs, paremetersList, methodParameters);
+
+            ValidateVerbInput(method, methodParameters, parameterValues);
+
+            if (inputArgs.Any())
+            {
+                throw new UnhandledParametersException(inputArgs);
+            }
+
+            var invocation = new DefaultVerbInvocation(verb, method, parameterValues, obj, originalArgs, argDict);
+            return invocation;
+        }
+
+        private static void ValidateVerbInput(Method method, ParameterInfo[] methodParameters, List<object> parameterValues)
+        {
+            // validate all parameters
+            //
+            var validators = method.MethodInfo.GetInterfaceAttributes<IValidation<ParameterInfo>>().Select(a => a.GetValidator());
+
+            if (validators.Any())
+            {
+                var parametersAndValues = new List<InfoAndValue<ParameterInfo>>();
+
+                methodParameters.Each((p, i) =>
+                {
+                    parametersAndValues.Add(new InfoAndValue<ParameterInfo>(p, parameterValues[i]));
+                });
+
+                // all validators must pass
+                //
+                foreach (var validator in validators)
+                {
+                    validator.Validate(parametersAndValues.ToArray());
+                }
+            }
+        }
+
+        private List<object> CreateParameterValues(
+            string verb,
+            Dictionary<string, string> inputArgs,
+            IEnumerable<Parameter> list,
+            ParameterInfo[] methodParameters)
+        {
             var parameters = new List<object>();
 
             foreach (var p in methodParameters)
@@ -218,9 +495,9 @@ namespace CLAP
 
                     // convert the default value, if different from parameter's value (guid, for example)
                     //
-                    if (value is string && !(p.ParameterType == typeof (string)))
+                    if (value is string && !(p.ParameterType == typeof(string)))
                     {
-                        value = GetValueForParameter(p.ParameterType, "{DEFAULT}", (string) value);
+                        value = GetValueForParameter(p.ParameterType, "{DEFAULT}", (string)value);
                     }
                 }
                 else
@@ -237,9 +514,7 @@ namespace CLAP
                     value = GetValueForParameter(p.ParameterType, inputKey, stringValue);
                 }
 
-                // validation
-                //
-                // each parameter:
+                // validate each parameter
                 //
                 if (value != null && p.HasAttribute<ValidationAttribute>())
                 {
@@ -258,235 +533,8 @@ namespace CLAP
                 parameters.Add(value);
             }
 
-            // validate all parameters
-            //
-            if (method.MethodInfo.HasAttribute<ParametersValidationAttribute>())
-            {
-                var validators = method.MethodInfo.GetAttributes<ParametersValidationAttribute>().Select(a => a.GetValidator());
-
-                var parametersAndValues = new List<ParameterInfoAndValue>();
-
-                methodParameters.Each((p, i) => { parametersAndValues.Add(new ParameterInfoAndValue(p, parameters[i])); });
-
-                // all validators must pass
-                //
-                foreach (var validator in validators)
-                {
-                    validator.Validate(parametersAndValues.ToArray());
-                }
-            }
-
-            if (inputArgs.Any())
-            {
-                throw new UnhandledParametersException(inputArgs);
-            }
-
-            var invocation = new DefaultVerbInvocation(verb, method, parameters, obj, originalArgs, argDict);
-            return invocation;
+            return parameters;
         }
-
-        private MethodInfo GetVerbInterceptor()
-        {
-            return typeof(T).GetMethodsWith<VerbInterceptorAttribute>().FirstOrDefault();
-        }
-
-        /// <summary>
-        /// Registers an action to a global parameter name
-        /// </summary>
-        public override void RegisterParameterHandler(string names, Action action)
-        {
-            RegisterParameterHandler(
-                names,
-                new Action<bool>(delegate { action(); }),
-                null);
-        }
-
-        /// <summary>
-        /// Registers an action to a global parameter name
-        /// </summary>
-        public override void RegisterParameterHandler(string names, Action action, string description)
-        {
-            RegisterParameterHandler(
-                names,
-                new Action<bool>(delegate { action(); }),
-                description);
-        }
-
-        /// <summary>
-        /// Registers an action to a global parameter name
-        /// </summary>
-        public override void RegisterParameterHandler<TParameter>(string names, Action<TParameter> action)
-        {
-            RegisterParameterHandler(
-                names,
-                action,
-                null);
-        }
-
-        /// <summary>
-        /// Registers an action to a global parameter name
-        /// </summary>
-        public override void RegisterParameterHandler<TParameter>(string names, Action<TParameter> action, string description)
-        {
-            RegisterParameterHandlerInternal(
-                names,
-                action,
-                description);
-        }
-
-        /// <summary>
-        /// Registers a verb interceptor
-        /// </summary>
-        /// <param name="interceptor">verb interceptor delegate</param>
-        public override void RegisterInterceptor(Action<IVerbInvocation> interceptor)
-        {
-            var attrInterceptor = GetVerbInterceptor();
-            if (attrInterceptor != null)
-                throw new MoreThanOneVerbInterceptorException();
-
-            m_registeredInterceptor = interceptor;
-        }
-
-        /// <summary>
-        /// Returns a help string
-        /// </summary>
-        public string GetHelpString()
-        {
-            var verbs = GetVerbs();
-
-            if (verbs.None())
-            {
-                return string.Empty;
-            }
-
-            var sb = new StringBuilder();
-
-            foreach (var verb in verbs)
-            {
-                sb.AppendLine();
-
-                sb.Append(verb.Names.StringJoin("/")).Append(":");
-
-                if (verb.IsDefault)
-                {
-                    sb.Append(" [Default]");
-                }
-
-                if (!string.IsNullOrEmpty(verb.Description))
-                {
-                    sb.AppendFormat(" {0}", verb.Description);
-                }
-
-                if (verb.MethodInfo.HasAttribute<ParametersValidationAttribute>())
-                {
-                    sb.AppendLine();
-                    sb.AppendLine("Validation:");
-
-                    var validators = verb.MethodInfo.GetAttributes<ParametersValidationAttribute>();
-
-                    foreach (var validator in validators)
-                    {
-                        sb.AppendLine("- {0}".FormatWith(validator.Description));
-                    }
-                }
-
-                sb.AppendLine();
-
-                var parameters = GetParameters(verb.MethodInfo);
-
-                foreach (var p in parameters)
-                {
-                    sb.AppendLine(" -{0}: {1}".FormatWith(p.Names.StringJoin("/"), GetParameterOption(p)));
-                }
-            }
-
-            var definedGlobals = GetDefinedGlobals();
-
-            if (m_globalRegisteredHandlers.Any() || definedGlobals.Any())
-            {
-                sb.AppendLine();
-                sb.AppendLine("Global parameters:");
-
-                foreach (var handler in m_globalRegisteredHandlers.Values)
-                {
-                    sb.AppendLine(" -{0}: {1} [{2}]".FormatWith(handler.Name, handler.Desription, handler.Type.Name));
-                }
-
-                foreach (var handler in definedGlobals)
-                {
-                    sb.AppendLine(" -{0}".FormatWith(GetDefinedGlobalHelpString(handler)));
-
-                    if (handler.HasAttribute<ParametersValidationAttribute>())
-                    {
-                        var validators = handler.GetAttributes<ParametersValidationAttribute>();
-
-                        sb.AppendLine("  Validation:");
-
-                        foreach (var validator in validators)
-                        {
-                            sb.AppendLine("  {0}".FormatWith(validator.Description));
-                        }
-                    }
-                }
-            }
-
-            return sb.ToString();
-        }
-
-        /// <summary>
-        /// Registers a parameter name to handle the help string
-        /// </summary>
-        /// <param name="names">The parameter name</param>
-        /// <param name="helpHandler">The help string handler. For example: help => Console.WriteLine(help)</param>
-        public override void RegisterHelpHandler(string names, Action<string> helpHandler)
-        {
-            RegisterHelpHandlerInternal(names, helpHandler);
-        }
-
-        public override void RegisterEmptyHelpHandler(Action<string> handler)
-        {
-            if (m_registeredEmptyHandler != null)
-            {
-                throw new MoreThanOneEmptyHandlerException();
-            }
-
-            var help = GetHelpString();
-
-            m_registeredEmptyHandler = delegate
-            {
-                handler(help);
-            };
-        }
-
-        public override void RegisterEmptyHandler(Action handler)
-        {
-            if (m_registeredEmptyHandler != null)
-            {
-                throw new MoreThanOneEmptyHandlerException();
-            }
-
-            m_registeredEmptyHandler = handler;
-        }
-
-        public override void RegisterErrorHandler(Action<Exception> handler)
-        {
-            RegisterErrorHandler(handler, false);
-        }
-
-        public override void RegisterErrorHandler(Action<Exception> handler, bool rethrow)
-        {
-            if (m_registeredErrorHandler != null)
-            {
-                throw new MoreThanOneErrorHandlerException();
-            }
-
-            m_registeredErrorHandler = handler;
-            m_registeredErrorHandlerRethrow = rethrow;
-        }
-
-        #endregion Public Methods
-
-        #region Private Methods
 
         private void Validate()
         {
@@ -656,38 +704,69 @@ namespace CLAP
 
         private object GetValueForParameter(Type parameterType, string inputKey, string stringValue)
         {
+            // a string doesn't need convertion
+            //
+            if (parameterType == typeof(string) && stringValue != null)
+            {
+                return stringValue;
+            }
+
             // in case of a switch - the default is true/false according to the switch
             //
             if (parameterType == typeof(Boolean) && stringValue == null)
             {
                 return inputKey != null;
             }
-            // if array
-            else if (parameterType.IsArray)
+            // try JSON deserializing it. it works in most cases
+            else
             {
-                var stringValues = stringValue.CommaSplit();
+                try
+                {
+                    var obj = Serialization.Deserialize(stringValue, parameterType);
 
-                // The type of the array element
-                //
-                var type = parameterType.GetElementType();
+                    // validate
 
-                // Create a generic instance of the ConvertToArray method
-                //
-                var convertToArrayMethod = GetType().GetMethod(
-                        "ConvertToArray",
-                        BindingFlags.NonPublic | BindingFlags.Static).
-                    MakeGenericMethod(type);
+                    return obj;
+                }
+                catch (Exception ex)
+                {
+                    // can't deserialize - try converting
+                    //
+                    try
+                    {
+                        // if array
+                        if (parameterType.IsArray)
+                        {
+                            var stringValues = stringValue.CommaSplit();
 
-                // Run the array converter
-                //
-                return convertToArrayMethod.Invoke(null, new[] { stringValues });
-            }
-            // if there is an input value
-            else if (stringValue != null)
-            {
-                // convert the string value to the relevant parameter type
-                //
-                return ConvertString(stringValue, parameterType);
+                            // The type of the array element
+                            //
+                            var type = parameterType.GetElementType();
+
+                            // Create a generic instance of the ConvertToArray method
+                            //
+                            var convertToArrayMethod = GetType().GetMethod(
+                                    "ConvertToArray",
+                                    BindingFlags.NonPublic | BindingFlags.Static).
+                                MakeGenericMethod(type);
+
+                            // Run the array converter
+                            //
+                            return convertToArrayMethod.Invoke(null, new[] { stringValues });
+                        }
+                        // if there is an input value
+                        else if (stringValue != null)
+                        {
+                            // convert the string value to the relevant parameter type
+                            //
+                            return ConvertString(stringValue, parameterType);
+                        }
+                    }
+                    catch // use the JSON exception
+                    {
+                        throw new TypeConvertionException(stringValue, parameterType, ex);
+                    }
+                }
             }
 
             throw new MissingArgumentValueException(inputKey);
@@ -706,28 +785,21 @@ namespace CLAP
         /// </summary>
         private static object ConvertString(string value, Type type)
         {
-            try
+            if (type.IsEnum)
             {
-                if (type.IsEnum)
-                {
-                    return Enum.Parse(type, value);
-                }
-                else if (type == typeof(Guid))
-                {
-                    return string.IsNullOrEmpty(value) ? (object)null : new Guid(value);
-                }
-                else if (type == typeof(Uri))
-                {
-                    return string.IsNullOrEmpty(value) ? (object)null : new Uri(Environment.ExpandEnvironmentVariables(value));
-                }
-                else
-                {
-                    return Convert.ChangeType(value, type);
-                }
+                return Enum.Parse(type, value);
             }
-            catch (Exception ex)
+            else if (type == typeof(Guid))
             {
-                throw new TypeConvertionException(value, type, ex);
+                return string.IsNullOrEmpty(value) ? (object)null : new Guid(value);
+            }
+            else if (type == typeof(Uri))
+            {
+                return string.IsNullOrEmpty(value) ? (object)null : new Uri(Environment.ExpandEnvironmentVariables(value));
+            }
+            else
+            {
+                return Convert.ChangeType(value, type);
             }
         }
 
@@ -786,7 +858,9 @@ namespace CLAP
                     throw new MissingArgumentPrefixException(arg, string.Join(",", s_prefixes));
                 }
 
-                var parts = arg.Substring(1).Split(new[] { '=', ':' }, 2, StringSplitOptions.RemoveEmptyEntries);
+                var prefix = arg.Substring(1);
+
+                var parts = prefix.Split(new[] { '=', ':' }, 2, StringSplitOptions.RemoveEmptyEntries);
                 var name = parts[0].ToLowerInvariant();
 
                 string valueString = null;
@@ -797,6 +871,17 @@ namespace CLAP
                 if (parts.Length > 1)
                 {
                     valueString = parts[1];
+
+                    // if it has a file input prefix - remove it
+                    //
+                    if (name.StartsWith(s_fileInputPrefix))
+                    {
+                        name = name.Substring(1);
+
+                        // the value is replaced with the content of the input file
+                        //
+                        valueString = FileSystemHelper.ReadAllText(valueString);
+                    }
                 }
 
                 map.Add(name, valueString);
@@ -938,28 +1023,25 @@ namespace CLAP
                             //
                             if (value != null && p.HasAttribute<ValidationAttribute>())
                             {
-                                var validators = p.GetAttributes<ValidationAttribute>().Select(a => a.GetValidator());
+                                var parameterValidators = p.GetAttributes<ValidationAttribute>().Select(a => a.GetValidator());
 
                                 // all validators must pass
                                 //
-                                foreach (var validator in validators)
+                                foreach (var validator in parameterValidators)
                                 {
                                     validator.Validate(p, value);
                                 }
                             }
 
-                            if (method.HasAttribute<ParametersValidationAttribute>())
-                            {
-                                var validators = method.GetAttributes<ParametersValidationAttribute>().
-                                    Select(a => a.GetValidator());
+                            var validators = method.GetInterfaceAttributes<IValidation<ParameterInfo>>().
+                                Select(a => a.GetValidator());
 
-                                foreach (var validator in validators)
+                            foreach (var validator in validators)
+                            {
+                                validator.Validate(new[]
                                 {
-                                    validator.Validate(new[]
-                                    {
-                                        new ParameterInfoAndValue(p, value),
-                                    });
-                                }
+                                    new InfoAndValue<ParameterInfo>(p, value),
+                                });
                             }
 
                             method.Invoke(obj, new[] { value });
