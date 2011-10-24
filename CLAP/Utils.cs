@@ -43,13 +43,6 @@ namespace CLAP
                 Cast<T>();
         }
 
-        public static IEnumerable<T> GetAttributes<T>(this MethodInfo method) where T : Attribute
-        {
-            var atts = Attribute.GetCustomAttributes(method, typeof(T)).Cast<T>();
-
-            return atts;
-        }
-
         public static IEnumerable<T> GetAttributes<T>(this Type type) where T : Attribute
         {
             var atts = Attribute.GetCustomAttributes(type, typeof(T)).Cast<T>();

@@ -1,10 +1,9 @@
-﻿using System.Reflection;
-using System.Data;
+﻿using System.Data;
 using System.Linq;
 
 namespace CLAP
 {
-    internal class ParametersExpressionValidator : IInfoValidator<ParameterInfo>
+    internal class ParametersExpressionValidator : IInfoValidator
     {
         public string Expression { get; private set; }
         public bool CaseSensitive { get; private set; }
@@ -15,7 +14,7 @@ namespace CLAP
             CaseSensitive = caseSensitive;
         }
 
-        public void Validate(InfoAndValue<ParameterInfo>[] parameters)
+        public void Validate(ValueInfo[] parameters)
         {
             var table = new DataTable();
 
@@ -26,8 +25,8 @@ namespace CLAP
             table.Columns.AddRange(
                 parameters.Select(
                     p => new DataColumn(
-                            p.Info.Name,
-                            p.Info.ParameterType)).ToArray());
+                            p.Name,
+                            p.Type)).ToArray());
 
             // create one row with all the values
             //
@@ -43,7 +42,7 @@ namespace CLAP
                     Expression,
                     parameters.Select(
                         p => "{0}={1}".FormatWith(
-                            p.Info.Name,
+                            p.Name,
                             p.Value.ToSafeString("<NULL>"))).StringJoin(", ")));
             }
         }

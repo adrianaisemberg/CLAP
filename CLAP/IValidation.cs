@@ -1,9 +1,11 @@
-﻿
+﻿using System;
+using System.Diagnostics;
+
 namespace CLAP
 {
-    public interface IValidation<T>
+    public interface IValidation
     {
-        IInfoValidator<T> GetValidator();
+        IInfoValidator GetValidator();
 
         /// <summary>
         /// The description of this validation attribute, used when asking for help
@@ -11,20 +13,23 @@ namespace CLAP
         string Description { get; }
     }
 
-    public interface IInfoValidator<T>
+    public interface IInfoValidator
     {
-        void Validate(InfoAndValue<T>[] properties);
+        void Validate(ValueInfo[] properties);
     }
 
-    public class InfoAndValue<T>
+    [DebuggerDisplay("{Name}:{Value} [{Type}]")]
+    public class ValueInfo
     {
-        public InfoAndValue(T info, object value)
+        public ValueInfo(string name, Type type, object value)
         {
-            Info = info;
+            Name = name;
+            Type = type;
             Value = value;
         }
 
-        public T Info { get; private set; }
+        public string Name { get; private set; }
+        public Type Type { get; private set; }
         public object Value { get; private set; }
     }
 }

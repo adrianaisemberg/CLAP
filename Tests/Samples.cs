@@ -760,6 +760,16 @@ namespace Tests
         {
             TheType_Global = t;
         }
+
+        [Verb]
+        public void Val(MyValidatedType t)
+        {
+        }
+
+        [Verb]
+        public void Complex(MyComplexType t)
+        {
+        }
     }
 
     public enum Case
@@ -773,5 +783,20 @@ namespace Tests
     {
         public int Number { get; set; }
         public string Name { get; set; }
+    }
+
+    [Validate("Number > 10 AND Name LIKE '*foo'")]
+    public class MyValidatedType
+    {
+        public int Number { get; set; }
+        public string Name { get; set; }
+    }
+
+    [Validate("Number < 50 AND Name IN ('foo','bar')")]
+    public class MyComplexType
+    {
+        public int Number { get; set; }
+        public string Name { get; set; }
+        public MyValidatedType Validated { get; set; }
     }
 }
