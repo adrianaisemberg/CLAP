@@ -1796,5 +1796,30 @@ namespace Tests
                 "-t:{Number: 40, Name: 'bar', Validated: { Number: 100, Name: 'barfoo' }}",
             }, s);
         }
+
+        [Test]
+        [ExpectedException(typeof(ValidationException))]
+        public void ComplexGraphType_WithPropertyValidation_Fail()
+        {
+            var s = new Sample_42();
+
+            Parser.Run(new[]
+            {
+                "props",
+                "-t:{Number: 40, Name: 'foobar', Validated: { Number: 100, Name: 'blah' }}",
+            }, s);
+        }
+
+        [Test]
+        public void ComplexGraphType_WithPropertyValidation_Pass()
+        {
+            var s = new Sample_42();
+
+            Parser.Run(new[]
+            {
+                "props",
+                "-t:{Number: 40000, Name: 'something', Validated: { Number: 40, Name: 'foo' }}",
+            }, s);
+        }
     }
 }

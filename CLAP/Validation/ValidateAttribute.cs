@@ -10,7 +10,7 @@ namespace CLAP.Validation
     /// For full documentation, see MSDN:
     /// http://msdn.microsoft.com/en-us/library/system.data.datacolumn.expression.aspx
     /// </remarks>
-    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class, AllowMultiple = true)]
+    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class | AttributeTargets.Property, AllowMultiple = true)]
     public sealed class ValidateAttribute : Attribute, IValidation
     {
         #region Properties
