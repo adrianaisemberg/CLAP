@@ -606,14 +606,14 @@ namespace ConsoleTest
             get { return "All arrays are of the same length"; }
         }
 
-        public override IInfoValidator<ParameterInfo> GetValidator()
+        public override IInfoValidator GetValidator()
         {
             return new SameLengthValidator();
         }
 
-        private class SameLengthValidator : IInfoValidator<ParameterInfo>
+        private class SameLengthValidator : IInfoValidator
         {
-            public void Validate(InfoAndValue<ParameterInfo>[] parameters)
+            public void Validate(ValueInfo[] parameters)
             {
                 // At this point - we already know that all the parameters have a value
                 // that matches their types.

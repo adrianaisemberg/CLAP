@@ -152,7 +152,7 @@ namespace CLAP
                     sb.AppendFormat(" {0}", verb.Description);
                 }
 
-                var validators = verb.MethodInfo.GetInterfaceAttributes<IValidation<ParameterInfo>>();
+                var validators = verb.MethodInfo.GetInterfaceAttributes<IValidation>();
 
                 if (validators.Any())
                 {
@@ -191,7 +191,7 @@ namespace CLAP
                 {
                     sb.AppendLine(" -{0}".FormatWith(GetDefinedGlobalHelpString(handler)));
 
-                    var validators = handler.GetInterfaceAttributes<IValidation<ParameterInfo>>();
+                    var validators = handler.GetInterfaceAttributes<IValidation>();
 
                     if (validators.Any())
                     {
@@ -435,15 +435,15 @@ namespace CLAP
         {
             // validate all parameters
             //
-            var validators = method.MethodInfo.GetInterfaceAttributes<IValidation<ParameterInfo>>().Select(a => a.GetValidator());
+            var validators = method.MethodInfo.GetInterfaceAttributes<IValidation>().Select(a => a.GetValidator());
 
             if (validators.Any())
             {
-                var parametersAndValues = new List<InfoAndValue<ParameterInfo>>();
+                var parametersAndValues = new List<ValueInfo>();
 
                 methodParameters.Each((p, i) =>
                 {
-                    parametersAndValues.Add(new InfoAndValue<ParameterInfo>(p, parameterValues[i]));
+                    parametersAndValues.Add(new ValueInfo(p.Name, p.ParameterType, parameterValues[i]));
                 });
 
                 // all validators must pass
@@ -724,9 +724,13 @@ namespace CLAP
                 {
                     var obj = Serialization.Deserialize(stringValue, parameterType);
 
-                    // validate
+                    TypeValidator.Validate(obj);
 
                     return obj;
+                }
+                catch (ValidationException)
+                {
+                    throw;
                 }
                 catch (Exception ex)
                 {
@@ -1033,14 +1037,14 @@ namespace CLAP
                                 }
                             }
 
-                            var validators = method.GetInterfaceAttributes<IValidation<ParameterInfo>>().
+                            var validators = method.GetInterfaceAttributes<IValidation>().
                                 Select(a => a.GetValidator());
 
                             foreach (var validator in validators)
                             {
                                 validator.Validate(new[]
                                 {
-                                    new InfoAndValue<ParameterInfo>(p, value),
+                                    new ValueInfo(p.Name, p.ParameterType, value),
                                 });
                             }
 

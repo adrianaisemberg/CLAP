@@ -1833,5 +1833,80 @@ namespace Tests
             Assert.AreEqual(7, arr2[0]);
             Assert.AreEqual(8, arr2[1]);
         }
+
+        [Test]
+        [ExpectedException(typeof(ValidationException))]
+        public void ComplexType_WithTypeValidation_Fail()
+        {
+            var s = new Sample_42();
+
+            Parser.Run(new[]
+            {
+                "val",
+                "-t:{Number: 5, Name: 'bar'}",
+            }, s);
+        }
+
+        [Test]
+        public void ComplexType_WithTypeValidation_Pass()
+        {
+            var s = new Sample_42();
+
+            Parser.Run(new[]
+            {
+                "val",
+                "-t:{Number: 50, Name: 'barfoo'}",
+            }, s);
+        }
+
+        [Test]
+        [ExpectedException(typeof(ValidationException))]
+        public void ComplexGraphType_WithTypeValidation_Fail()
+        {
+            var s = new Sample_42();
+
+            Parser.Run(new[]
+            {
+                "complex",
+                "-t:{Number: 40, Name: 'foobar', Validated: { Number: 100, Name: 'blah' }}",
+            }, s);
+        }
+
+        [Test]
+        public void ComplexGraphType_WithTypeValidation_Pass()
+        {
+            var s = new Sample_42();
+
+            Parser.Run(new[]
+            {
+                "complex",
+                "-t:{Number: 40, Name: 'bar', Validated: { Number: 100, Name: 'barfoo' }}",
+            }, s);
+        }
+
+        [Test]
+        [ExpectedException(typeof(ValidationException))]
+        public void ComplexGraphType_WithPropertyValidation_Fail()
+        {
+            var s = new Sample_42();
+
+            Parser.Run(new[]
+            {
+                "props",
+                "-t:{Number: 40, Name: 'foobar', Validated: { Number: 100, Name: 'blah' }}",
+            }, s);
+        }
+
+        [Test]
+        public void ComplexGraphType_WithPropertyValidation_Pass()
+        {
+            var s = new Sample_42();
+
+            Parser.Run(new[]
+            {
+                "props",
+                "-t:{Number: 40000, Name: 'something', Validated: { Number: 40, Name: 'foo' }}",
+            }, s);
+        }
     }
 }

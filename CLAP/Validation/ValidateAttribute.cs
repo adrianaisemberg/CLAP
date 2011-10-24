@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Data;
-using System.Linq;
-using System.Reflection;
 
 namespace CLAP.Validation
 {
@@ -13,8 +10,8 @@ namespace CLAP.Validation
     /// For full documentation, see MSDN:
     /// http://msdn.microsoft.com/en-us/library/system.data.datacolumn.expression.aspx
     /// </remarks>
-    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class, AllowMultiple = true)]
-    public sealed class ValidateAttribute : Attribute, IValidation<ParameterInfo>, IValidation<PropertyInfo>
+    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class | AttributeTargets.Property, AllowMultiple = true)]
+    public sealed class ValidateAttribute : Attribute, IValidation
     {
         #region Properties
 
@@ -58,12 +55,7 @@ namespace CLAP.Validation
 
         #region Methods
 
-        IInfoValidator<PropertyInfo> IValidation<PropertyInfo>.GetValidator()
-        {
-            throw new NotImplementedException();
-        }
-
-        IInfoValidator<ParameterInfo> IValidation<ParameterInfo>.GetValidator()
+        public IInfoValidator GetValidator()
         {
             return new ParametersExpressionValidator(Expression, CaseSensitive);
         }
