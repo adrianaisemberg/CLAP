@@ -1616,7 +1616,11 @@ namespace Tests
         {
             var s = new Sample_41();
 
-            FileSystemHelper.FileHandler = new FileSystemMock { ReturnValue = "kicks ass!" };
+            var mock = new Mock<FileSystemHelper.IFileSystem>();
+
+            mock.Setup(f => f.ReadAllText("some_dummy_file")).Returns("kicks ass!");
+
+            FileSystemHelper.FileHandler = mock.Object;
 
             Parser.Run(new[]
             {
@@ -1624,6 +1628,8 @@ namespace Tests
             }, s);
 
             Assert.AreEqual("kicks ass!", s.Values["str"]);
+
+            mock.VerifyAll();
         }
 
         [Test]
@@ -1631,7 +1637,11 @@ namespace Tests
         {
             var s = new Sample_41();
 
-            FileSystemHelper.FileHandler = new FileSystemMock { ReturnValue = "567" };
+            var mock = new Mock<FileSystemHelper.IFileSystem>();
+
+            mock.Setup(f => f.ReadAllText("some_dummy_file")).Returns("567");
+
+            FileSystemHelper.FileHandler = mock.Object;
 
             Parser.Run(new[]
             {
@@ -1639,6 +1649,8 @@ namespace Tests
             }, s);
 
             Assert.AreEqual(567, s.Values["num"]);
+
+            mock.VerifyAll();
         }
 
         [Test]
@@ -1646,7 +1658,11 @@ namespace Tests
         {
             var s = new Sample_41();
 
-            FileSystemHelper.FileHandler = new FileSystemMock { ReturnValue = "false" };
+            var mock = new Mock<FileSystemHelper.IFileSystem>();
+
+            mock.Setup(f => f.ReadAllText("some_dummy_file")).Returns("false");
+
+            FileSystemHelper.FileHandler = mock.Object;
 
             Parser.Run(new[]
             {
@@ -1654,6 +1670,8 @@ namespace Tests
             }, s);
 
             Assert.AreEqual(false, s.Values["b"]);
+
+            mock.VerifyAll();
         }
 
         [Test]
@@ -1661,7 +1679,11 @@ namespace Tests
         {
             var s = new Sample_41();
 
-            FileSystemHelper.FileHandler = new FileSystemMock { ReturnValue = "Unchanged" };
+            var mock = new Mock<FileSystemHelper.IFileSystem>();
+
+            mock.Setup(f => f.ReadAllText("some_dummy_file")).Returns("Unchanged");
+
+            FileSystemHelper.FileHandler = mock.Object;
 
             Parser.Run(new[]
             {
@@ -1669,6 +1691,8 @@ namespace Tests
             }, s);
 
             Assert.AreEqual(Case.Unchanged, s.Values["c"]);
+
+            mock.VerifyAll();
         }
 
         [Test]
@@ -1676,7 +1700,11 @@ namespace Tests
         {
             var s = new Sample_41();
 
-            FileSystemHelper.FileHandler = new FileSystemMock { ReturnValue = "301,7,99" };
+            var mock = new Mock<FileSystemHelper.IFileSystem>();
+
+            mock.Setup(f => f.ReadAllText("some_dummy_file")).Returns("301,7,99");
+
+            FileSystemHelper.FileHandler = mock.Object;
 
             Parser.Run(new[]
             {
@@ -1688,6 +1716,8 @@ namespace Tests
             Assert.AreEqual(301, arr[0]);
             Assert.AreEqual(7, arr[1]);
             Assert.AreEqual(99, arr[2]);
+
+            mock.VerifyAll();
         }
 
         [Test]
