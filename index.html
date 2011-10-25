@@ -62,6 +62,7 @@
                 </div>
                 <a href="#file_input" class="menu_item">FILE INPUT</a>
                 <a href="#custom_types" class="menu_item">CUSTOM TYPES</a>
+                <a href="#custom_validation" class="menu_item">CUSTOM VALIDATION</a><span class="grumbler" text="Lots of features here" angle="50" distance="100" showAfter="18000" hideAfter="3000"></span>
                 <a href="#validation" class="menu_item">VALIDATION</a>
                 <div class="sub_menu" menu_id="#validation">
                     <a href="#validation_lessthan" class="sub_menu_item">LessThan</a>
@@ -73,11 +74,7 @@
                     <a href="#validation_directoryexists" class="sub_menu_item">DirectoryExists</a>
                     <a href="#validation_pathexists" class="sub_menu_item">PathExists</a>
                     <a href="#validation_expression" class="sub_menu_item">Validate(Expression)</a>
-                </div>
-                <a href="#custom_validation" class="menu_item">CUSTOM VALIDATION</a><span class="grumbler" text="Lots of features here" angle="50" distance="100" showAfter="18000" hideAfter="3000"></span>
-                <div class="sub_menu" menu_id="#custom_validation">
-                    <a href="#custom_validation_single" class="sub_menu_item">Single Parameter</a>
-                    <a href="#custom_validation_multiple" class="sub_menu_item">Multiple Parameters</a>
+                    <a href="#validation_properties" class="sub_menu_item">Properties Validation</a>
                 </div>
                 <a href="#expressions" class="menu_item">EXPRESSIONS</a>
                 <div class="sub_menu" menu_id="#expressions">
@@ -456,7 +453,6 @@ C:\> <span class="commandline">myexe foo -bar=Ass! -count=10</span><span class="
                         </p>
                     </div>
                     <h4>For example:</h4>
-
                     <pre class="console">
 <span class="commandline">> myexe -persons@=..\data\persons.txt</span></pre>
                     <p>Keep in mind that if the path contains spaces - you'll have to add quotation marks, as in:</p>
@@ -738,40 +734,109 @@ C:\> <span class="commandline">myexe foo -bar=Ass! -count=10</span><span class="
                             </div>
                             <div class="attribute_samples">
                                 <h3>Examples:</h3>
-                                                                                                                                                    <pre class="brush: csharp, highlight: 4">
-                                class Program
-                                {
-                                    [Verb]
-                                    [Validate("num1 > num2")]
-                                    public static void Foo1(int num1, int num2)
+                                <pre class="brush: csharp, highlight: 4">
+                                    class Program
                                     {
+                                        [Verb]
+                                        [Validate("num1 > num2")]
+                                        public static void Foo1(int num1, int num2)
+                                        {
+                                        }
+
+                                        [Verb]
+                                        [Validate("num1 > num2 AND num2 > 100")]
+                                        public static void Foo2(int num1, int num2)
+                                        {
+                                        }
+
+                                        [Verb]
+                                        [Validate("name LIKE 'John*'", CaseSensitive = true)]
+                                        public static void Foo3(string name)
+                                        {
+                                        }
+
+                                        [Verb]
+                                        [Validate("name IN ('ping','pong')")]
+                                        public static void Foo4(string name)
+                                        {
+                                        }
+
+                                        [Verb]
+                                        [Validate("num1 + num2 >= num3")]
+                                        public static void Foo5(int num1, int num2, int num3)
+                                        {
+                                        }
+                                    }
+                                </pre>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="attribute_wrapper" id="validation_properties">
+                        <div class="attribute">
+                            <div class="attribute_name code">Properties Validation</div>
+                            <div class="attribute_description">
+                                <p>
+                                    All validation attributes can be applied to properties of a custom type.
+                                    In-addition, the expression validation attribute can be applied to a custom class.
+                                </p>
+                                <p>
+                                    Following is a sample class having both properties and expression validations.
+                                </p>
+                            </div>
+                            <div class="attribute_samples">
+                                <h3>Example:</h3>
+                                <pre class="brush: csharp">
+                                    // Validate properties of this class
+                                    [Validate("Name NOT LIKE 'Banana*'")]
+                                    public class Product
+                                    {
+                                        // Validate the value of this property
+                                        [RegexMatches("#PP[0-9]*")]
+                                        public string ID { get; set; }
+
+                                        // Validate the value of this property
+                                        [MoreOrEqualTo(0)]
+                                        public int Index { get; set; }
+
+                                        public string Name { get; set; }
+
+                                        // Validate the properties of the value of this property
+                                        [Validate("Name NOT IN 'Adrian','Alon'")]
+                                        public ProductReview Review { get; set; }
                                     }
 
-                                    [Verb]
-                                    [Validate("num1 > num2 AND num2 > 100")]
-                                    public static void Foo2(int num1, int num2)
+                                    // Validate the properties of all instances of this class
+                                    [Validate("Name NOT LIKE 'Bob*'")]
+                                    public class ProductReview
                                     {
-                                    }
+                                        public string Name { get; set; }
 
-                                    [Verb]
-                                    [Validate("name LIKE 'John*'", CaseSensitive = true)]
-                                    public static void Foo3(string name)
-                                    {
+                                        // Validate the value of this property
+                                        [RegexMatches(@"^([0-9a-zA-Z]([-.\w]* ... ")]
+                                        public string Email { get; set; }
                                     }
-
-                                    [Verb]
-                                    [Validate("name IN ('ping','pong')")]
-                                    public static void Foo4(string name)
-                                    {
-                                    }
-
-                                    [Verb]
-                                    [Validate("num1 + num2 >= num3")]
-                                    public static void Foo5(int num1, int num2, int num3)
-                                    {
-                                    }
-                                }
-                            </pre>
+                                </pre>
+                                <h4>Class vs Instance Expression Validation</h4>
+                                <p>
+                                    The <span class="code">Validate(Expression)</span> attribute can be applied
+                                    to both properties and also classes (in-addition to verbs).
+                                </p>
+                                <p>
+                                    If the attribute is placed over a class - all instances of that class will have to pass the validation.
+                                </p>
+                                <p>
+                                    If the attribute is placed over a property - it will validate the instance of the property, in-addition to the
+                                    class's validations.
+                                </p>
+                                <p>
+                                    In the above example, the Name property of a Product's review must pass both validations:
+                                    <div class="code">Name NOT IN 'Adrian','Alon'</div>
+                                    <div class="code">Name NOT LIKE 'Bob*'</div>
+                                </p>
+                                <p>
+                                    In any other instance of the Review class, not related to Product, the Name property must pass:
+                                    <div class="code">Name NOT LIKE 'Bob*'</div>
+                                </p>
                             </div>
                         </div>
                     </div>
