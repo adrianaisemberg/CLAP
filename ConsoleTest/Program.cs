@@ -599,7 +599,7 @@ namespace ConsoleTest
     //    }
     //}
 
-    public class SameLengthAttribute : ParametersValidationAttribute
+    public class SameLengthAttribute : CollectionValidationAttribute
     {
         public override string Description
         {

@@ -11,7 +11,7 @@ namespace CLAP.Validation
     /// http://msdn.microsoft.com/en-us/library/system.data.datacolumn.expression.aspx
     /// </remarks>
     [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class | AttributeTargets.Property, AllowMultiple = true)]
-    public sealed class ValidateAttribute : ParametersValidationAttribute
+    public sealed class ValidateAttribute : CollectionValidationAttribute
     {
         #region Properties
 
