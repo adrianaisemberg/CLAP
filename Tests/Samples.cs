@@ -775,6 +775,11 @@ namespace Tests
         public void Props(MyComplexType_2 t)
         {
         }
+
+        [Verb]
+        public void Zoo(TypeWithProps t)
+        {
+        }
     }
 
     public enum Case
@@ -812,5 +817,11 @@ namespace Tests
 
         [Validate("Number < 50 AND Name IN ('foo','bar')")]
         public MyValidatedType Validated { get; set; }
+    }
+
+    public class TypeWithProps
+    {
+        [MoreThan(10)]
+        public int Number { get; set; }
     }
 }

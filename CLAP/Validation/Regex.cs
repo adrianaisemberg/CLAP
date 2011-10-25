@@ -8,7 +8,7 @@ namespace CLAP.Validation
     /// Regex validation
     /// </summary>
     [Serializable]
-    [AttributeUsage(AttributeTargets.Parameter)]
+    [AttributeUsage(AttributeTargets.Parameter | AttributeTargets.Property)]
     public sealed class RegexMatchesAttribute : ValidationAttribute
     {
         public string Pattern { get; private set; }
@@ -22,7 +22,7 @@ namespace CLAP.Validation
             Pattern = pattern;
         }
 
-        public override IParameterValidator GetValidator()
+        public override IValueValidator GetValidator()
         {
             return new RegexMatchesValidator(Pattern);
         }
@@ -38,7 +38,7 @@ namespace CLAP.Validation
         /// <summary>
         /// Regex validator
         /// </summary>
-        private class RegexMatchesValidator : IParameterValidator
+        private class RegexMatchesValidator : IValueValidator
         {
             /// <summary>
             /// The regex pattern
@@ -57,13 +57,13 @@ namespace CLAP.Validation
             /// <summary>
             /// Validate
             /// </summary>
-            public void Validate(ParameterInfo parameter, object value)
+            public void Validate(ValueInfo info)
             {
-                if (!Regex.IsMatch(value.ToString(), Pattern))
+                if (!Regex.IsMatch(info.Value.ToSafeString(string.Empty), Pattern))
                 {
                     throw new ValidationException("{0}: '{1}' does not match regex '{2}'".FormatWith(
-                        parameter.Name,
-                        value,
+                        info.Name,
+                        info.Value,
                         Pattern));
                 }
             }

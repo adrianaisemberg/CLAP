@@ -8,7 +8,7 @@ namespace CLAP.Validation
     /// Directory exists validation
     /// </summary>
     [Serializable]
-    [AttributeUsage(AttributeTargets.Parameter)]
+    [AttributeUsage(AttributeTargets.Parameter | AttributeTargets.Property)]
     public sealed class DirectoryExistsAttribute : ValidationAttribute
     {
         public DirectoryExistsAttribute()
@@ -16,7 +16,7 @@ namespace CLAP.Validation
 
         }
 
-        public override IParameterValidator GetValidator()
+        public override IValueValidator GetValidator()
         {
             return new DirectoryExistsValidator();
         }
@@ -29,25 +29,25 @@ namespace CLAP.Validation
             }
         }
 
-        private class DirectoryExistsValidator : IParameterValidator
+        private class DirectoryExistsValidator : IValueValidator
         {
-            public void Validate(ParameterInfo parameter, object value)
+            public void Validate(ValueInfo info)
             {
                 string path = string.Empty;
 
-                if (value is Uri)
+                if (info.Value is Uri)
                 {
-                    path = ((Uri)value).LocalPath;
+                    path = ((Uri)info.Value).LocalPath;
                 }
                 else
                 {
-                    path = Environment.ExpandEnvironmentVariables((string)value);
+                    path = Environment.ExpandEnvironmentVariables((string)info.Value);
                 }
 
                 if (!Directory.Exists(path))
                 {
                     throw new ValidationException("{0}: '{1}' is not an existing directory".FormatWith(
-                        parameter.Name,
+                        info.Name,
                         path));
                 }
             }

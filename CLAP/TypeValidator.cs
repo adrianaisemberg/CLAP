@@ -23,7 +23,6 @@ namespace CLAP
             //
             var validators = type.
                 GetAttributes<CollectionValidationAttribute>().
-                Cast<IValidation>().
                 Select(a => a.GetValidator());
 
             var properties = type.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
@@ -44,17 +43,31 @@ namespace CLAP
             {
                 var value = property.GetValue(obj, null);
 
+                // single validators
+                //
+                var propertySingleValidators = property.
+                    GetAttributes<ValidationAttribute>().
+                    Select(a => a.GetValidator());
+
+                foreach (var propertySingleValidator in propertySingleValidators)
+                {
+                    propertySingleValidator.Validate(new ValueInfo(property.Name, property.PropertyType, value));
+                }
+
+                // no need to validate primitives etc with collection validators
+                //
                 if (Ignore(value))
                 {
                     continue;
                 }
 
-                var propertyValidators = property.
+                // collection validators
+                //
+                var propertyCollectionValidators = property.
                     GetAttributes<CollectionValidationAttribute>().
-                    Cast<IValidation>().
                     Select(a => a.GetValidator());
 
-                foreach (var propertyValidator in propertyValidators)
+                foreach (var propertyValidator in propertyCollectionValidators)
                 {
                     var propertyPropsAndValues = value.GetType().
                         GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).

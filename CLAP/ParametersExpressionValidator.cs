@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace CLAP
 {
-    internal class ParametersExpressionValidator : IInfoValidator
+    internal class ParametersExpressionValidator : ICollectionValidator
     {
         public string Expression { get; private set; }
         public bool CaseSensitive { get; private set; }

@@ -101,6 +101,7 @@
     <Compile Include="Validation\NumberValidator.cs" />
     <Compile Include="Validation\Regex.cs" />
     <Compile Include="Validation\ValidateAttribute.cs" />
+    <Compile Include="ValueInfo.cs" />
     <Compile Include="VerbAttribute.cs" />
   </ItemGroup>
   <ItemGroup>

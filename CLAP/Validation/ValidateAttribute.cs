@@ -55,7 +55,7 @@ namespace CLAP.Validation
 
         #region Methods
 
-        public override IInfoValidator GetValidator()
+        public override ICollectionValidator GetValidator()
         {
             return new ParametersExpressionValidator(Expression, CaseSensitive);
         }

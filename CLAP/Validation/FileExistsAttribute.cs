@@ -8,7 +8,7 @@ namespace CLAP.Validation
     /// File exists validation
     /// </summary>
     [Serializable]
-    [AttributeUsage(AttributeTargets.Parameter)]
+    [AttributeUsage(AttributeTargets.Parameter | AttributeTargets.Property)]
     public sealed class FileExistsAttribute : ValidationAttribute
     {
         public FileExistsAttribute()
@@ -16,7 +16,7 @@ namespace CLAP.Validation
 
         }
 
-        public override IParameterValidator GetValidator()
+        public override IValueValidator GetValidator()
         {
             return new FileExistsValidator();
         }
@@ -29,25 +29,25 @@ namespace CLAP.Validation
             }
         }
 
-        private class FileExistsValidator : IParameterValidator
+        private class FileExistsValidator : IValueValidator
         {
-            public void Validate(ParameterInfo parameter, object value)
+            public void Validate(ValueInfo info)
             {
                 string path = string.Empty;
 
-                if (value is Uri)
+                if (info.Value is Uri)
                 {
-                    path = ((Uri)value).LocalPath;
+                    path = ((Uri)info.Value).LocalPath;
                 }
                 else
                 {
-                    path = Environment.ExpandEnvironmentVariables((string)value);
+                    path = Environment.ExpandEnvironmentVariables((string)info.Value);
                 }
 
                 if (!File.Exists(path))
                 {
                     throw new ValidationException("{0}: '{1}' is not an existing file".FormatWith(
-                        parameter.Name,
+                        info.Name,
                         path));
                 }
             }

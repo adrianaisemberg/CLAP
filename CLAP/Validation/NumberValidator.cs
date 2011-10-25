@@ -17,7 +17,7 @@ namespace CLAP.Validation
     /// <summary>
     /// Number validation
     /// </summary>
-    public abstract class NumberValidator : IParameterValidator
+    public abstract class NumberValidator : IValueValidator
     {
         /// <summary>
         /// The number to validate with
@@ -35,6 +35,6 @@ namespace CLAP.Validation
         /// <summary>
         /// Validate
         /// </summary>
-        public abstract void Validate(ParameterInfo parameter, object value);
+        public abstract void Validate(ValueInfo info);
     }
 }

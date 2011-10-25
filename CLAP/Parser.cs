@@ -133,7 +133,7 @@ namespace CLAP
                     sb.AppendFormat(" {0}", verb.Description);
                 }
 
-                var validators = verb.MethodInfo.GetInterfaceAttributes<IValidation>();
+                var validators = verb.MethodInfo.GetInterfaceAttributes<ICollectionValidation>();
 
                 if (validators.Any())
                 {
@@ -172,7 +172,7 @@ namespace CLAP
                 {
                     sb.AppendLine(" -{0}".FormatWith(GetDefinedGlobalHelpString(handler)));
 
-                    var validators = handler.GetInterfaceAttributes<IValidation>();
+                    var validators = handler.GetInterfaceAttributes<ICollectionValidation>();
 
                     if (validators.Any())
                     {
@@ -364,7 +364,7 @@ namespace CLAP
         {
             // validate all parameters
             //
-            var validators = method.MethodInfo.GetInterfaceAttributes<IValidation>().Select(a => a.GetValidator());
+            var validators = method.MethodInfo.GetInterfaceAttributes<ICollectionValidation>().Select(a => a.GetValidator());
 
             if (validators.Any())
             {
@@ -453,7 +453,7 @@ namespace CLAP
                     //
                     foreach (var validator in validators)
                     {
-                        validator.Validate(p, value);
+                        validator.Validate(new ValueInfo(p.Name, p.ParameterType, value));
                     }
                 }
 
@@ -939,11 +939,11 @@ namespace CLAP
                                 //
                                 foreach (var validator in parameterValidators)
                                 {
-                                    validator.Validate(p, value);
+                                    validator.Validate(new ValueInfo(p.Name, p.ParameterType, value));
                                 }
                             }
 
-                            var validators = method.GetInterfaceAttributes<IValidation>().
+                            var validators = method.GetInterfaceAttributes<ICollectionValidation>().
                                 Select(a => a.GetValidator());
 
                             foreach (var validator in validators)

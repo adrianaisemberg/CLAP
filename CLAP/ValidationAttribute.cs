@@ -12,7 +12,7 @@ namespace CLAP
         /// <summary>
         /// The validator
         /// </summary>
-        public abstract IParameterValidator GetValidator();
+        public abstract IValueValidator GetValidator();
 
         /// <summary>
         /// The description of this validation attribute, used when asking for help
@@ -23,11 +23,11 @@ namespace CLAP
     /// <summary>
     /// A value validator
     /// </summary>
-    public interface IParameterValidator
+    public interface IValueValidator
     {
         /// <summary>
         /// Validate the value
         /// </summary>
-        void Validate(ParameterInfo parameter, object value);
+        void Validate(ValueInfo info);
     }
 }

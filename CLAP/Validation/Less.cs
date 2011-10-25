@@ -7,7 +7,7 @@ namespace CLAP.Validation
     /// Less-Than validation
     /// </summary>
     [Serializable]
-    [AttributeUsage(AttributeTargets.Parameter)]
+    [AttributeUsage(AttributeTargets.Parameter | AttributeTargets.Property)]
     public sealed class LessThanAttribute : NumberValidationAttribute
     {
         /// <summary>
@@ -18,7 +18,7 @@ namespace CLAP.Validation
         {
         }
 
-        public override IParameterValidator GetValidator()
+        public override IValueValidator GetValidator()
         {
             return new LessThanValidator(Number);
         }
@@ -47,15 +47,15 @@ namespace CLAP.Validation
             /// <summary>
             /// Validate
             /// </summary>
-            public override void Validate(ParameterInfo parameter, object value)
+            public override void Validate(ValueInfo info)
             {
-                var doubleValue = (double)Convert.ChangeType(value, typeof(double));
+                var doubleValue = (double)Convert.ChangeType(info.Value, typeof(double));
 
                 if (doubleValue >= Number)
                 {
                     throw new ValidationException("{0}: {1} is not less than {2}".FormatWith(
-                        parameter.Name,
-                        value,
+                        info.Name,
+                        info.Value,
                         Number));
                 }
             }

@@ -1851,5 +1851,30 @@ namespace Tests
                 "-t:{Number: 40000, Name: 'something', Validated: { Number: 40, Name: 'foo' }}",
             }, s);
         }
+
+        [Test]
+        public void ComplexType_WithPropertySingleValidation_Pass()
+        {
+            var s = new Sample_42();
+
+            Parser.Run(new[]
+            {
+                "zoo",
+                "-t:{Number: 20}",
+            }, s);
+        }
+
+        [Test]
+        [ExpectedException(typeof(ValidationException))]
+        public void ComplexType_WithPropertySingleValidation_Fail()
+        {
+            var s = new Sample_42();
+
+            Parser.Run(new[]
+            {
+                "zoo",
+                "-t:{Number: 5}",
+            }, s);
+        }
     }
 }

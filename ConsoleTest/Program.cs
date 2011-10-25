@@ -339,7 +339,7 @@ namespace ConsoleTest
             Length = length;
         }
 
-        public override IParameterValidator GetValidator()
+        public override IValueValidator GetValidator()
         {
             return new LengthValidator(Length);
         }
@@ -353,7 +353,7 @@ namespace ConsoleTest
             }
         }
 
-        class LengthValidator : IParameterValidator
+        class LengthValidator : IValueValidator
         {
             public int Length { get; private set; }
 
@@ -362,9 +362,9 @@ namespace ConsoleTest
                 Length = length;
             }
 
-            public void Validate(ParameterInfo parameter, object value)
+            public void Validate(ValueInfo info)
             {
-                var str = (string)value;
+                var str = (string)info.Value;
 
                 if (str.Length < Length)
                 {
@@ -606,12 +606,12 @@ namespace ConsoleTest
             get { return "All arrays are of the same length"; }
         }
 
-        public override IInfoValidator GetValidator()
+        public override ICollectionValidator GetValidator()
         {
             return new SameLengthValidator();
         }
 
-        private class SameLengthValidator : IInfoValidator
+        private class SameLengthValidator : ICollectionValidator
         {
             public void Validate(ValueInfo[] parameters)
             {
