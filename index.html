@@ -230,7 +230,7 @@ C:\> <span class="commandline">myexe foo -bar=Ass! -count=10</span><span class="
                                 <li>Guid</li>
                                 <li>Uri</li>
                                 <li>Arrays of all the above (as CSV)</li>
-                                <li><strong>Any other type as a JSON string</strong>. See <a class="link" href="#file_input">File Input</a></li>
+                                <li><strong>Any other type as a JSON/XML string</strong>. See <a class="link" href="#file_input">File Input</a></li>
                             </ul>
                         </div>
                         <div class="attribute_properties">
@@ -430,7 +430,7 @@ C:\> <span class="commandline">myexe foo -bar=Ass! -count=10</span><span class="
                     </p>
                     <p>
                         A good motivation for using this feature is when using a custom class as an input argument.
-                        A custom class requires a JSON string as an argument value and passing such a string is easier within
+                        A custom class requires a JSON/XML string as an argument value and passing such a string is easier within
                         a text file.
                     </p>
                     <p>
@@ -466,7 +466,7 @@ C:\> <span class="commandline">myexe foo -bar=Ass! -count=10</span><span class="
                     </p>
                     <p>
                         In-addition to primitive types, enums and single-dimention arrays, CLAP also supports
-                        any type you can represent using a JSON string.
+                        any type you can represent using a JSON/XML string.
                     </p>
                     <h4>Example</h4>
                     <p>Suppose we have the following class which contains several properties and a list of another class:</p>
@@ -495,7 +495,7 @@ C:\> <span class="commandline">myexe foo -bar=Ass! -count=10</span><span class="
                     </pre>
                     <p>
                         Now we can pass an instance of a Person class from the command-line.
-                        We need a JSON representation of such an instance:
+                        We need a JSON (or XML) representation of such an instance:
                     </p>
                     <pre class="brush: csharp">
                         {
