@@ -655,5 +655,33 @@ namespace ConsoleTest
         public string Type { get; set; }
         public string Number { get; set; }
     }
+
+    // Validate properties of this class
+    [Validate("Name NOT LIKE 'Banana*'")]
+    public class Product
+    {
+        // Validate the value of this property
+        [RegexMatches("#PP[0-9]*")]
+        public string ID { get; set; }
+
+        // Validate the value of this property
+        [MoreOrEqualTo(0)]
+        public int Index { get; set; }
+
+        public string Name { get; set; }
+
+        // Validate the properties of the value of this property
+        [Validate("Name NOT IN 'Adrian'")]
+        public ProductReview Review { get; set; }
+    }
+
+    public class ProductReview
+    {
+        public string Name { get; set; }
+
+        // Validate the value of this property
+        [RegexMatches(@"^([0-9a-zA-Z]([-.\w]*[0-9a-zA-Z])*@([0-9a-zA-Z][-\w]*[0-9a-zA-Z]\.)+[a-zA-Z]{2,9})$")]
+        public string Email { get; set; }
+    }
 }
 
