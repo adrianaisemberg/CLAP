@@ -623,60 +623,88 @@ namespace CLAP
             {
                 return inputKey != null;
             }
-            // try JSON deserializing it. it works in most cases
             else
             {
+                // try JSON/XML deserializing it
+                //
                 try
                 {
-                    var obj = Serialization.Deserialize(stringValue, parameterType);
+                    object obj = null;
 
-                    TypeValidator.Validate(obj);
+                    if (Serialization.Deserialize(stringValue, parameterType, ref obj))
+                    {
+                        TypeValidator.Validate(obj);
 
-                    return obj;
+                        return obj;
+                    }
+                    else
+                    {
+                        // if can't deserialize - try converting it
+                        //
+                        return ConvertParameterValue(inputKey, stringValue, parameterType);
+                    }
                 }
                 catch (ValidationException)
                 {
+                    // validation exceptions are good to throw out
+                    //
                     throw;
                 }
                 catch (Exception ex)
                 {
-                    // can't deserialize - try converting
+                    // tried deserialize but failed - try converting
                     //
-                    try
-                    {
-                        // if array
-                        if (parameterType.IsArray)
-                        {
-                            var stringValues = stringValue.CommaSplit();
-
-                            // The type of the array element
-                            //
-                            var type = parameterType.GetElementType();
-
-                            // Create a generic instance of the ConvertToArray method
-                            //
-                            var convertToArrayMethod = GetType().GetMethod(
-                                    "ConvertToArray",
-                                    BindingFlags.NonPublic | BindingFlags.Static).
-                                MakeGenericMethod(type);
-
-                            // Run the array converter
-                            //
-                            return convertToArrayMethod.Invoke(null, new[] { stringValues });
-                        }
-                        // if there is an input value
-                        else if (stringValue != null)
-                        {
-                            // convert the string value to the relevant parameter type
-                            //
-                            return ConvertString(stringValue, parameterType);
-                        }
-                    }
-                    catch // use the JSON exception
-                    {
-                        throw new TypeConvertionException(stringValue, parameterType, ex);
-                    }
+                    return ConvertParameterValue(inputKey, stringValue, parameterType, ex);
                 }
+            }
+
+            throw new MissingArgumentValueException(inputKey);
+        }
+
+        private object ConvertParameterValue(string inputKey, string stringValue, Type parameterType)
+        {
+            return ConvertParameterValue(inputKey, stringValue, parameterType, null);
+        }
+
+        private object ConvertParameterValue(
+            string inputKey,
+            string stringValue,
+            Type parameterType,
+            Exception deserializationException)
+        {
+            try
+            {
+                // if array
+                if (parameterType.IsArray)
+                {
+                    var stringValues = stringValue.CommaSplit();
+
+                    // The type of the array element
+                    //
+                    var type = parameterType.GetElementType();
+
+                    // Create a generic instance of the ConvertToArray method
+                    //
+                    var convertToArrayMethod = GetType().GetMethod(
+                            "ConvertToArray",
+                            BindingFlags.NonPublic | BindingFlags.Static).
+                        MakeGenericMethod(type);
+
+                    // Run the array converter
+                    //
+                    return convertToArrayMethod.Invoke(null, new[] { stringValues });
+                }
+                // if there is an input value
+                else if (stringValue != null)
+                {
+                    // convert the string value to the relevant parameter type
+                    //
+                    return ConvertString(stringValue, parameterType);
+                }
+            }
+            catch
+            {
+                throw new TypeConvertionException(stringValue, parameterType, deserializationException);
             }
 
             throw new MissingArgumentValueException(inputKey);

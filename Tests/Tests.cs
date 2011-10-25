@@ -1735,6 +1735,20 @@ namespace Tests
         }
 
         [Test]
+        public void ComplexType_XmlDeserialized_MyType()
+        {
+            var s = new Sample_42();
+
+            Parser.Run(new[]
+            {
+                "-t:<MyType><Number>56</Number><Name>blah</Name></MyType>", 
+            }, s);
+
+            Assert.AreEqual(56, s.TheType.Number);
+            Assert.AreEqual("blah", s.TheType.Name);
+        }
+
+        [Test]
         public void ComplexType_JsonDeserialized_MyType_AsGlobal()
         {
             var s = new Sample_42();
