@@ -11,6 +11,8 @@
     <script type="text/javascript" src="jquery-ui/jquery-ui-1.8.16.custom.min.js"></script>
     <script type="text/javascript" src="syntaxhighlighter/shCore.js"></script>
     <script type="text/javascript" src="syntaxhighlighter/shBrushCSharp.js"></script>
+    <script type="text/javascript" src="syntaxhighlighter/shBrushXml.js"></script>
+    <script type="text/javascript" src="syntaxhighlighter/shBrushJScript.js"></script>
     <script type="text/javascript" src="grumble/jquery.grumble.min.js"></script>
     <script type="text/javascript" src="script.js"></script>
     <script type="text/javascript">
@@ -497,7 +499,7 @@ C:\> <span class="commandline">myexe foo -bar=Ass! -count=10</span><span class="
                         Now we can pass an instance of a Person class from the command-line.
                         We need a JSON (or XML) representation of such an instance:
                     </p>
-                    <pre class="brush: csharp">
+                    <pre class="brush: javascript">
                         {
                             Age: 34,
                             Name: 'Adrian Aisemberg',
@@ -519,6 +521,49 @@ C:\> <span class="commandline">myexe foo -bar=Ass! -count=10</span><span class="
                         }
                     </pre>
                     <p>
+                        As an alternative, CLAP also supports XML:
+                    </p>
+                    <pre class="brush: xml">
+                        &lt;Person>
+                            &lt;Age>34&lt;/Age>
+                            &lt;Name>Adrian Aisemberg&lt;/Name>
+                            &lt;Email>adrianaisemberg@gmail.com&lt;/Email>
+                            &lt;PhoneNumbers>
+                                &lt;PhoneNumber>
+                                    &lt;Type>Home&lt;/Type>
+                                    &lt;Number>001-2232322&lt;/Number>
+                                &lt;/PhoneNumber>
+                                &lt;PhoneNumber>
+                                    &lt;Type>Mobile&lt;/Type>
+                                    &lt;Number>002-7787787&lt;/Number>
+                                &lt;/PhoneNumber>
+                                &lt;PhoneNumber>
+                                    &lt;Type>Office&lt;/Type>
+                                    &lt;Number>003-4463565&lt;/Number>
+                                &lt;/PhoneNumber>
+                            &lt;/PhoneNumbers>
+                        &lt;/Person>
+                    </pre>
+                    <div class="note">
+                        <h4>XML Beautifying</h4>
+                        <p>
+                            Using some .NET XML tweaks, such as marking properties with <span class="code">[XmlAttribute]</span>,
+                            The above XML sample can be represented as the following:
+                        </p>
+                        <pre class="brush: xml">
+                            &lt;Person Age="34" Name="Adrian Aisemberg" Email="adrianaisemberg@gmail.com">
+                                &lt;PhoneNumbers>
+                                    &lt;PhoneNumber Type="Home" Number="001-2232322"/>
+                                    &lt;PhoneNumber Type="Mobile" Number="002-7787787"/>
+                                    &lt;PhoneNumber Type="Office" Number="003-4463565"/>
+                                &lt;/PhoneNumbers>
+                            &lt;/Person>
+                        </pre>
+                        <p>
+                            Note that this topic is unrelated to CLAP and not discussed in this web-site.
+                        </p>
+                    </div>
+                    <p>
                         Instead of passing this whole string (in a single line) directly from the command-line, we better
                         put it in a file and pass the file as an input:
                     </p>
@@ -533,7 +578,7 @@ C:\> <span class="commandline">myexe foo -bar=Ass! -count=10</span><span class="
                         }
                     </pre>
                     <p>A collection of Persons as a JSON string looks like this:</p>
-                    <pre class="brush: csharp">
+                    <pre class="brush: javascript">
                         [{
                             Age: 34,
                             Name: 'Adrian Aisemberg',
