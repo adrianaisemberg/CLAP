@@ -7,7 +7,7 @@ namespace CLAP
     /// <summary>
     /// A method descriptor
     /// </summary>
-    internal sealed class Method
+    public sealed class Method
     {
         #region Properties
 

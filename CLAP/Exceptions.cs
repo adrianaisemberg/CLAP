@@ -175,6 +175,34 @@ namespace CLAP
     }
 
     [Serializable]
+    public class MoreThanOneVerbInterceptorException : CommandLineException
+    {
+        public MoreThanOneVerbInterceptorException()
+            : base("More than one verb interceptor was defined. Only a single method can be marked with [VerbInterceptor] in a type.")
+        {
+        }
+
+        protected MoreThanOneVerbInterceptorException(
+          System.Runtime.Serialization.SerializationInfo info,
+          System.Runtime.Serialization.StreamingContext context)
+            : base(info, context) { }
+    }
+
+    [Serializable]
+    public class InvalidVerbInterceptorException : CommandLineException
+    {
+        public InvalidVerbInterceptorException()
+            : base("Verb interceptor has an invalid signature.  Signature must be \"void Interceptor(IVerbInvocation)\"")
+        {
+        }
+
+        protected InvalidVerbInterceptorException(
+          System.Runtime.Serialization.SerializationInfo info,
+          System.Runtime.Serialization.StreamingContext context)
+            : base(info, context) { }
+    }
+
+    [Serializable]
     public class ArgumentMismatchException : CommandLineException
     {
         public ArgumentMismatchException() { }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using CLAP;
@@ -1612,6 +1613,92 @@ namespace Tests
         }
 
         [Test]
+        public void InterceptorTest()
+        {
+            const string method1 = "foo1";
+            const string method2 = "foo2";
+            const string arg1 = "argument1";
+            const string arg2 = "argument2";
+
+            var sample = new InterceptorSample();
+
+            Parser.Run(new[] { method1, "-str:" + arg1 }, sample);
+            Parser.Run(new[] { method2, "-str:" + arg2 }, sample);
+
+            Assert.AreEqual(2, sample.Intercepted.Count());
+            Assert.AreEqual(method1, sample.Intercepted[0]);
+            Assert.AreEqual(method2, sample.Intercepted[1]);
+
+            Assert.AreEqual(2, sample.Invoked.Count());
+            Assert.AreEqual("Foo1:" + arg1, sample.Invoked[0]);
+            Assert.AreEqual("Foo2:" + arg2, sample.Invoked[1]);
+        }
+
+        [Test]
+        public void MultipleInterceptorTest()
+        {
+            var sample = new MultipleInterceptorSample();
+
+            Assert.Throws<MoreThanOneVerbInterceptorException>(() => Parser.Run(new[] { "foo" }, sample));
+        }
+
+        [Test]
+        public void InvalidInterceptorTest()
+        {
+            var sample = new InvalidInterceptorSample();
+
+            Assert.Throws<InvalidVerbInterceptorException>(() => Parser.Run(new[] { "foo", "-str:something" }, sample));
+        }
+
+        [Test]
+        public void InheritedInterceptorTest()
+        {
+            const string method1 = "foo";
+            const string arg1 = "argument1";
+
+            var sample = new VerbWithInterceptorBaseSample();
+
+            Parser.Run(new[] { method1, "-str:" + arg1 }, sample);
+
+            Assert.AreEqual(1, sample.Intercepted.Count());
+            Assert.AreEqual(method1, sample.Intercepted[0]);
+
+            Assert.AreEqual(1, sample.Invoked.Count());
+            Assert.AreEqual("Foo:" + arg1, sample.Invoked[0]);
+        }
+
+        [Test]
+        public void InterceptorOnInheritedVerbTest()
+        {
+            const string method1 = "foo";
+            const string arg1 = "argument1";
+
+            var sample = new InterceptorWithVerbBaseSample();
+
+            Parser.Run(new[] { method1, "-str:" + arg1 }, sample);
+
+            Assert.AreEqual(1, sample.Intercepted.Count());
+            Assert.AreEqual(method1, sample.Intercepted[0]);
+
+            Assert.AreEqual(1, sample.Invoked.Count());
+            Assert.AreEqual("Foo:" + arg1, sample.Invoked[0]);
+        }
+
+        [Test]
+        public void RegisteredVerbInterceptorTest()
+        {
+            var printer = new Printer();
+            var sample = new Sample_02 { Printer = printer };
+
+            var list = new List<string>();
+            var p = new Parser<Sample_02>();
+            p.RegisterInterceptor(x => list.Add(x.Verb));
+
+            p.Run("print /c=5 /msg=test /prefix=hello_".Split(' '), sample);
+            Assert.AreEqual(1, list.Count());
+            Assert.AreEqual("print", list[0]);
+        }
+
         public void Execute_WithFileInput_String()
         {
             var s = new Sample_41();

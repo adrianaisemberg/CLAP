@@ -14,7 +14,7 @@ namespace CLAP
     /// <summary>
     /// A command-line arguments parser
     /// </summary>
-    public sealed class Parser<T>
+    public sealed class Parser<T> : AbstractParser
     {
         #region Fields
 
@@ -24,6 +24,7 @@ namespace CLAP
         private readonly static string s_fileInputSuffix = "@";
 
         private readonly Dictionary<string, GlobalParameterHandler> m_globalRegisteredHandlers;
+        private Action<IVerbInvocation> m_registeredInterceptor;
 
         private Dictionary<string, Action<string>> m_registeredHelpHandlers;
         private Action m_registeredEmptyHandler;
@@ -49,12 +50,12 @@ namespace CLAP
 
         #region Public Methods
 
-        public void Run(string[] args)
+        public override void Run(string[] args)
         {
             TryRunInternal(args, null);
         }
 
-        public void Run(string[] args, object obj)
+        public override void Run(string[] args, object obj)
         {
             TryRunInternal(args, obj);
         }
@@ -62,7 +63,7 @@ namespace CLAP
         /// <summary>
         /// Registers an action to a global parameter name
         /// </summary>
-        public void RegisterParameterHandler(string names, Action action)
+        public override void RegisterParameterHandler(string names, Action action)
         {
             RegisterParameterHandler(
                 names,
@@ -73,7 +74,7 @@ namespace CLAP
         /// <summary>
         /// Registers an action to a global parameter name
         /// </summary>
-        public void RegisterParameterHandler(string names, Action action, string description)
+        public override void RegisterParameterHandler(string names, Action action, string description)
         {
             RegisterParameterHandler(
                 names,
@@ -84,7 +85,7 @@ namespace CLAP
         /// <summary>
         /// Registers an action to a global parameter name
         /// </summary>
-        public void RegisterParameterHandler<TParameter>(string names, Action<TParameter> action)
+        public override void RegisterParameterHandler<TParameter>(string names, Action<TParameter> action)
         {
             RegisterParameterHandler(
                 names,
@@ -95,12 +96,30 @@ namespace CLAP
         /// <summary>
         /// Registers an action to a global parameter name
         /// </summary>
-        public void RegisterParameterHandler<TParameter>(string names, Action<TParameter> action, string description)
+        public override void RegisterParameterHandler<TParameter>(string names, Action<TParameter> action, string description)
         {
             RegisterParameterHandlerInternal(
                 names,
                 action,
                 description);
+        }
+
+        /// <summary>
+        /// Registers a verb interceptor
+        /// </summary>
+        /// <param name="interceptor">verb interceptor delegate</param>
+        public override void RegisterInterceptor(Action<IVerbInvocation> interceptor)
+        {
+            var attrInterceptor = GetVerbInterceptor();
+            if (attrInterceptor != null)
+                throw new MoreThanOneVerbInterceptorException();
+
+            m_registeredInterceptor = interceptor;
+        }
+
+        private MethodInfo GetVerbInterceptor()
+        {
+            return typeof(T).GetMethodsWith<VerbInterceptorAttribute>().FirstOrDefault();
         }
 
         /// <summary>
@@ -194,12 +213,12 @@ namespace CLAP
         /// </summary>
         /// <param name="names">The parameter name</param>
         /// <param name="helpHandler">The help string handler. For example: help => Console.WriteLine(help)</param>
-        public void RegisterHelpHandler(string names, Action<string> helpHandler)
+        public override void RegisterHelpHandler(string names, Action<string> helpHandler)
         {
             RegisterHelpHandlerInternal(names, helpHandler);
         }
 
-        public void RegisterEmptyHelpHandler(Action<string> handler)
+        public override void RegisterEmptyHelpHandler(Action<string> handler)
         {
             if (m_registeredEmptyHandler != null)
             {
@@ -214,7 +233,7 @@ namespace CLAP
             };
         }
 
-        public void RegisterEmptyHandler(Action handler)
+        public override void RegisterEmptyHandler(Action handler)
         {
             if (m_registeredEmptyHandler != null)
             {
@@ -224,12 +243,12 @@ namespace CLAP
             m_registeredEmptyHandler = handler;
         }
 
-        public void RegisterErrorHandler(Action<Exception> handler)
+        public override void RegisterErrorHandler(Action<Exception> handler)
         {
             RegisterErrorHandler(handler, false);
         }
 
-        public void RegisterErrorHandler(Action<Exception> handler, bool rethrow)
+        public override void RegisterErrorHandler(Action<Exception> handler, bool rethrow)
         {
             if (m_registeredErrorHandler != null)
             {
@@ -275,25 +294,83 @@ namespace CLAP
 
         private void RunInternal(string[] args, object obj)
         {
-            // no args
-            //
-            if (args.None())
+            try
             {
-                HandleEmptyArguments(obj);
+                // no args
+                //
+                if (args.None())
+                {
+                    HandleEmptyArguments(obj);
 
-                return;
+                    return;
+                }
+
+                // the first arg should be the verb, unless there is no verb and a default is used
+                //
+                var firstArg = args[0];
+
+                if (HandleHelp(firstArg, obj))
+                {
+                    return;
+                }
+
+                var verb = firstArg;
+
+                var invocation = BuildVerbInvocation(verb, obj, args);
+                Debug.Assert(invocation != null);
+
+                if(!InvokeInterceptor(obj, invocation))
+                {
+                    if (invocation.UnusedDictionary.Any())
+                    {
+                        throw new UnhandledParametersException(invocation.UnusedDictionary);
+                    }
+                    invocation.Proceed();
+                }
+            }
+            catch (TargetInvocationException tex)
+            {
+                if (tex.InnerException != null)
+                {
+                    var rethrow = HandleError(tex.InnerException, obj);
+
+                    if (rethrow)
+                    {
+                        throw;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                var rethrow = HandleError(ex, obj);
+
+                if (rethrow)
+                {
+                    throw;
+                }
+            }
+        }
+
+        private bool InvokeInterceptor(object obj, IVerbInvocation invocation)
+        {
+            if (m_registeredInterceptor != null)
+            {
+                m_registeredInterceptor(invocation);
+                return true;
             }
 
-            // the first arg should be the verb, unless there is no verb and a default is used
-            //
-            var firstArg = args[0];
-
-            if (HandleHelp(firstArg, obj))
+            var interceptor = GetVerbInterceptor();
+            if (interceptor != null)
             {
-                return;
+                interceptor.Invoke(obj, new object[] { invocation });
+                return true;
             }
 
-            var verb = firstArg;
+            return false;
+        }
+
+        private IVerbInvocation BuildVerbInvocation(string verb, object obj, IEnumerable<string> args)
+        {
 
             // a flag, in case there is no verb
             //
@@ -309,10 +386,7 @@ namespace CLAP
             //
             if (method == null)
             {
-                // if there is a verb input but no method was found
-                // AND
-                // the first arg is not an input argument (doesn't start with "-" etc)
-                //
+                // if there is a verb input but no method was found - throw
                 if (verb != null && !s_prefixes.Any(p => p.Equals(verb[0].ToString())))
                 {
                     throw new MissingVerbException(verb);
@@ -332,7 +406,9 @@ namespace CLAP
 
             // if there is a verb - skip the first arg
             //
-            var inputArgs = MapArguments(noVerb ? args : args.Skip(1));
+            var originalArgs = noVerb ? args : args.Skip(1);
+            var argDict = MapArguments(originalArgs);
+            var inputArgs = new Dictionary<string, string>(argDict);
 
             HandleGlobals(inputArgs, obj);
 
@@ -350,14 +426,9 @@ namespace CLAP
 
             ValidateVerbInput(method, methodParameters, parameterValues);
 
-            if (inputArgs.Any())
-            {
-                throw new UnhandledParametersException(inputArgs);
-            }
 
-            // invoke the method with the list of parameters
-            //
-            method.MethodInfo.Invoke(obj, parameterValues.ToArray());
+            var invocation = new DefaultVerbInvocation(verb, method, parameterValues, obj, originalArgs, argDict, inputArgs);
+            return invocation;
         }
 
         private static void ValidateVerbInput(Method method, ParameterInfo[] methodParameters, List<object> parameterValues)
@@ -491,6 +562,29 @@ namespace CLAP
                 throw new MoreThanOneEmptyHandlerException();
             }
 
+            // no more than one verb interceptor
+            //
+            var definedInterceptors = typeof(T).GetMethodsWith<VerbInterceptorAttribute>().ToList();
+
+            if (definedInterceptors.Count() > 1)
+            {
+                throw new MoreThanOneVerbInterceptorException();
+            }
+
+            if (definedInterceptors.Count == 1)
+            {
+                var methodInfo = definedInterceptors[0];
+                var parms = methodInfo.GetParameters();
+                if (parms.Length != 1)
+                {
+                    throw new InvalidVerbInterceptorException();
+                }
+
+                if(parms[0].ParameterType != typeof(IVerbInvocation))
+                {
+                    throw new InvalidVerbInterceptorException();
+                }
+            }
         }
 
         private void RegisterParameterHandlerInternal<TParameter>(string names, Action<TParameter> action, string description)

@@ -79,11 +79,14 @@
     <Compile Include="EmptyAttribute.cs" />
     <Compile Include="Exceptions.cs" />
     <Compile Include="GlobalAttribute.cs" />
+    <Compile Include="IVerbInvocation.cs" />
+    <Compile Include="DefaultVerbInvocation.cs" />
     <Compile Include="Method.cs" />
     <Compile Include="Parameter.cs" />
     <Compile Include="ParameterAttribute.cs" />
     <Compile Include="ParametersExpressionValidator.cs" />
     <Compile Include="Parser.cs" />
+    <Compile Include="AbstractParser.cs" />
     <Compile Include="IValidation.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Serialization.cs" />
@@ -103,6 +106,7 @@
     <Compile Include="Validation\ValidateAttribute.cs" />
     <Compile Include="ValueInfo.cs" />
     <Compile Include="VerbAttribute.cs" />
+    <Compile Include="VerbInterceptorAttribute.cs" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
