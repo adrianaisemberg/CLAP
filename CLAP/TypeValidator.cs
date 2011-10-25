@@ -22,7 +22,7 @@ namespace CLAP
             // first use all the validators defined over this type
             //
             var validators = type.
-                GetAttributes<ValidateAttribute>().
+                GetAttributes<CollectionValidationAttribute>().
                 Cast<IValidation>().
                 Select(a => a.GetValidator());
 
@@ -50,7 +50,7 @@ namespace CLAP
                 }
 
                 var propertyValidators = property.
-                    GetAttributes<ValidateAttribute>().
+                    GetAttributes<CollectionValidationAttribute>().
                     Cast<IValidation>().
                     Select(a => a.GetValidator());
 
