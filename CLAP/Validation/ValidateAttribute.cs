@@ -11,7 +11,7 @@ namespace CLAP.Validation
     /// http://msdn.microsoft.com/en-us/library/system.data.datacolumn.expression.aspx
     /// </remarks>
     [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class | AttributeTargets.Property, AllowMultiple = true)]
-    public sealed class ValidateAttribute : Attribute, IValidation
+    public sealed class ValidateAttribute : ParametersValidationAttribute
     {
         #region Properties
 
@@ -25,7 +25,7 @@ namespace CLAP.Validation
         /// </summary>
         public bool CaseSensitive { get; set; }
 
-        public string Description
+        public override string Description
         {
             get
             {
@@ -55,7 +55,7 @@ namespace CLAP.Validation
 
         #region Methods
 
-        public IInfoValidator GetValidator()
+        public override IInfoValidator GetValidator()
         {
             return new ParametersExpressionValidator(Expression, CaseSensitive);
         }

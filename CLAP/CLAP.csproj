@@ -72,6 +72,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CollectionValidationAttribute.cs" />
     <Compile Include="ErrorAttribute.cs" />
     <Compile Include="FileSystemHelper.cs" />
     <Compile Include="FW2Stuff.cs" />
@@ -90,7 +91,6 @@
     <Compile Include="Utils.cs" />
     <Compile Include="ValidationAttribute.cs" />
     <Compile Include="HelpAttribute.cs" />
-    <Compile Include="ParametersValidationAttribute.cs" />
     <Compile Include="Validation\PathExistsAttribute.cs" />
     <Compile Include="Validation\DirectoryExistsAttribute.cs" />
     <Compile Include="Validation\FileExistsAttribute.cs" />

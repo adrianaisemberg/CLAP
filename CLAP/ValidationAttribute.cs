@@ -7,7 +7,6 @@ namespace CLAP
     /// Validation on the parameter's value
     /// </summary>
     [Serializable]
-    [AttributeUsage(AttributeTargets.Parameter, AllowMultiple = true)]
     public abstract class ValidationAttribute : Attribute
     {
         /// <summary>
