@@ -2,7 +2,7 @@
 
 namespace CLAP.Interception
 {
-    public sealed class PreVerbExecutionContext : VerbExecutionContext, IVerbExecutionContext
+    public sealed class PreVerbExecutionContext : VerbExecutionContext
     {
         #region Properties
 

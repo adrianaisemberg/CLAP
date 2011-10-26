@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace CLAP.Interception
 {
-    public sealed class PostVerbExecutionContext : VerbExecutionContext, IVerbExecutionContext
+    public sealed class PostVerbExecutionContext : VerbExecutionContext
     {
         #region Properties
 
