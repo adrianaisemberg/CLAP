@@ -175,6 +175,34 @@ namespace CLAP
     }
 
     [Serializable]
+    public class MoreThanOnePreVerbInterceptorException : CommandLineException
+    {
+        public MoreThanOnePreVerbInterceptorException()
+            : base("More than one pre-verb interceptor was defined. Only a single method can be marked with [PreVerbExecutionAttribute] in a type and only a single action can be registered as a pre-interceptor.")
+        {
+        }
+
+        protected MoreThanOnePreVerbInterceptorException(
+          System.Runtime.Serialization.SerializationInfo info,
+          System.Runtime.Serialization.StreamingContext context)
+            : base(info, context) { }
+    }
+
+    [Serializable]
+    public class MoreThanOnePostVerbInterceptorException : CommandLineException
+    {
+        public MoreThanOnePostVerbInterceptorException()
+            : base("More than one post-verb interceptor was defined. Only a single method can be marked with [PostVerbExecutionAttribute] in a type and only a single action can be registered as a post-interceptor.")
+        {
+        }
+
+        protected MoreThanOnePostVerbInterceptorException(
+          System.Runtime.Serialization.SerializationInfo info,
+          System.Runtime.Serialization.StreamingContext context)
+            : base(info, context) { }
+    }
+
+    [Serializable]
     public class ArgumentMismatchException : CommandLineException
     {
         public ArgumentMismatchException() { }

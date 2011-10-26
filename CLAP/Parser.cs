@@ -359,7 +359,7 @@ namespace CLAP
             Execute(obj, method, inputArgs, parameterValues);
         }
 
-        private static void Execute(
+        private void Execute(
             object target,
             Method method,
             Dictionary<string, string> inputArgs,
@@ -371,21 +371,45 @@ namespace CLAP
             //
             var preVerbExecutionContext = new PreVerbExecutionContext(method, target, arguments);
 
-            // validate the arguments so they weren't changed after the interception
-            //
+            var preInterceptionMethods = typeof(T).GetMethodsWith<PreVerbExecutionAttribute>();
 
-            // invoke the method with the list of parameters
+            if (preInterceptionMethods.Any())
+            {
+                Debug.Assert(preInterceptionMethods.Count() == 1);
+
+                var preInterceptionMethod = preInterceptionMethods.First();
+
+                preInterceptionMethod.Invoke(target, new[] { preVerbExecutionContext });
+            }
+
+            // actual verb execution
             //
-            method.MethodInfo.Invoke(target, values.ToArray());
+            if (!preVerbExecutionContext.Cancel)
+            {
+                // invoke the method with the list of parameters
+                //
+                method.MethodInfo.Invoke(target, values.ToArray());
+            }
 
             // post-interception
             //
-            var postVerbExecutionContext = new PostVerbExecutionContext(
-                method,
-                target,
-                arguments,
-                preVerbExecutionContext.Cancel,
-                preVerbExecutionContext.UserContext);
+            var postInterceptionMethods = typeof(T).GetMethodsWith<PostVerbExecutionAttribute>();
+
+            if (postInterceptionMethods.Any())
+            {
+                Debug.Assert(postInterceptionMethods.Count() == 1);
+
+                var postInterceptionMethod = postInterceptionMethods.First();
+
+                var postVerbExecutionContext = new PostVerbExecutionContext(
+                    method,
+                    target,
+                    arguments,
+                    preVerbExecutionContext.Cancel,
+                    preVerbExecutionContext.UserContext);
+
+                postInterceptionMethod.Invoke(target, new[] { postVerbExecutionContext });
+            }
         }
 
         private static void ValidateVerbInput(Method method, ParameterInfo[] methodParameters, List<object> parameterValues)
@@ -519,6 +543,21 @@ namespace CLAP
                 throw new MoreThanOneEmptyHandlerException();
             }
 
+            // no more that one pre/post interception methods
+            //
+            var preInterceptionMethods = typeof(T).GetMethodsWith<PreVerbExecutionAttribute>();
+
+            if (preInterceptionMethods.Count() > 1)
+            {
+                throw new MoreThanOnePreVerbInterceptorException();
+            }
+
+            var postInterceptionMethods = typeof(T).GetMethodsWith<PostVerbExecutionAttribute>();
+
+            if (postInterceptionMethods.Count() > 1)
+            {
+                throw new MoreThanOnePostVerbInterceptorException();
+            }
         }
 
         private void RegisterParameterHandlerInternal<TParameter>(string names, Action<TParameter> action, string description)
