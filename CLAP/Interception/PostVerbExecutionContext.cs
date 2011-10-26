@@ -3,13 +3,9 @@ using System.Collections.Generic;
 
 namespace CLAP.Interception
 {
-    public sealed class PostVerbExecutionContext : IVerbExecutionContext
+    public sealed class PostVerbExecutionContext : VerbExecutionContext, IVerbExecutionContext
     {
         #region Properties
-
-        public Method Method { get; private set; }
-        public object Target { get; private set; }
-        public ParameterAndValue[] Parameters { get; private set; }
 
         public bool Cancelled { get; private set; }
         public Exception Exception { get; private set; }
@@ -18,8 +14,6 @@ namespace CLAP.Interception
         {
             get { return Exception != null; }
         }
-
-        public Dictionary<object, object> UserContext { get; private set; }
 
         #endregion Properties
 
@@ -30,15 +24,12 @@ namespace CLAP.Interception
             object target,
             ParameterAndValue[] parameters,
             bool cancelled,
-            Exception ex,
+            Exception exception,
             Dictionary<object, object> userContext)
+            : base(method, target, parameters, userContext)
         {
-            Method = method;
-            Target = target;
-            Parameters = parameters;
             Cancelled = cancelled;
-            Exception = ex;
-            UserContext = userContext;
+            Exception = exception;
         }
 
         #endregion Constructors

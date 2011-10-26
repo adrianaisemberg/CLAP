@@ -1915,6 +1915,8 @@ namespace Tests
             Assert.AreEqual("blah", s.PostContext.Parameters.First(p => p.Parameter.ParameterInfo.Name == "str").Value);
             Assert.AreEqual(554, s.PostContext.Parameters.First(p => p.Parameter.ParameterInfo.Name == "num").Value);
 
+            Assert.AreEqual(54, s.PostContext.UserContext["a"]);
+
             Assert.IsTrue(s.VerbExecuted);
         }
 

@@ -84,6 +84,7 @@
     <Compile Include="Interception\IVerbExecutionContext.cs" />
     <Compile Include="Interception\PreVerbExecutionAttribute.cs" />
     <Compile Include="Interception\PreVerbExecutionContext.cs" />
+    <Compile Include="Interception\VerbExecutionContext.cs" />
     <Compile Include="Method.cs" />
     <Compile Include="Parameter.cs" />
     <Compile Include="ParameterAttribute.cs" />

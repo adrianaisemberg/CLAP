@@ -798,6 +798,8 @@ namespace Tests
         private void Pre(PreVerbExecutionContext context)
         {
             PreContext = context;
+
+            context.UserContext.Add("a", 54);
         }
 
         [PostVerbExecution]
