@@ -6,6 +6,7 @@ using System.Text;
 
 #if !FW2
 using System.Linq;
+using CLAP.Interception;
 
 #endif
 
@@ -355,9 +356,36 @@ namespace CLAP
                 throw new UnhandledParametersException(inputArgs);
             }
 
+            Execute(obj, method, inputArgs, parameterValues);
+        }
+
+        private static void Execute(
+            object target,
+            Method method,
+            Dictionary<string, string> inputArgs,
+            List<object> values)
+        {
+            var arguments = new ArgumentsCollection(inputArgs, values);
+
+            // pre-interception
+            //
+            var preVerbExecutionContext = new PreVerbExecutionContext(method, target, arguments);
+
+            // validate the arguments so they weren't changed after the interception
+            //
+
             // invoke the method with the list of parameters
             //
-            method.MethodInfo.Invoke(obj, parameterValues.ToArray());
+            method.MethodInfo.Invoke(target, values.ToArray());
+
+            // post-interception
+            //
+            var postVerbExecutionContext = new PostVerbExecutionContext(
+                method,
+                target,
+                arguments,
+                preVerbExecutionContext.Cancel,
+                preVerbExecutionContext.UserContext);
         }
 
         private static void ValidateVerbInput(Method method, ParameterInfo[] methodParameters, List<object> parameterValues)
