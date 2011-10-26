@@ -4,9 +4,7 @@ namespace CLAP.Interception
 {
     public class ArgumentsCollection : ReadOnlyDictionary<string, Value>
     {
-        #region Constructors
-
-        public ArgumentsCollection(Dictionary<string, string> inputArgs, List<object> values)
+        internal ArgumentsCollection(Dictionary<string, string> inputArgs, List<object> values)
         {
             Dict = new Dictionary<string, Value>();
 
@@ -19,8 +17,6 @@ namespace CLAP.Interception
                 index++;
             }
         }
-
-        #endregion Constructors
     }
 
     public sealed class Value
