@@ -8,7 +8,8 @@ namespace CLAP
     /// <summary>
     /// A parameter descriptor
     /// </summary>
-    internal sealed class Parameter
+    [DebuggerDisplay("{ParameterInfo}")]
+    public sealed class Parameter
     {
         #region Properties
 

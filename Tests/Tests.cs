@@ -1890,5 +1890,113 @@ namespace Tests
                 "-t:{Number: 5}",
             }, s);
         }
+
+        [Test]
+        public void Interception_PreAndPostExecuted_VerbExecuted()
+        {
+            var s = new Sample_43();
+
+            Assert.IsNull(s.PreContext);
+            Assert.IsNull(s.PostContext);
+            Assert.IsFalse(s.VerbExecuted);
+
+            Parser.Run(new[]
+            {
+                "foo",
+                "-str=blah",
+                "-num=554",
+            }, s);
+
+            Assert.IsNotNull(s.PreContext);
+            Assert.AreEqual("blah", s.PreContext.Parameters.First(p => p.Parameter.ParameterInfo.Name == "str").Value);
+            Assert.AreEqual(554, s.PreContext.Parameters.First(p => p.Parameter.ParameterInfo.Name == "num").Value);
+
+            Assert.IsNotNull(s.PostContext);
+            Assert.AreEqual("blah", s.PostContext.Parameters.First(p => p.Parameter.ParameterInfo.Name == "str").Value);
+            Assert.AreEqual(554, s.PostContext.Parameters.First(p => p.Parameter.ParameterInfo.Name == "num").Value);
+
+            Assert.IsTrue(s.VerbExecuted);
+        }
+
+        [Test]
+        public void Interception_PreAndPostExecuted_VerbNotExecuted()
+        {
+            var s = new Sample_44();
+
+            Assert.IsNull(s.PreContext);
+            Assert.IsNull(s.PostContext);
+            Assert.IsFalse(s.VerbExecuted);
+
+            Parser.Run(new[]
+            {
+                "foo",
+                "-str=blah",
+                "-num=554",
+            }, s);
+
+            Assert.IsNotNull(s.PreContext);
+            Assert.IsNotNull(s.PostContext);
+            Assert.IsFalse(s.VerbExecuted);
+        }
+
+        [Test]
+        [ExpectedException(typeof(MoreThanOnePreVerbInterceptorException))]
+        public void Interception_MoreThanOnePre_Exception()
+        {
+            Parser.Run<Sample_45>(new[] { "foo" });
+        }
+
+        [Test]
+        [ExpectedException(typeof(MoreThanOnePostVerbInterceptorException))]
+        public void Interception_MoreThanOnePost_Exception()
+        {
+            Parser.Run<Sample_46>(new[] { "foo" });
+        }
+
+        [Test]
+        public void Interception_ExecutionFailed_PostCalled()
+        {
+            var s = new Sample_47();
+
+            try
+            {
+                Parser.Run(new[] { "" }, s);
+            }
+            catch (Exception ex)
+            {
+                Assert.AreEqual("ha!", ex.Message);
+            }
+
+            Assert.IsTrue(s.Context.Failed);
+        }
+
+        [Test]
+        public void Interception_ExecutionFailed_PostCalled_WithErrorHandler_NoReThrow()
+        {
+            var s = new Sample_48();
+
+            Parser.Run(new[] { "" }, s);
+
+            Assert.IsTrue(s.Context.Failed);
+        }
+
+        [Test]
+        public void Interception_ExecutionFailed_PostCalled_WithErrorHandler_ReThrow()
+        {
+            var s = new Sample_49();
+
+            try
+            {
+                Parser.Run(new[] { "" }, s);
+
+                Assert.Fail();
+            }
+            catch (Exception ex)
+            {
+                Assert.AreEqual("ha!", ex.Message);
+            }
+
+            Assert.IsTrue(s.Context.Failed);
+        }
     }
 }

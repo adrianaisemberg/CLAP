@@ -8,7 +8,7 @@ namespace CLAP.Interception
 
         public Method Method { get; private set; }
         public object Target { get; private set; }
-        public ArgumentsCollection Arguments { get; private set; }
+        public ParameterAndValue[] Parameters { get; private set; }
 
         public bool Cancel { get; set; }
 
@@ -21,11 +21,11 @@ namespace CLAP.Interception
         internal PreVerbExecutionContext(
             Method method,
             object target,
-            ArgumentsCollection arguments)
+            ParameterAndValue[] parameters)
         {
             Method = method;
             Target = target;
-            Arguments = arguments;
+            Parameters = parameters;
 
             UserContext = new Dictionary<object, object>();
         }

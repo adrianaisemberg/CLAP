@@ -7,6 +7,7 @@ namespace CLAP
     /// <summary>
     /// A method descriptor
     /// </summary>
+    [DebuggerDisplay("{MethodInfo}")]
     public sealed class Method
     {
         #region Properties

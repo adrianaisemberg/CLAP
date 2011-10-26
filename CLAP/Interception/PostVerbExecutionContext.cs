@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace CLAP.Interception
 {
@@ -8,9 +9,15 @@ namespace CLAP.Interception
 
         public Method Method { get; private set; }
         public object Target { get; private set; }
-        public ArgumentsCollection Arguments { get; private set; }
+        public ParameterAndValue[] Parameters { get; private set; }
 
         public bool Cancelled { get; private set; }
+        public Exception Exception { get; private set; }
+
+        public bool Failed
+        {
+            get { return Exception != null; }
+        }
 
         public Dictionary<object, object> UserContext { get; private set; }
 
@@ -21,14 +28,16 @@ namespace CLAP.Interception
         internal PostVerbExecutionContext(
             Method method,
             object target,
-            ArgumentsCollection arguments,
+            ParameterAndValue[] parameters,
             bool cancelled,
+            Exception ex,
             Dictionary<object, object> userContext)
         {
             Method = method;
             Target = target;
-            Arguments = arguments;
+            Parameters = parameters;
             Cancelled = cancelled;
+            Exception = ex;
             UserContext = userContext;
         }
 

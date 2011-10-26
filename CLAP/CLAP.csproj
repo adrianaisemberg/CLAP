@@ -79,7 +79,6 @@
     <Compile Include="EmptyAttribute.cs" />
     <Compile Include="Exceptions.cs" />
     <Compile Include="GlobalAttribute.cs" />
-    <Compile Include="Interception\ArgumentsCollection.cs" />
     <Compile Include="Interception\PostVerbExecutionAttribute.cs" />
     <Compile Include="Interception\PostVerbExecutionContext.cs" />
     <Compile Include="Interception\IVerbExecutionContext.cs" />
@@ -92,7 +91,6 @@
     <Compile Include="Parser.cs" />
     <Compile Include="IValidation.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ReadOnlyDictionary.cs" />
     <Compile Include="Serialization.cs" />
     <Compile Include="TypeValidator.cs" />
     <Compile Include="Utils.cs" />

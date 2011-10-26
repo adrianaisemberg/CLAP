@@ -251,18 +251,6 @@ namespace CLAP
             {
                 RunInternal(args, obj);
             }
-            catch (TargetInvocationException tex)
-            {
-                if (tex.InnerException != null)
-                {
-                    var rethrow = HandleError(tex.InnerException, obj);
-
-                    if (rethrow)
-                    {
-                        throw;
-                    }
-                }
-            }
             catch (Exception ex)
             {
                 var rethrow = HandleError(ex, obj);
@@ -278,7 +266,7 @@ namespace CLAP
         {
             // no args
             //
-            if (args.None())
+            if (args.None() | args.All(a => string.IsNullOrEmpty(a)))
             {
                 HandleEmptyArguments(obj);
 
@@ -341,35 +329,30 @@ namespace CLAP
             //
             var paremetersList = GetParameters(method.MethodInfo);
 
-            // the actual refelcted parameters
-            //
-            var methodParameters = method.MethodInfo.GetParameters();
-
             // a list of values, used when invoking the method
             //
-            var parameterValues = CreateParameterValues(verb, inputArgs, paremetersList, methodParameters);
+            var parameterValues = CreateParameterValues(verb, inputArgs, paremetersList);
 
-            ValidateVerbInput(method, methodParameters, parameterValues);
+            ValidateVerbInput(method, parameterValues.Select(kvp => kvp.Value).ToList());
 
+            // if some args weren't handled
+            //
             if (inputArgs.Any())
             {
                 throw new UnhandledParametersException(inputArgs);
             }
 
-            Execute(obj, method, inputArgs, parameterValues);
+            Execute(obj, method, parameterValues);
         }
 
         private void Execute(
             object target,
             Method method,
-            Dictionary<string, string> inputArgs,
-            List<object> values)
+            ParameterAndValue[] parameters)
         {
-            var arguments = new ArgumentsCollection(inputArgs, values);
-
             // pre-interception
             //
-            var preVerbExecutionContext = new PreVerbExecutionContext(method, target, arguments);
+            var preVerbExecutionContext = new PreVerbExecutionContext(method, target, parameters);
 
             var preInterceptionMethods = typeof(T).GetMethodsWith<PreVerbExecutionAttribute>();
 
@@ -382,38 +365,71 @@ namespace CLAP
                 preInterceptionMethod.Invoke(target, new[] { preVerbExecutionContext });
             }
 
-            // actual verb execution
-            //
-            if (!preVerbExecutionContext.Cancel)
+            Exception verbException = null;
+
+            try
             {
-                // invoke the method with the list of parameters
+                // actual verb execution
                 //
-                method.MethodInfo.Invoke(target, values.ToArray());
+                if (!preVerbExecutionContext.Cancel)
+                {
+                    // invoke the method with the list of parameters
+                    //
+                    method.MethodInfo.Invoke(target, parameters.Select(p => p.Value).ToArray());
+                }
             }
-
-            // post-interception
-            //
-            var postInterceptionMethods = typeof(T).GetMethodsWith<PostVerbExecutionAttribute>();
-
-            if (postInterceptionMethods.Any())
+            catch (TargetInvocationException tex)
             {
-                Debug.Assert(postInterceptionMethods.Count() == 1);
+                verbException = tex.InnerException;
+            }
+            catch (Exception ex)
+            {
+                verbException = ex;
+            }
+            finally
+            {
+                try
+                {
+                    // post-interception
+                    //
+                    var postInterceptionMethods = typeof(T).GetMethodsWith<PostVerbExecutionAttribute>();
 
-                var postInterceptionMethod = postInterceptionMethods.First();
+                    if (postInterceptionMethods.Any())
+                    {
+                        Debug.Assert(postInterceptionMethods.Count() == 1);
 
-                var postVerbExecutionContext = new PostVerbExecutionContext(
-                    method,
-                    target,
-                    arguments,
-                    preVerbExecutionContext.Cancel,
-                    preVerbExecutionContext.UserContext);
+                        var postInterceptionMethod = postInterceptionMethods.First();
 
-                postInterceptionMethod.Invoke(target, new[] { postVerbExecutionContext });
+                        var postVerbExecutionContext = new PostVerbExecutionContext(
+                            method,
+                            target,
+                            parameters,
+                            preVerbExecutionContext.Cancel,
+                            verbException,
+                            preVerbExecutionContext.UserContext);
+
+                        postInterceptionMethod.Invoke(target, new[] { postVerbExecutionContext });
+                    }
+                }
+                finally
+                {
+                    if (verbException != null)
+                    {
+                        var rethrow = HandleError(verbException, target);
+
+                        if (rethrow)
+                        {
+                            throw verbException;
+                        }
+                    }
+                }
             }
         }
 
-        private static void ValidateVerbInput(Method method, ParameterInfo[] methodParameters, List<object> parameterValues)
+        private static void ValidateVerbInput(Method method, List<object> parameterValues)
         {
+            var methodParameters = method.MethodInfo.GetParameters();
+
             // validate all parameters
             //
             var validators = method.MethodInfo.GetInterfaceAttributes<ICollectionValidation>().Select(a => a.GetValidator());
@@ -436,18 +452,18 @@ namespace CLAP
             }
         }
 
-        private List<object> CreateParameterValues(
+        private ParameterAndValue[] CreateParameterValues(
             string verb,
             Dictionary<string, string> inputArgs,
-            IEnumerable<Parameter> list,
-            ParameterInfo[] methodParameters)
+            IEnumerable<Parameter> list)
         {
-            var parameters = new List<object>();
+            var parameters = new List<ParameterAndValue>();
 
-            foreach (var p in methodParameters)
+            foreach (var p in list)
             {
-                var parameter = list.First(param => param.ParameterInfo == p);
-                var names = parameter.Names;
+                var parameterInfo = p.ParameterInfo;
+
+                var names = p.Names;
 
                 // according to the parameter names, try to find a match from the input
                 //
@@ -465,20 +481,20 @@ namespace CLAP
                 //
                 if (inputKey == null)
                 {
-                    if (parameter.Required)
+                    if (p.Required)
                     {
-                        throw new MissingRequiredArgumentException(verb, p.Name);
+                        throw new MissingRequiredArgumentException(verb, parameterInfo.Name);
                     }
 
                     // the default is the value
                     //
-                    value = parameter.Default;
+                    value = p.Default;
 
                     // convert the default value, if different from parameter's value (guid, for example)
                     //
-                    if (value is string && !(p.ParameterType == typeof(string)))
+                    if (value is string && !(parameterInfo.ParameterType == typeof(string)))
                     {
-                        value = GetValueForParameter(p.ParameterType, "{DEFAULT}", (string)value);
+                        value = GetValueForParameter(parameterInfo.ParameterType, "{DEFAULT}", (string)value);
                     }
                 }
                 else
@@ -492,29 +508,29 @@ namespace CLAP
 
                 if (value == null && inputKey != null)
                 {
-                    value = GetValueForParameter(p.ParameterType, inputKey, stringValue);
+                    value = GetValueForParameter(parameterInfo.ParameterType, inputKey, stringValue);
                 }
 
                 // validate each parameter
                 //
-                if (value != null && p.HasAttribute<ValidationAttribute>())
+                if (value != null && parameterInfo.HasAttribute<ValidationAttribute>())
                 {
-                    var validators = p.GetAttributes<ValidationAttribute>().Select(a => a.GetValidator());
+                    var validators = parameterInfo.GetAttributes<ValidationAttribute>().Select(a => a.GetValidator());
 
                     // all validators must pass
                     //
                     foreach (var validator in validators)
                     {
-                        validator.Validate(new ValueInfo(p.Name, p.ParameterType, value));
+                        validator.Validate(new ValueInfo(parameterInfo.Name, parameterInfo.ParameterType, value));
                     }
                 }
 
                 // we have a valid value - add it to the list of parameters
                 //
-                parameters.Add(value);
+                parameters.Add(new ParameterAndValue(p, value));
             }
 
-            return parameters;
+            return parameters.ToArray();
         }
 
         private void Validate()
@@ -1218,9 +1234,10 @@ namespace CLAP
             {
                 // create an array of (null) arguments that matches the method
                 //
-                var parameters = defaultVerb.MethodInfo.GetParameters().Select(p => (object)null).ToArray();
+                var parameters = defaultVerb.MethodInfo.GetParameters().
+                    Select(p => new ParameterAndValue(new Parameter(p), (object)null)).ToArray();
 
-                defaultVerb.MethodInfo.Invoke(target, parameters);
+                Execute(target, defaultVerb, parameters);
             }
         }
 

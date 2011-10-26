@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using CLAP;
 using CLAP.Validation;
+using CLAP.Interception;
 
 namespace Tests
 {
@@ -736,7 +737,6 @@ namespace Tests
         }
     }
 
-
     public class Sample_42 : BaseSample
     {
         public MyType TheType { get; private set; }
@@ -778,6 +778,145 @@ namespace Tests
 
         [Verb]
         public void Zoo(TypeWithProps t)
+        {
+        }
+    }
+
+    public class Sample_43
+    {
+        public PreVerbExecutionContext PreContext;
+        public PostVerbExecutionContext PostContext;
+        public bool VerbExecuted;
+
+        [Verb]
+        public void Foo(string str, int num)
+        {
+            VerbExecuted = true;
+        }
+
+        [PreVerbExecution]
+        private void Pre(PreVerbExecutionContext context)
+        {
+            PreContext = context;
+        }
+
+        [PostVerbExecution]
+        private void Post(PostVerbExecutionContext context)
+        {
+            PostContext = context;
+        }
+    }
+
+    public class Sample_44
+    {
+        public PreVerbExecutionContext PreContext;
+        public PostVerbExecutionContext PostContext;
+        public bool VerbExecuted;
+
+        [Verb]
+        public void Foo(string str, int num)
+        {
+            VerbExecuted = true;
+        }
+
+        [PreVerbExecution]
+        private void Pre(PreVerbExecutionContext context)
+        {
+            PreContext = context;
+
+            context.Cancel = true;
+        }
+
+        [PostVerbExecution]
+        private void Post(PostVerbExecutionContext context)
+        {
+            PostContext = context;
+        }
+    }
+
+    public class Sample_45
+    {
+        [PreVerbExecution]
+        private void Pre1(PreVerbExecutionContext context)
+        {
+        }
+
+        [PreVerbExecution]
+        private void Pre2(PreVerbExecutionContext context)
+        {
+        }
+    }
+
+    public class Sample_46
+    {
+        [PostVerbExecution]
+        private void Pre1(PostVerbExecutionContext context)
+        {
+        }
+
+        [PostVerbExecution]
+        private void Pre2(PostVerbExecutionContext context)
+        {
+        }
+    }
+
+    public class Sample_47
+    {
+        public PostVerbExecutionContext Context;
+
+        [Verb(IsDefault = true)]
+        public void Foo(int x, string y)
+        {
+            throw new Exception("ha!");
+        }
+
+        [PostVerbExecution]
+        public void Post(PostVerbExecutionContext context)
+        {
+            Context = context;
+        }
+    }
+
+    public class Sample_48
+    {
+        public PostVerbExecutionContext Context;
+
+        [Verb(IsDefault = true)]
+        public void Foo(int x, string y)
+        {
+            throw new Exception("ha!");
+        }
+
+        [PostVerbExecution]
+        public void Post(PostVerbExecutionContext context)
+        {
+            Context = context;
+        }
+
+        [Error]
+        public void Error(Exception ex)
+        {
+        }
+    }
+
+    public class Sample_49
+    {
+        public PostVerbExecutionContext Context;
+
+        [Verb(IsDefault = true)]
+        public void Foo(int x, string y)
+        {
+            throw new Exception("ha!");
+        }
+
+        [PostVerbExecution]
+        public void Post(PostVerbExecutionContext context)
+        {
+            Context = context;
+        }
+
+        [Error(ReThrow = true)]
+        public void Error(Exception ex)
         {
         }
     }
