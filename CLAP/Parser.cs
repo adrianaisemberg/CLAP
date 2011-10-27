@@ -29,6 +29,8 @@ namespace CLAP
         private Dictionary<string, Action<string>> m_registeredHelpHandlers;
         private Action m_registeredEmptyHandler;
         private Action<Exception> m_registeredErrorHandler;
+        private Action<PreVerbExecutionContext> m_registeredPreVerbExecutionInterceptor;
+        private Action<PostVerbExecutionContext> m_registeredPostVerbExecutionInterceptor;
         private bool m_registeredErrorHandlerRethrow;
 
         #endregion Fields
@@ -241,6 +243,27 @@ namespace CLAP
             m_registeredErrorHandlerRethrow = rethrow;
         }
 
+
+        public void RegisterPreVerbExecutionInterceptor(Action<PreVerbExecutionContext> interceptor)
+        {
+            if (m_registeredPreVerbExecutionInterceptor != null)
+            {
+                throw new MoreThanOnePreVerbInterceptorException();
+            }
+
+            m_registeredPreVerbExecutionInterceptor = interceptor;
+        }
+
+        public void RegisterPostVerbExecutionInterceptor(Action<PostVerbExecutionContext> interceptor)
+        {
+            if (m_registeredPostVerbExecutionInterceptor != null)
+            {
+                throw new MoreThanOnePostVerbInterceptorException();
+            }
+
+            m_registeredPostVerbExecutionInterceptor = interceptor;
+        }
+
         #endregion Public Methods
 
         #region Private Methods
@@ -352,18 +375,7 @@ namespace CLAP
         {
             // pre-interception
             //
-            var preVerbExecutionContext = new PreVerbExecutionContext(method, target, parameters);
-
-            var preInterceptionMethods = typeof(T).GetMethodsWith<PreVerbExecutionAttribute>();
-
-            if (preInterceptionMethods.Any())
-            {
-                Debug.Assert(preInterceptionMethods.Count() == 1);
-
-                var preInterceptionMethod = preInterceptionMethods.First();
-
-                preInterceptionMethod.Invoke(target, new[] { preVerbExecutionContext });
-            }
+            var preVerbExecutionContext = PreInterception(target, method, parameters);
 
             Exception verbException = null;
 
@@ -390,26 +402,7 @@ namespace CLAP
             {
                 try
                 {
-                    // post-interception
-                    //
-                    var postInterceptionMethods = typeof(T).GetMethodsWith<PostVerbExecutionAttribute>();
-
-                    if (postInterceptionMethods.Any())
-                    {
-                        Debug.Assert(postInterceptionMethods.Count() == 1);
-
-                        var postInterceptionMethod = postInterceptionMethods.First();
-
-                        var postVerbExecutionContext = new PostVerbExecutionContext(
-                            method,
-                            target,
-                            parameters,
-                            preVerbExecutionContext.Cancel,
-                            verbException,
-                            preVerbExecutionContext.UserContext);
-
-                        postInterceptionMethod.Invoke(target, new[] { postVerbExecutionContext });
-                    }
+                    PostInterception(target, method, parameters, preVerbExecutionContext, verbException);
                 }
                 finally
                 {
@@ -424,6 +417,68 @@ namespace CLAP
                     }
                 }
             }
+        }
+
+        private void PostInterception(
+            object target,
+            Method method,
+            ParameterAndValue[] parameters,
+            PreVerbExecutionContext preVerbExecutionContext,
+            Exception verbException)
+        {
+            var postVerbExecutionContext = new PostVerbExecutionContext(
+                method,
+                target,
+                parameters,
+                preVerbExecutionContext.Cancel,
+                verbException,
+                preVerbExecutionContext.UserContext);
+
+            if (m_registeredPostVerbExecutionInterceptor != null)
+            {
+                m_registeredPostVerbExecutionInterceptor(postVerbExecutionContext);
+            }
+            else
+            {
+                var postInterceptionMethods = typeof(T).GetMethodsWith<PostVerbExecutionAttribute>();
+
+                if (postInterceptionMethods.Any())
+                {
+                    Debug.Assert(postInterceptionMethods.Count() == 1);
+
+                    var postInterceptionMethod = postInterceptionMethods.First();
+
+                    postInterceptionMethod.Invoke(target, new[] { postVerbExecutionContext });
+                }
+            }
+        }
+
+        private PreVerbExecutionContext PreInterception(
+            object target,
+            Method method,
+            ParameterAndValue[] parameters)
+        {
+            var preVerbExecutionContext = new PreVerbExecutionContext(method, target, parameters);
+
+            if (m_registeredPreVerbExecutionInterceptor != null)
+            {
+                m_registeredPreVerbExecutionInterceptor(preVerbExecutionContext);
+            }
+            else
+            {
+                var preInterceptionMethods = typeof(T).GetMethodsWith<PreVerbExecutionAttribute>();
+
+                if (preInterceptionMethods.Any())
+                {
+                    Debug.Assert(preInterceptionMethods.Count() == 1);
+
+                    var preInterceptionMethod = preInterceptionMethods.First();
+
+                    preInterceptionMethod.Invoke(target, new[] { preVerbExecutionContext });
+                }
+            }
+
+            return preVerbExecutionContext;
         }
 
         private static void ValidateVerbInput(Method method, List<object> parameterValues)
