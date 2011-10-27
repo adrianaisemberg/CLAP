@@ -22,6 +22,13 @@ namespace CLAP
             return (T)att;
         }
 
+        public static T GetAttribute<T>(this Type type) where T : Attribute
+        {
+            var att = Attribute.GetCustomAttribute(type, typeof(T));
+
+            return (T)att;
+        }
+
         public static T GetAttribute<T>(this ParameterInfo parameter) where T : Attribute
         {
             var att = Attribute.GetCustomAttribute(parameter, typeof(T));
@@ -60,6 +67,11 @@ namespace CLAP
         public static bool HasAttribute<T>(this MethodInfo method) where T : Attribute
         {
             return Attribute.IsDefined(method, typeof(T));
+        }
+
+        public static bool HasAttribute<T>(this Type type) where T : Attribute
+        {
+            return Attribute.IsDefined(type, typeof(T));
         }
 
         public static bool HasAttribute<T>(this ParameterInfo parameter) where T : Attribute

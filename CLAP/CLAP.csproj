@@ -79,12 +79,14 @@
     <Compile Include="EmptyAttribute.cs" />
     <Compile Include="Exceptions.cs" />
     <Compile Include="GlobalAttribute.cs" />
+    <Compile Include="Interception\IVerbInterceptor.cs" />
     <Compile Include="Interception\PostVerbExecutionAttribute.cs" />
     <Compile Include="Interception\PostVerbExecutionContext.cs" />
     <Compile Include="Interception\ParameterAndValue.cs" />
     <Compile Include="Interception\PreVerbExecutionAttribute.cs" />
     <Compile Include="Interception\PreVerbExecutionContext.cs" />
     <Compile Include="Interception\VerbExecutionContext.cs" />
+    <Compile Include="Interception\VerbInterception.cs" />
     <Compile Include="Method.cs" />
     <Compile Include="Parameter.cs" />
     <Compile Include="ParameterAttribute.cs" />

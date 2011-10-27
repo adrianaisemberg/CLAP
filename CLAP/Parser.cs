@@ -319,6 +319,8 @@ namespace CLAP
                 verbException,
                 preVerbExecutionContext.UserContext);
 
+            // registered interceptors get top priority
+            //
             if (m_registration.RegisteredPostVerbInterceptor != null)
             {
                 m_registration.RegisteredPostVerbInterceptor(postVerbExecutionContext);
@@ -327,6 +329,8 @@ namespace CLAP
             {
                 var postInterceptionMethods = typeof(T).GetMethodsWith<PostVerbExecutionAttribute>();
 
+                // try a defined interceptor type
+                //
                 if (postInterceptionMethods.Any())
                 {
                     Debug.Assert(postInterceptionMethods.Count() == 1);
@@ -334,6 +338,19 @@ namespace CLAP
                     var postInterceptionMethod = postInterceptionMethods.First();
 
                     postInterceptionMethod.Invoke(target, new[] { postVerbExecutionContext });
+                }
+                else
+                {
+                    // try a defined interceptor type
+                    //
+                    if (typeof(T).HasAttribute<VerbInterception>())
+                    {
+                        var interception = typeof(T).GetAttribute<VerbInterception>();
+
+                        var interceptor = (IPostVerbInterceptor)Activator.CreateInstance(interception.InterceptorType);
+
+                        interceptor.Intercept(postVerbExecutionContext);
+                    }
                 }
             }
         }
@@ -345,12 +362,16 @@ namespace CLAP
         {
             var preVerbExecutionContext = new PreVerbExecutionContext(method, target, parameters);
 
+            // registered interceptors get top priority
+            //
             if (m_registration.RegisteredPreVerbInterceptor != null)
             {
                 m_registration.RegisteredPreVerbInterceptor(preVerbExecutionContext);
             }
             else
             {
+                // try a defined verb interceptor
+                //
                 var preInterceptionMethods = typeof(T).GetMethodsWith<PreVerbExecutionAttribute>();
 
                 if (preInterceptionMethods.Any())
@@ -360,6 +381,19 @@ namespace CLAP
                     var preInterceptionMethod = preInterceptionMethods.First();
 
                     preInterceptionMethod.Invoke(target, new[] { preVerbExecutionContext });
+                }
+                else
+                {
+                    // try a defined interceptor type
+                    //
+                    if (typeof(T).HasAttribute<VerbInterception>())
+                    {
+                        var interception = typeof(T).GetAttribute<VerbInterception>();
+
+                        var interceptor = (IPreVerbInterceptor)Activator.CreateInstance(interception.InterceptorType);
+
+                        interceptor.Intercept(preVerbExecutionContext);
+                    }
                 }
             }
 

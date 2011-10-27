@@ -923,6 +923,36 @@ namespace Tests
         }
     }
 
+    [VerbInterception(typeof(Inter))]
+    public class Sample_50
+    {
+        public bool VerbExecuted;
+
+        [Verb]
+        public void Foo(string str, int num)
+        {
+            VerbExecuted = true;
+        }
+
+        class Inter : IVerbInterceptor
+        {
+            public PreVerbExecutionContext PreContext;
+            public PostVerbExecutionContext PostContext;
+
+            public void Intercept(PreVerbExecutionContext context)
+            {
+                PreContext = context;
+
+                context.UserContext.Add("a", 54);
+            }
+
+            public void Intercept(PostVerbExecutionContext context)
+            {
+                PostContext = context;
+            }
+        }
+    }
+
     public enum Case
     {
         Upper,

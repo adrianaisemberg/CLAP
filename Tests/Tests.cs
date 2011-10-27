@@ -2053,5 +2053,22 @@ namespace Tests
             Assert.IsTrue(preInterceptorCalled);
             Assert.IsTrue(postInterceptorCalled);
         }
+
+        [Test]
+        public void Interception_DefinedOverType_PreAndPostExecuted_VerbExecuted()
+        {
+            var s = new Sample_50();
+
+            Assert.IsFalse(s.VerbExecuted);
+
+            Parser.Run(new[]
+            {
+                "foo",
+                "-str=blah",
+                "-num=554",
+            }, s);
+
+            Assert.IsTrue(s.VerbExecuted);
+        }
     }
 }
