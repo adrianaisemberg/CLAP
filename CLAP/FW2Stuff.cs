@@ -106,6 +106,19 @@ namespace CLAP
             return false;
         }
 
+        public static bool All<T>(this IEnumerable<T> collection, Func<T, bool> predicate)
+        {
+            foreach (var item in collection)
+            {
+                if (!predicate(item))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
         public static int Count<T>(this IEnumerable<T> collection)
         {
             var c = 0;
@@ -230,6 +243,18 @@ namespace CLAP
             }
 
             return false;
+        }
+
+        public static List<T> ToList<T>(this IEnumerable<T> collection)
+        {
+            var list = new List<T>();
+
+            foreach (var item in collection)
+            {
+                list.Add(item);
+            }
+
+            return list;
         }
     }
 
