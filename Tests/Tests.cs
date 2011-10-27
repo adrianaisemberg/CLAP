@@ -479,8 +479,8 @@ namespace Tests
 
             // with and without description for coverage
             //
-            p.RegisterParameterHandler("dec", delegate { x--; });
-            p.RegisterParameterHandler("inc", delegate { x++; }, "description");
+            p.Register.ParameterHandler("dec", delegate { x--; });
+            p.Register.ParameterHandler("inc", delegate { x++; }, "description");
 
             p.Run("print /c=5 /msg=test /prefix=hello_ /inc".Split(' '), sample);
 
@@ -500,7 +500,7 @@ namespace Tests
             var debug = String.Empty;
 
             var p = new Parser<Sample_02>();
-            p.RegisterParameterHandler<string>("debug", str => debug = str);
+            p.Register.ParameterHandler<string>("debug", str => debug = str);
 
             p.Run("print /c=5 /msg=test /prefix=hello_ /debug=true".Split(' '), sample);
 
@@ -592,7 +592,7 @@ namespace Tests
 
             var p = new Parser<Sample_11>();
 
-            p.RegisterHelpHandler("help", s => sample.Print());
+            p.Register.HelpHandler("help", s => sample.Print());
 
             p.Run("-help".Split(' '), sample);
             p.Run("help".Split(' '), sample);
@@ -651,7 +651,7 @@ namespace Tests
 
             var p = new Parser<Sample_11>();
 
-            p.RegisterEmptyHandler(() => sample.Print());
+            p.Register.EmptyHandler(() => sample.Print());
 
             p.Run(new string[] { }, sample);
 
@@ -754,7 +754,7 @@ namespace Tests
         {
             var p = new Parser<Sample_10>();
 
-            p.RegisterParameterHandler("param", delegate { }, "description");
+            p.Register.ParameterHandler("param", delegate { }, "description");
 
             p.GetHelpString();
         }
@@ -858,8 +858,8 @@ namespace Tests
         {
             var p = new Parser<Sample_25>();
 
-            p.RegisterEmptyHandler(delegate { });
-            p.RegisterEmptyHandler(delegate { });
+            p.Register.EmptyHandler(delegate { });
+            p.Register.EmptyHandler(delegate { });
         }
 
         [Test]
@@ -869,7 +869,7 @@ namespace Tests
 
             string help = null;
 
-            p.RegisterEmptyHelpHandler(h => help = h);
+            p.Register.EmptyHelpHandler(h => help = h);
 
             Assert.IsNull(help);
 
@@ -884,8 +884,8 @@ namespace Tests
         {
             var p = new Parser<Sample_25>();
 
-            p.RegisterEmptyHelpHandler(delegate { });
-            p.RegisterEmptyHelpHandler(delegate { });
+            p.Register.EmptyHelpHandler(delegate { });
+            p.Register.EmptyHelpHandler(delegate { });
         }
 
         [Test]
@@ -894,9 +894,9 @@ namespace Tests
         {
             var p = new Parser<Sample_25>();
 
-            p.RegisterHelpHandler("a", delegate { });
-            p.RegisterHelpHandler("b", delegate { });
-            p.RegisterHelpHandler("a", delegate { });
+            p.Register.HelpHandler("a", delegate { });
+            p.Register.HelpHandler("b", delegate { });
+            p.Register.HelpHandler("a", delegate { });
         }
 
         [Test]
@@ -1276,7 +1276,7 @@ namespace Tests
             var p = new Parser<Sample_39>();
             var handled = false;
 
-            p.RegisterErrorHandler(ex =>
+            p.Register.ErrorHandler(ex =>
             {
                 handled = true;
             }, false);
@@ -1292,7 +1292,7 @@ namespace Tests
             var p = new Parser<Sample_39>();
             var handled = false;
 
-            p.RegisterErrorHandler(ex =>
+            p.Register.ErrorHandler(ex =>
             {
                 handled = true;
             });
@@ -1308,7 +1308,7 @@ namespace Tests
             var p = new Parser<Sample_39>();
             var handled = false;
 
-            p.RegisterErrorHandler(ex =>
+            p.Register.ErrorHandler(ex =>
             {
                 handled = true;
             }, true);
@@ -1335,7 +1335,7 @@ namespace Tests
 
             var handled = false;
 
-            p.RegisterErrorHandler(ex =>
+            p.Register.ErrorHandler(ex =>
             {
                 handled = true;
             }, false);
@@ -1360,7 +1360,7 @@ namespace Tests
             var p = new Parser<ValidationSample_01>();
             var handled = false;
 
-            p.RegisterErrorHandler(ex =>
+            p.Register.ErrorHandler(ex =>
             {
                 handled = true;
             }, false);
@@ -1388,8 +1388,8 @@ namespace Tests
         {
             var p = new Parser<Sample_02>();
 
-            p.RegisterErrorHandler(delegate { });
-            p.RegisterErrorHandler(delegate { });
+            p.Register.ErrorHandler(delegate { });
+            p.Register.ErrorHandler(delegate { });
         }
 
         [Test]

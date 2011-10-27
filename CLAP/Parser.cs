@@ -24,16 +24,18 @@ namespace CLAP
         private readonly static string[] s_prefixes = new[] { "/", "-" };
         private readonly static string s_fileInputSuffix = "@";
 
-        private readonly Dictionary<string, GlobalParameterHandler> m_globalRegisteredHandlers;
-
-        private Dictionary<string, Action<string>> m_registeredHelpHandlers;
-        private Action m_registeredEmptyHandler;
-        private Action<Exception> m_registeredErrorHandler;
-        private Action<PreVerbExecutionContext> m_registeredPreVerbExecutionInterceptor;
-        private Action<PostVerbExecutionContext> m_registeredPostVerbExecutionInterceptor;
-        private bool m_registeredErrorHandlerRethrow;
+        private readonly ParserRegistration m_registration;
 
         #endregion Fields
+
+        #region Properties
+
+        public ParserRegistration Register
+        {
+            get { return m_registration; }
+        }
+
+        #endregion Properties
 
         #region Constructors
 
@@ -42,8 +44,7 @@ namespace CLAP
         /// </summary>
         public Parser()
         {
-            m_globalRegisteredHandlers = new Dictionary<string, GlobalParameterHandler>();
-            m_registeredHelpHandlers = new Dictionary<string, Action<string>>();
+            m_registration = new ParserRegistration(GetHelpString, GetValueForParameter);
 
             Validate();
         }
@@ -60,50 +61,6 @@ namespace CLAP
         public void Run(string[] args, object obj)
         {
             TryRunInternal(args, obj);
-        }
-
-        /// <summary>
-        /// Registers an action to a global parameter name
-        /// </summary>
-        public void RegisterParameterHandler(string names, Action action)
-        {
-            RegisterParameterHandler(
-                names,
-                new Action<bool>(delegate { action(); }),
-                null);
-        }
-
-        /// <summary>
-        /// Registers an action to a global parameter name
-        /// </summary>
-        public void RegisterParameterHandler(string names, Action action, string description)
-        {
-            RegisterParameterHandler(
-                names,
-                new Action<bool>(delegate { action(); }),
-                description);
-        }
-
-        /// <summary>
-        /// Registers an action to a global parameter name
-        /// </summary>
-        public void RegisterParameterHandler<TParameter>(string names, Action<TParameter> action)
-        {
-            RegisterParameterHandler(
-                names,
-                action,
-                null);
-        }
-
-        /// <summary>
-        /// Registers an action to a global parameter name
-        /// </summary>
-        public void RegisterParameterHandler<TParameter>(string names, Action<TParameter> action, string description)
-        {
-            RegisterParameterHandlerInternal(
-                names,
-                action,
-                description);
         }
 
         /// <summary>
@@ -161,12 +118,12 @@ namespace CLAP
 
             var definedGlobals = GetDefinedGlobals();
 
-            if (m_globalRegisteredHandlers.Any() || definedGlobals.Any())
+            if (m_registration.RegisteredGlobalHandlers.Any() || definedGlobals.Any())
             {
                 sb.AppendLine();
                 sb.AppendLine("Global parameters:");
 
-                foreach (var handler in m_globalRegisteredHandlers.Values)
+                foreach (var handler in m_registration.RegisteredGlobalHandlers.Values)
                 {
                     sb.AppendLine(" -{0}: {1} [{2}]".FormatWith(handler.Name, handler.Desription, handler.Type.Name));
                 }
@@ -190,78 +147,6 @@ namespace CLAP
             }
 
             return sb.ToString();
-        }
-
-        /// <summary>
-        /// Registers a parameter name to handle the help string
-        /// </summary>
-        /// <param name="names">The parameter name</param>
-        /// <param name="helpHandler">The help string handler. For example: help => Console.WriteLine(help)</param>
-        public void RegisterHelpHandler(string names, Action<string> helpHandler)
-        {
-            RegisterHelpHandlerInternal(names, helpHandler);
-        }
-
-        public void RegisterEmptyHelpHandler(Action<string> handler)
-        {
-            if (m_registeredEmptyHandler != null)
-            {
-                throw new MoreThanOneEmptyHandlerException();
-            }
-
-            var help = GetHelpString();
-
-            m_registeredEmptyHandler = delegate
-            {
-                handler(help);
-            };
-        }
-
-        public void RegisterEmptyHandler(Action handler)
-        {
-            if (m_registeredEmptyHandler != null)
-            {
-                throw new MoreThanOneEmptyHandlerException();
-            }
-
-            m_registeredEmptyHandler = handler;
-        }
-
-        public void RegisterErrorHandler(Action<Exception> handler)
-        {
-            RegisterErrorHandler(handler, false);
-        }
-
-        public void RegisterErrorHandler(Action<Exception> handler, bool rethrow)
-        {
-            if (m_registeredErrorHandler != null)
-            {
-                throw new MoreThanOneErrorHandlerException();
-            }
-
-            m_registeredErrorHandler = handler;
-            m_registeredErrorHandlerRethrow = rethrow;
-        }
-
-
-        public void RegisterPreVerbExecutionInterceptor(Action<PreVerbExecutionContext> interceptor)
-        {
-            if (m_registeredPreVerbExecutionInterceptor != null)
-            {
-                throw new MoreThanOnePreVerbInterceptorException();
-            }
-
-            m_registeredPreVerbExecutionInterceptor = interceptor;
-        }
-
-        public void RegisterPostVerbExecutionInterceptor(Action<PostVerbExecutionContext> interceptor)
-        {
-            if (m_registeredPostVerbExecutionInterceptor != null)
-            {
-                throw new MoreThanOnePostVerbInterceptorException();
-            }
-
-            m_registeredPostVerbExecutionInterceptor = interceptor;
         }
 
         #endregion Public Methods
@@ -434,9 +319,9 @@ namespace CLAP
                 verbException,
                 preVerbExecutionContext.UserContext);
 
-            if (m_registeredPostVerbExecutionInterceptor != null)
+            if (m_registration.RegisteredPostVerbInterceptor != null)
             {
-                m_registeredPostVerbExecutionInterceptor(postVerbExecutionContext);
+                m_registration.RegisteredPostVerbInterceptor(postVerbExecutionContext);
             }
             else
             {
@@ -460,9 +345,9 @@ namespace CLAP
         {
             var preVerbExecutionContext = new PreVerbExecutionContext(method, target, parameters);
 
-            if (m_registeredPreVerbExecutionInterceptor != null)
+            if (m_registration.RegisteredPreVerbInterceptor != null)
             {
-                m_registeredPreVerbExecutionInterceptor(preVerbExecutionContext);
+                m_registration.RegisteredPreVerbInterceptor(preVerbExecutionContext);
             }
             else
             {
@@ -631,68 +516,6 @@ namespace CLAP
             }
         }
 
-        private void RegisterParameterHandlerInternal<TParameter>(string names, Action<TParameter> action, string description)
-        {
-            RegisterParameterHandlerInternal(
-                names.CommaSplit(),
-                action,
-                description);
-        }
-
-        private void RegisterParameterHandlerInternal<TParameter>(IEnumerable<string> names, Action<TParameter> action, string description)
-        {
-            var objectAction = new Action<string>(str =>
-            {
-                object v = null;
-
-                if (typeof(TParameter) == typeof(bool) && str == null)
-                {
-                    v = true;
-                }
-                else
-                {
-                    v = GetValueForParameter(typeof(TParameter), string.Empty, str);
-                }
-
-                action((TParameter)v);
-            });
-
-            foreach (var name in names)
-            {
-                m_globalRegisteredHandlers.Add(
-                    name,
-                    new GlobalParameterHandler
-                    {
-                        Name = name,
-                        Handler = objectAction,
-                        Desription = description,
-                        Type = typeof(TParameter),
-                    });
-            }
-        }
-
-        private void RegisterHelpHandlerInternal(string names, Action<string> helpHandler)
-        {
-            RegisterHelpHandlerInternal(
-                names.CommaSplit(),
-                helpHandler);
-        }
-
-        private void RegisterHelpHandlerInternal(IEnumerable<string> names, Action<string> helpHandler)
-        {
-            foreach (var name in names)
-            {
-                var key = name.ToLowerInvariant();
-
-                if (m_registeredHelpHandlers.ContainsKey(key))
-                {
-                    throw new InvalidOperationException("'{0}' is already registered as a help handler".FormatWith(key));
-                }
-
-                m_registeredHelpHandlers.Add(key, helpHandler);
-            }
-        }
-
         private string GetDefinedGlobalHelpString(MethodInfo method)
         {
             var sb = new StringBuilder();
@@ -738,7 +561,7 @@ namespace CLAP
 
             Action<string> action = null;
 
-            if (m_registeredHelpHandlers.TryGetValue(input.ToLowerInvariant(), out action))
+            if (m_registration.RegisteredHelpHandlers.TryGetValue(input.ToLowerInvariant(), out action))
             {
                 return action;
             }
@@ -1025,7 +848,7 @@ namespace CLAP
             {
                 GlobalParameterHandler handler = null;
 
-                if (m_globalRegisteredHandlers.TryGetValue(kvp.Key, out handler))
+                if (m_registration.RegisteredGlobalHandlers.TryGetValue(kvp.Key, out handler))
                 {
                     handler.Handler(kvp.Value);
                     handled.Add(kvp.Key);
@@ -1216,9 +1039,9 @@ namespace CLAP
 
         private void HandleEmptyArguments(object target)
         {
-            if (m_registeredEmptyHandler != null)
+            if (m_registration.RegisteredEmptyHandler != null)
             {
-                m_registeredEmptyHandler();
+                m_registration.RegisteredEmptyHandler();
             }
 
             var definedEmptyHandlers = typeof(T).GetMethodsWith<EmptyAttribute>();
@@ -1298,11 +1121,11 @@ namespace CLAP
 
         private bool HandleError(Exception ex, object target)
         {
-            if (m_registeredErrorHandler != null)
+            if (m_registration.RegisteredErrorHandler != null)
             {
-                m_registeredErrorHandler(ex);
-
-                return m_registeredErrorHandlerRethrow;
+                m_registration.RegisteredErrorHandler(ex);
+#warning TODO: return bool from the error handler
+                return m_registration.RegisteredErrorHandlerRethrow;
             }
             else
             {
@@ -1397,15 +1220,7 @@ namespace CLAP
 
         #region Types
 
-        internal class GlobalParameterHandler
-        {
-            internal string Name { get; set; }
-            internal Action<string> Handler { get; set; }
-            internal string Desription { get; set; }
-            internal Type Type { get; set; }
-        }
-
-        internal class ErrorHandler
+        private class ErrorHandler
         {
             internal MethodInfo Method { get; set; }
             internal bool ReThrow { get; set; }
