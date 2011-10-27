@@ -1095,10 +1095,9 @@ CLAP.ValidationException: Not all arrays have the same length.
                         and you can't derive from the program's class (it is sealed) - then adding the extra functionality is possible
                         only using expressions.
                     </p>
-                    <h2>Expression Methods</h2>
                     <div class="attribute_wrapper" id="expressions_empty">
                         <div class="attribute">
-                        <div class="attribute_name code">RegisterEmptyHandler(Action handler)</div>
+                        <div class="attribute_name code">Register.EmptyHandler(Action handler)</div>
                         <div class="attribute_description">
                             <p>Registers an action that will be executed when no input was provided by the user.</p>
                             <p>
@@ -1113,7 +1112,7 @@ CLAP.ValidationException: Not all arrays have the same length.
                                 {
                                     var p = new Parser&lt;TheApp>();
 
-                                    p.RegisterEmptyHandler(() => Console.WriteLine("No Input"));
+                                    p.Register.EmptyHandler(() => Console.WriteLine("No Input"));
 
                                     p.Run(args);
                                 }
@@ -1125,7 +1124,7 @@ CLAP.ValidationException: Not all arrays have the same length.
                                 {
                                     var p = new Parser&lt;TheApp>();
 
-                                    p.RegisterEmptyHandler(delegate
+                                    p.Register.EmptyHandler(delegate
                                     {
                                         Console.WriteLine("No Input");
                                     });
@@ -1139,7 +1138,7 @@ CLAP.ValidationException: Not all arrays have the same length.
                     </div>
                     <div class="attribute_wrapper" id="expressions_help">
                         <div class="attribute">
-                        <div class="attribute_name code">RegisterHelpHandler(string names, Action&lt;string> helpHandler)</div>
+                        <div class="attribute_name code">Register.HelpHandler(string names, Action&lt;string> helpHandler)</div>
                         <div class="attribute_description">
                             <p>Registers an action that will be executed when help is requested by the user.</p>
                         </div>
@@ -1150,7 +1149,7 @@ CLAP.ValidationException: Not all arrays have the same length.
                                 {
                                     var p = new Parser&lt;TheApp>();
 
-                                    p.RegisterHelpHandler("?,h,help", help => Console.WriteLine(help));
+                                    p.Register.HelpHandler("?,h,help", help => Console.WriteLine(help));
 
                                     p.Run(args);
                                 }
@@ -1165,7 +1164,7 @@ CLAP.ValidationException: Not all arrays have the same length.
                     </div>
                     <div class="attribute_wrapper" id="expressions_emptyhelp">
                         <div class="attribute">
-                        <div class="attribute_name code">RegisterEmptyHelpHandler(Action&lt;string> handler)</div>
+                        <div class="attribute_name code">Register.EmptyHelpHandler(Action&lt;string> handler)</div>
                         <div class="attribute_description">
                             <p>Print the help string when no input is provided by the user.</p>
                             <p>
@@ -1180,7 +1179,7 @@ CLAP.ValidationException: Not all arrays have the same length.
                                 {
                                     var p = new Parser&lt;TheApp>();
 
-                                    p.RegisterEmptyHelpHandler(help => Console.WriteLine(help));
+                                    p.Register.EmptyHelpHandler(help => Console.WriteLine(help));
 
                                     p.Run(args);
                                 }
@@ -1191,11 +1190,14 @@ CLAP.ValidationException: Not all arrays have the same length.
                     </div>
                     <div class="attribute_wrapper" id="expressions_error">
                         <div class="attribute">
-                        <div class="attribute_name code">RegisterErrorHandler(Action&lt;Exception> handler, [bool rethrow = false])</div>
+                        <div class="attribute_name code">Register.ErrorHandler(Action&lt;Exception> handler)</div>
+                        <div class="attribute_name code">Register.ErrorHandler(Func&lt;Exception, bool> handler)</div>
                         <div class="attribute_description">
                             <p>Registers an action that will be executed when an error occurs.</p>
-                            <p>if <span class="code">rethrow</span> is true - the exception will be rethrown by the parser, keeping the original stack trace.</p>
-                            <p>if <span class="code">rethrow</span> is false - the exception will not be rethrown after handling it. The default is <span class="code">false</span>.</p>
+                            <p>The action can return a bool value indicating whether the exception should be re-thrown after handling.</p>
+                            <p>if <span class="code">true</span> - the exception will be rethrown by the parser, keeping the original stack trace.</p>
+                            <p>if <span class="code">false</span> - the exception will not be rethrown after handling it. The default is <span class="code">false</span>.</p>
+                            <p>If not returning any value - <span class="code highlight">false</span> is the default</p>
                             <p>
                                 Only a single error handler can be registered. Trying to register more than one
                                 handler will throw a <span class="code">MoreThanOneErrorHandlerException</span>.
@@ -1208,7 +1210,7 @@ CLAP.ValidationException: Not all arrays have the same length.
                                 {
                                     var p = new Parser&lt;TheApp>();
 
-                                    p.RegisterErrorHandler(ex =>
+                                    p.Register.ErrorHandler(ex =>
                                     {
                                         Console.ForegroundColor = ConsoleColor.Red;
                                         Console.WriteLine(ex.Message);
@@ -1219,13 +1221,31 @@ CLAP.ValidationException: Not all arrays have the same length.
                                 }
                             </pre>
                             <p>This will print the error message in red.</p>
+                            <pre class="brush: csharp, highlight: 11">
+                                static void Main(string[] args)
+                                {
+                                    var p = new Parser&lt;TheApp>();
+
+                                    p.Register.ErrorHandler(ex =>
+                                    {
+                                        Console.ForegroundColor = ConsoleColor.Red;
+                                        Console.WriteLine(ex.Message);
+                                        Console.ResetColor();
+
+                                        return true;
+                                    });
+
+                                    p.Run(args);
+                                }
+                            </pre>
+                            <p>This will print the error message in red and throw the exception after that.</p>
                         </div>
                     </div>
                     </div>
                     <div class="attribute_wrapper" id="expressions_global">
                         <div class="attribute">
-                        <div class="attribute_name code">RegisterParameterHandler(string names, Action action, [string description])</div>
-                        <div class="attribute_name code">RegisterParameterHandler&lt;T>(string names, Action&lt;T> action, [string description])</div>
+                        <div class="attribute_name code">Register.ParameterHandler(string names, Action action, [string description])</div>
+                        <div class="attribute_name code">Register.ParameterHandler&lt;T>(string names, Action&lt;T> action, [string description])</div>
                         <div class="attribute_description">
                             <p>Registers a parameter handler.</p>
                             <p>
@@ -1244,8 +1264,8 @@ CLAP.ValidationException: Not all arrays have the same length.
                                 {
                                     var p = new Parser&lt;TheApp>();
 
-                                    p.RegisterParameterHandler("d,debug", () => Debugger.Launch());
-                                    p.RegisterParameterHandler&lt;int>(
+                                    p.Register.ParameterHandler("d,debug", () => Debugger.Launch());
+                                    p.Register.ParameterHandler&lt;int>(
                                         "p,pause",
                                         seconds => Thread.Sleep(1000 * seconds));
 
