@@ -1123,9 +1123,9 @@ namespace CLAP
         {
             if (m_registration.RegisteredErrorHandler != null)
             {
-                m_registration.RegisteredErrorHandler(ex);
-#warning TODO: return bool from the error handler
-                return m_registration.RegisteredErrorHandlerRethrow;
+                var rethrow = m_registration.RegisteredErrorHandler(ex);
+
+                return rethrow;
             }
             else
             {

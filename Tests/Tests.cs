@@ -1279,7 +1279,9 @@ namespace Tests
             p.Register.ErrorHandler(ex =>
             {
                 handled = true;
-            }, false);
+
+                return false;
+            });
 
             p.Run(new string[] { });
 
@@ -1311,7 +1313,9 @@ namespace Tests
             p.Register.ErrorHandler(ex =>
             {
                 handled = true;
-            }, true);
+
+                return true;
+            });
 
             try
             {
@@ -1338,7 +1342,7 @@ namespace Tests
             p.Register.ErrorHandler(ex =>
             {
                 handled = true;
-            }, false);
+            });
 
             p.Run(new[]
             {
@@ -1363,7 +1367,7 @@ namespace Tests
             p.Register.ErrorHandler(ex =>
             {
                 handled = true;
-            }, false);
+            });
 
             p.Run(new[] { "morethan5", "/n=1" }, sample);
 
@@ -1949,10 +1953,30 @@ namespace Tests
         }
 
         [Test]
+        [ExpectedException(typeof(MoreThanOnePreVerbInterceptorException))]
+        public void Interception_RegisterMoreThanOnePre_Exception()
+        {
+            var p = new Parser<Sample_02>();
+
+            p.Register.PreVerbInterceptor(c => { });
+            p.Register.PreVerbInterceptor(c => { });
+        }
+
+        [Test]
         [ExpectedException(typeof(MoreThanOnePostVerbInterceptorException))]
         public void Interception_MoreThanOnePost_Exception()
         {
             Parser.Run<Sample_46>(new[] { "foo" });
+        }
+
+        [Test]
+        [ExpectedException(typeof(MoreThanOnePostVerbInterceptorException))]
+        public void Interception_RegisterMoreThanOnePost_Exception()
+        {
+            var p = new Parser<Sample_02>();
+
+            p.Register.PostVerbInterceptor(c => { });
+            p.Register.PostVerbInterceptor(c => { });
         }
 
         [Test]
@@ -1999,6 +2023,35 @@ namespace Tests
             }
 
             Assert.IsTrue(s.Context.Failed);
+        }
+
+        [Test]
+        public void Interception_Registered_Called()
+        {
+            var printer = new Printer();
+            var sample = new Sample_02 { Printer = printer };
+
+            var p = new Parser<Sample_02>();
+
+            var preInterceptorCalled = false;
+            var postInterceptorCalled = false;
+
+            p.Register.PreVerbInterceptor(c => preInterceptorCalled = true);
+            p.Register.PostVerbInterceptor(c => postInterceptorCalled = true);
+
+            p.Run(new[]
+            {
+                "print",
+                "/c=5",
+                "/msg=test",
+                "/prefix=hello_",
+            }, sample);
+
+            Assert.AreEqual(5, printer.PrintedTexts.Count);
+            Assert.IsTrue(printer.PrintedTexts.All(t => t.Equals("hello_test")));
+
+            Assert.IsTrue(preInterceptorCalled);
+            Assert.IsTrue(postInterceptorCalled);
         }
     }
 }

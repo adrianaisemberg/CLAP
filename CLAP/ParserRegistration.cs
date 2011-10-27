@@ -16,14 +16,11 @@ namespace CLAP
         #region Properties
 
         internal Dictionary<string, GlobalParameterHandler> RegisteredGlobalHandlers { get; private set; }
-
-#warning TODO: only one help handler
         internal Dictionary<string, Action<string>> RegisteredHelpHandlers { get; private set; }
         internal Action RegisteredEmptyHandler { get; private set; }
-        internal Action<Exception> RegisteredErrorHandler { get; private set; }
+        internal Func<Exception, bool> RegisteredErrorHandler { get; private set; }
         internal Action<PreVerbExecutionContext> RegisteredPreVerbInterceptor { get; private set; }
         internal Action<PostVerbExecutionContext> RegisteredPostVerbInterceptor { get; private set; }
-        internal bool RegisteredErrorHandlerRethrow { get; private set; }
 
         #endregion Properties
 
@@ -74,10 +71,15 @@ namespace CLAP
 
         public void ErrorHandler(Action<Exception> handler)
         {
-            ErrorHandler(handler, false);
+            ErrorHandler(new Func<Exception, bool>(ex =>
+            {
+                handler(ex);
+
+                return false;
+            }));
         }
 
-        public void ErrorHandler(Action<Exception> handler, bool rethrow)
+        public void ErrorHandler(Func<Exception, bool> handler)
         {
             if (RegisteredErrorHandler != null)
             {
@@ -85,7 +87,6 @@ namespace CLAP
             }
 
             RegisteredErrorHandler = handler;
-            RegisteredErrorHandlerRethrow = rethrow;
         }
 
         public void PreVerbInterceptor(Action<PreVerbExecutionContext> interceptor)
