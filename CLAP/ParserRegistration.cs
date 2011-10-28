@@ -6,13 +6,6 @@ namespace CLAP
 {
     public sealed class ParserRegistration
     {
-        #region Fields
-
-        private readonly Func<string> m_helpGetter;
-        private readonly Func<Type, string, string, object> m_parameterValueGetter;
-
-        #endregion Fields
-
         #region Properties
 
         internal Dictionary<string, GlobalParameterHandler> RegisteredGlobalHandlers { get; private set; }
@@ -22,17 +15,20 @@ namespace CLAP
         internal Action<PreVerbExecutionContext> RegisteredPreVerbInterceptor { get; private set; }
         internal Action<PostVerbExecutionContext> RegisteredPostVerbInterceptor { get; private set; }
 
+        internal Func<string> HelpGetter { get; private set; }
+        internal Func<Type, string, string, object> ParameterValueGetter { get; private set; }
+
         #endregion Properties
 
         #region Constructors
 
         public ParserRegistration(Func<string> helpGetter, Func<Type, string, string, object> parameterValueGetter)
         {
-            m_helpGetter = helpGetter;
-            m_parameterValueGetter = parameterValueGetter;
-
             RegisteredGlobalHandlers = new Dictionary<string, GlobalParameterHandler>();
             RegisteredHelpHandlers = new Dictionary<string, Action<string>>();
+
+            HelpGetter = helpGetter;
+            ParameterValueGetter = parameterValueGetter;
         }
 
         #endregion Constructors
@@ -51,7 +47,7 @@ namespace CLAP
                 throw new MoreThanOneEmptyHandlerException();
             }
 
-            var help = m_helpGetter();
+            var help = HelpGetter();
 
             RegisteredEmptyHandler = delegate
             {
@@ -165,7 +161,7 @@ namespace CLAP
                 }
                 else
                 {
-                    v = m_parameterValueGetter(typeof(TParameter), string.Empty, str);
+                    v = ParameterValueGetter(typeof(TParameter), string.Empty, str);
                 }
 
                 action((TParameter)v);

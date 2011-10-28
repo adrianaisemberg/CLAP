@@ -708,7 +708,7 @@ namespace Tests
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentMismatchException))]
+        [ExpectedException(typeof(InvalidHelpHandlerException))]
         public void EmptyHelp_Defined_IntParameter_Exception()
         {
             var mock = new Mock<IPrinter>();
@@ -720,7 +720,7 @@ namespace Tests
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentMismatchException))]
+        [ExpectedException(typeof(InvalidHelpHandlerException))]
         public void EmptyHelp_Defined_TwoParameters_Exception()
         {
             var mock = new Mock<IPrinter>();
@@ -813,7 +813,7 @@ namespace Tests
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentMismatchException))]
+        [ExpectedException(typeof(InvalidHelpHandlerException))]
         public void Help_MoreThanOneParameter_Exception()
         {
             var mock = new Mock<IPrinter>();
@@ -825,7 +825,7 @@ namespace Tests
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentMismatchException))]
+        [ExpectedException(typeof(InvalidHelpHandlerException))]
         public void Help_IntParameter_Exception()
         {
             var mock = new Mock<IPrinter>();

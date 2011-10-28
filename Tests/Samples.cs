@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Reflection;
 using CLAP;
-using CLAP.Validation;
 using CLAP.Interception;
+using CLAP.Validation;
 
 namespace Tests
 {

@@ -88,12 +88,13 @@
     <Compile Include="Interception\VerbExecutionContext.cs" />
     <Compile Include="Interception\VerbInterception.cs" />
     <Compile Include="Method.cs" />
+    <Compile Include="MultiParser.cs" />
     <Compile Include="Parameter.cs" />
     <Compile Include="ParameterAttribute.cs" />
     <Compile Include="ParametersExpressionValidator.cs" />
     <Compile Include="Parser.cs" />
     <Compile Include="IValidation.cs" />
-    <Compile Include="ParserBase.cs" />
+    <Compile Include="ParserRunner.cs" />
     <Compile Include="ParserRegistration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Serialization.cs" />
@@ -112,6 +113,7 @@
     <Compile Include="Validation\Regex.cs" />
     <Compile Include="Validation\ValidateAttribute.cs" />
     <Compile Include="ValueInfo.cs" />
+    <Compile Include="ValuesFactory.cs" />
     <Compile Include="VerbAttribute.cs" />
   </ItemGroup>
   <ItemGroup>

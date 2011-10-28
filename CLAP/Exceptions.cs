@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace CLAP
 {
@@ -10,8 +11,8 @@ namespace CLAP
         public CommandLineException(string message) : base(message) { }
         public CommandLineException(string message, Exception inner) : base(message, inner) { }
         protected CommandLineException(
-          System.Runtime.Serialization.SerializationInfo info,
-          System.Runtime.Serialization.StreamingContext context)
+            System.Runtime.Serialization.SerializationInfo info,
+            System.Runtime.Serialization.StreamingContext context)
             : base(info, context) { }
     }
 
@@ -22,8 +23,8 @@ namespace CLAP
         public ParserException(string message) : base(message) { }
         public ParserException(string message, Exception inner) : base(message, inner) { }
         protected ParserException(
-          System.Runtime.Serialization.SerializationInfo info,
-          System.Runtime.Serialization.StreamingContext context)
+            System.Runtime.Serialization.SerializationInfo info,
+            System.Runtime.Serialization.StreamingContext context)
             : base(info, context) { }
     }
 
@@ -37,8 +38,8 @@ namespace CLAP
         public MissingDefaultVerbException(string message) : base(message) { }
         public MissingDefaultVerbException(string message, Exception inner) : base(message, inner) { }
         protected MissingDefaultVerbException(
-          System.Runtime.Serialization.SerializationInfo info,
-          System.Runtime.Serialization.StreamingContext context)
+            System.Runtime.Serialization.SerializationInfo info,
+            System.Runtime.Serialization.StreamingContext context)
             : base(info, context) { }
     }
 
@@ -55,8 +56,8 @@ namespace CLAP
 
         public MissingVerbException(string message, Exception inner) : base(message, inner) { }
         protected MissingVerbException(
-          System.Runtime.Serialization.SerializationInfo info,
-          System.Runtime.Serialization.StreamingContext context)
+            System.Runtime.Serialization.SerializationInfo info,
+            System.Runtime.Serialization.StreamingContext context)
             : base(info, context) { }
     }
 
@@ -75,8 +76,8 @@ namespace CLAP
 
         public MissingRequiredArgumentException(string message, Exception inner) : base(message, inner) { }
         protected MissingRequiredArgumentException(
-          System.Runtime.Serialization.SerializationInfo info,
-          System.Runtime.Serialization.StreamingContext context)
+            System.Runtime.Serialization.SerializationInfo info,
+            System.Runtime.Serialization.StreamingContext context)
             : base(info, context) { }
     }
 
@@ -93,8 +94,8 @@ namespace CLAP
 
         public MissingArgumentValueException(string message, Exception inner) : base(message, inner) { }
         protected MissingArgumentValueException(
-          System.Runtime.Serialization.SerializationInfo info,
-          System.Runtime.Serialization.StreamingContext context)
+            System.Runtime.Serialization.SerializationInfo info,
+            System.Runtime.Serialization.StreamingContext context)
             : base(info, context) { }
     }
 
@@ -111,8 +112,8 @@ namespace CLAP
 
         public MissingArgumentPrefixException(string message, Exception inner) : base(message, inner) { }
         protected MissingArgumentPrefixException(
-          System.Runtime.Serialization.SerializationInfo info,
-          System.Runtime.Serialization.StreamingContext context)
+            System.Runtime.Serialization.SerializationInfo info,
+            System.Runtime.Serialization.StreamingContext context)
             : base(info, context) { }
     }
 
@@ -122,8 +123,8 @@ namespace CLAP
         public ValidationException(string message) : base(message) { }
         public ValidationException(string message, Exception inner) : base(message, inner) { }
         protected ValidationException(
-          System.Runtime.Serialization.SerializationInfo info,
-          System.Runtime.Serialization.StreamingContext context)
+            System.Runtime.Serialization.SerializationInfo info,
+            System.Runtime.Serialization.StreamingContext context)
             : base(info, context) { }
     }
 
@@ -141,8 +142,8 @@ namespace CLAP
         }
 
         protected TypeConvertionException(
-          System.Runtime.Serialization.SerializationInfo info,
-          System.Runtime.Serialization.StreamingContext context)
+            System.Runtime.Serialization.SerializationInfo info,
+            System.Runtime.Serialization.StreamingContext context)
             : base(info, context) { }
     }
 
@@ -155,8 +156,8 @@ namespace CLAP
         }
 
         protected MoreThanOneEmptyHandlerException(
-          System.Runtime.Serialization.SerializationInfo info,
-          System.Runtime.Serialization.StreamingContext context)
+            System.Runtime.Serialization.SerializationInfo info,
+            System.Runtime.Serialization.StreamingContext context)
             : base(info, context) { }
     }
 
@@ -169,8 +170,8 @@ namespace CLAP
         }
 
         protected MoreThanOneErrorHandlerException(
-          System.Runtime.Serialization.SerializationInfo info,
-          System.Runtime.Serialization.StreamingContext context)
+            System.Runtime.Serialization.SerializationInfo info,
+            System.Runtime.Serialization.StreamingContext context)
             : base(info, context) { }
     }
 
@@ -183,8 +184,8 @@ namespace CLAP
         }
 
         protected MoreThanOnePreVerbInterceptorException(
-          System.Runtime.Serialization.SerializationInfo info,
-          System.Runtime.Serialization.StreamingContext context)
+            System.Runtime.Serialization.SerializationInfo info,
+            System.Runtime.Serialization.StreamingContext context)
             : base(info, context) { }
     }
 
@@ -197,8 +198,8 @@ namespace CLAP
         }
 
         protected MoreThanOnePostVerbInterceptorException(
-          System.Runtime.Serialization.SerializationInfo info,
-          System.Runtime.Serialization.StreamingContext context)
+            System.Runtime.Serialization.SerializationInfo info,
+            System.Runtime.Serialization.StreamingContext context)
             : base(info, context) { }
     }
 
@@ -209,8 +210,8 @@ namespace CLAP
         public ArgumentMismatchException(string message) : base(message) { }
         public ArgumentMismatchException(string message, Exception inner) : base(message, inner) { }
         protected ArgumentMismatchException(
-          System.Runtime.Serialization.SerializationInfo info,
-          System.Runtime.Serialization.StreamingContext context)
+            System.Runtime.Serialization.SerializationInfo info,
+            System.Runtime.Serialization.StreamingContext context)
             : base(info, context) { }
     }
 
@@ -221,8 +222,8 @@ namespace CLAP
         public ParserExecutionTargetException(string message) : base(message) { }
         public ParserExecutionTargetException(string message, Exception inner) : base(message, inner) { }
         protected ParserExecutionTargetException(
-          System.Runtime.Serialization.SerializationInfo info,
-          System.Runtime.Serialization.StreamingContext context)
+            System.Runtime.Serialization.SerializationInfo info,
+            System.Runtime.Serialization.StreamingContext context)
             : base(info, context) { }
     }
 
@@ -238,8 +239,8 @@ namespace CLAP
         }
 
         protected UnhandledParametersException(
-          System.Runtime.Serialization.SerializationInfo info,
-          System.Runtime.Serialization.StreamingContext context)
+            System.Runtime.Serialization.SerializationInfo info,
+            System.Runtime.Serialization.StreamingContext context)
             : base(info, context) { }
     }
 
@@ -255,9 +256,30 @@ namespace CLAP
         }
 
         protected MoreThanOneDefaultVerbException(
-          System.Runtime.Serialization.SerializationInfo info,
-          System.Runtime.Serialization.StreamingContext context)
+            System.Runtime.Serialization.SerializationInfo info,
+            System.Runtime.Serialization.StreamingContext context)
             : base(info, context) { }
     }
 
+    [Serializable]
+    public class InvalidHelpHandlerException : CommandLineException
+    {
+        public MethodInfo Method { get; private set; }
+
+        public InvalidHelpHandlerException(MethodInfo method)
+            : this(method, null)
+        {
+        }
+
+        public InvalidHelpHandlerException(MethodInfo method, Exception ex)
+            : base("Method '{0}' is marked as [Help] but it does not have a single string parameter".FormatWith(method.Name), ex)
+        {
+            Method = method;
+        }
+
+        protected InvalidHelpHandlerException(
+            System.Runtime.Serialization.SerializationInfo info,
+            System.Runtime.Serialization.StreamingContext context)
+            : base(info, context) { }
+    }
 }

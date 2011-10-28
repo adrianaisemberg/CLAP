@@ -1,6 +1,4 @@
-﻿using System;
-using System.Diagnostics;
-
+﻿
 namespace CLAP
 {
     public interface ICollectionValidation
