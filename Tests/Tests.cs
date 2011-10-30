@@ -622,7 +622,7 @@ namespace Tests
 
             var p = new Parser<Sample_16>();
 
-            p.StaticRun(new string[] { });
+            p.RunStatic(new string[] { });
 
             mock.Verify(o => o.Print("a"));
 
@@ -686,7 +686,7 @@ namespace Tests
         {
             var p = new Parser<Sample_15>();
 
-            p.StaticRun(new string[] { });
+            p.RunStatic(new string[] { });
         }
 
         [Test]
@@ -772,7 +772,7 @@ namespace Tests
         {
             var p = new Parser<Sample_23>();
 
-            p.StaticRun(new[] { "-?" });
+            p.RunStatic(new[] { "-?" });
         }
 
         [Test]
@@ -784,7 +784,7 @@ namespace Tests
 
             var p = new Parser<Sample_22>();
 
-            p.StaticRun(new[] { "-?" });
+            p.RunStatic(new[] { "-?" });
 
             Sample_22.StaticPrinter = null;
         }
@@ -863,7 +863,7 @@ namespace Tests
 
             Assert.IsNull(help);
 
-            p.StaticRun(new string[] { });
+            p.RunStatic(new string[] { });
 
             Assert.IsNotNull(help);
         }
@@ -895,7 +895,7 @@ namespace Tests
         {
             var p = new Parser<Sample_25>();
 
-            p.StaticRun(new[] { "boo!" });
+            p.RunStatic(new[] { "boo!" });
         }
 
         [Test]
@@ -904,7 +904,7 @@ namespace Tests
         {
             var p = new Parser<Sample_25>();
 
-            p.StaticRun(new string[] { "-x" });
+            p.RunStatic(new string[] { "-x" });
         }
 
         [Test]
@@ -1273,7 +1273,7 @@ namespace Tests
                 return false;
             });
 
-            p.StaticRun(new string[] { });
+            p.RunStatic(new string[] { });
 
             Assert.IsTrue(handled);
         }
@@ -1289,7 +1289,7 @@ namespace Tests
                 handled = true;
             });
 
-            p.StaticRun(new string[] { });
+            p.RunStatic(new string[] { });
 
             Assert.IsTrue(handled);
         }
@@ -1309,7 +1309,7 @@ namespace Tests
 
             try
             {
-                p.StaticRun(new string[] { });
+                p.RunStatic(new string[] { });
 
                 Assert.Fail();
             }

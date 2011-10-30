@@ -21,6 +21,7 @@ namespace CLAP
             string ReadAllText(string path);
         }
 
+        [CoverageExclude]
         private class FileSystem : IFileSystem
         {
             public string ReadAllText(string path)

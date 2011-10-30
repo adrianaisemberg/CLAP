@@ -77,6 +77,51 @@ namespace CLAP
     }
 
     [Serializable]
+    public class MultiParserMissingClassNameException : CommandLineException
+    {
+        public MultiParserMissingClassNameException()
+            : this("Arguments contain no class name", null)
+        {
+        }
+
+        public MultiParserMissingClassNameException(string message, Exception inner) : base(message, inner) { }
+        protected MultiParserMissingClassNameException(
+            System.Runtime.Serialization.SerializationInfo info,
+            System.Runtime.Serialization.StreamingContext context)
+            : base(info, context) { }
+    }
+
+    [Serializable]
+    public class InvalidVerbException : CommandLineException
+    {
+        public InvalidVerbException()
+            : this("Invalid verb: Contains more than two parts.", null)
+        {
+        }
+
+        public InvalidVerbException(string message, Exception inner) : base(message, inner) { }
+        protected InvalidVerbException(
+            System.Runtime.Serialization.SerializationInfo info,
+            System.Runtime.Serialization.StreamingContext context)
+            : base(info, context) { }
+    }
+
+    [Serializable]
+    public class UnknownParserTypeException : CommandLineException
+    {
+        public UnknownParserTypeException(string typeName)
+            : this("Parser type '{0}' not found".FormatWith(typeName), null)
+        {
+        }
+
+        public UnknownParserTypeException(string message, Exception inner) : base(message, inner) { }
+        protected UnknownParserTypeException(
+            System.Runtime.Serialization.SerializationInfo info,
+            System.Runtime.Serialization.StreamingContext context)
+            : base(info, context) { }
+    }
+
+    [Serializable]
     public class MissingRequiredArgumentException : CommandLineException
     {
         public string ParameterName { get; private set; }

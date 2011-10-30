@@ -51,12 +51,12 @@ namespace CLAP
             Register = new ParserRegistration(GetHelpString, ValuesFactory.GetValueForParameter);
         }
 
-        public void StaticRun(string[] args)
+        public void RunStatic(string[] args)
         {
             RunTargets(args, null);
         }
 
-        internal void RunTargets(string[] args, params object[] targets)
+        public void RunTargets(string[] args, params object[] targets)
         {
             // no args
             //
@@ -82,7 +82,7 @@ namespace CLAP
 
             Debug.Assert(parser != null);
 
-            var index = m_types.IndexOf(parser.Type);
+            var index = m_types.ToList().IndexOf(parser.Type);
 
             Debug.Assert(index >= 0);
 
@@ -127,17 +127,16 @@ namespace CLAP
                 throw new MissingVerbException();
             }
 
-            if (!s_delimiters.Any(d => verb.Contains(d)))
+            if (!verb.Contains(s_delimiters))
             {
-#warning TODO:
-                throw new Exception("requires dot");
+                throw new MultiParserMissingClassNameException();
             }
 
             var parts = verb.Split(s_delimiters, StringSplitOptions.RemoveEmptyEntries);
 
             if (parts.Length > 2)
             {
-                throw new Exception("parts length != 2");
+                throw new InvalidVerbException();
             }
 
             var typeName = parts[0];
@@ -148,7 +147,7 @@ namespace CLAP
 
             if (type == null)
             {
-                throw new Exception("no type");
+                throw new UnknownParserTypeException(typeName);
             }
 
             return new ParserRunner(type, registration);
@@ -173,19 +172,23 @@ namespace CLAP
 
             // if the verb contains a delimiter - remove the type name from the arg
             //
-            if (s_delimiters.Any(d => verb.Contains(d)))
+            if (verb.Contains(s_delimiters))
             {
                 var parts = verb.Split(s_delimiters, StringSplitOptions.RemoveEmptyEntries);
 
                 if (parts.Length > 2)
                 {
-#warning TODO:
-                    throw new Exception("parts length != 2");
+                    throw new InvalidVerbException();
                 }
 
                 Debug.Assert(parts.Length == 2);
 
                 var typeName = parts[0];
+
+                if (!type.Name.Equals(typeName, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    throw new UnknownParserTypeException(typeName);
+                }
 
                 args[0] = args[0].Substring(typeName.Length + 1);
             }

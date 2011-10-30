@@ -73,6 +73,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CollectionValidationAttribute.cs" />
+    <Compile Include="CoverageExcludeAttribute.cs" />
     <Compile Include="ErrorAttribute.cs" />
     <Compile Include="FileSystemHelper.cs" />
     <Compile Include="FW2Stuff.cs" />

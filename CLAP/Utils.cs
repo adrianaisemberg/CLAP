@@ -131,26 +131,14 @@ namespace CLAP
             return obj == null ? nullValue : obj.ToString();
         }
 
-        public static int IndexOf<T>(this IEnumerable<T> collection, T item) where T : class
-        {
-            var index = -1;
-
-            foreach (var i in collection)
-            {
-                index++;
-
-                if (i == item)
-                {
-                    return index;
-                }
-            }
-
-            return -1;
-        }
-
         public static bool StartsWith(this string str, IEnumerable<string> values)
         {
             return values.Any(v => str.StartsWith(v));
+        }
+
+        public static bool Contains(this string str, IEnumerable<string> values)
+        {
+            return values.Any(v => str.Contains(v));
         }
     }
 }
