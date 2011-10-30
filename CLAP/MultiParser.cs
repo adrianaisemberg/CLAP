@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Linq;
+using System.Text;
 
 namespace CLAP
 {
@@ -91,6 +92,25 @@ namespace CLAP
             parser.Run(args, target);
         }
 
+        public string GetHelpString()
+        {
+            var sb = new StringBuilder();
+
+            foreach (var type in m_types)
+            {
+                var pr = new ParserRunner(type, Register);
+
+                sb.AppendLine(type.Name);
+                sb.AppendLine("".PadLeft(30, '-'));
+
+                sb.AppendLine(pr.GetHelpString());
+
+                sb.AppendLine();
+            }
+
+            return sb.ToString();
+        }
+
         private void HandleEmptyArguments(object[] targets)
         {
             if (Register.RegisteredEmptyHandler != null)
@@ -106,13 +126,6 @@ namespace CLAP
                 parser.HandleEmptyArguments(target);
             }
         }
-
-        public string GetHelpString()
-        {
-            return "FOOOO!";
-        }
-
-        #endregion Methods
 
         private ParserRunner GetMultiTypesParser(string[] args, object obj, ParserRegistration registration)
         {
@@ -195,5 +208,7 @@ namespace CLAP
 
             return parser;
         }
+
+        #endregion Methods
     }
 }

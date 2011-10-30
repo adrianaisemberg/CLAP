@@ -47,11 +47,6 @@ namespace CLAP
 
         #region Public Methods
 
-        public void Run(string[] args)
-        {
-            TryRunInternal(args, null);
-        }
-
         public void Run(string[] args, object obj)
         {
             TryRunInternal(args, obj);
@@ -166,14 +161,12 @@ namespace CLAP
 
         private void RunInternal(string[] args, object obj)
         {
-            // no args
             //
-            if (args.None() || args.All(a => string.IsNullOrEmpty(a)))
-            {
-                HandleEmptyArguments(obj);
+            // *** empty args are handled by the multi-parser
+            //
+            //
 
-                return;
-            }
+            Debug.Assert(args.Length > 0 && args.All(a => !string.IsNullOrEmpty(a)));
 
             // the first arg should be the verb, unless there is no verb and a default is used
             //
@@ -423,6 +416,7 @@ namespace CLAP
         internal static void Validate(Type type)
         {
             // no more than one default verb
+            //
             var verbMethods = type.GetMethodsWith<VerbAttribute>().
                 Select(m => new Method(m));
 
@@ -480,6 +474,7 @@ namespace CLAP
                         if (definedEmptyHandlerParameters.Length > 1 ||
                             definedEmptyHandlerParameters.First().ParameterType != typeof(string))
                         {
+                            throw new InvalidHelpHandlerException(definedEmptyHandler);
                         }
                     }
                     else
@@ -874,10 +869,9 @@ namespace CLAP
 
         internal void HandleEmptyArguments(object target)
         {
-            if (m_registration.RegisteredEmptyHandler != null)
-            {
-                m_registration.RegisteredEmptyHandler();
-            }
+            //
+            // *** registered empty handlers are called by the multi-parser
+            //
 
             var definedEmptyHandlers = Type.GetMethodsWith<EmptyAttribute>();
             var definedEmptyHandlersCount = definedEmptyHandlers.Count();
@@ -893,35 +887,18 @@ namespace CLAP
                 var obj = method.IsStatic ? null : target;
 
                 // if it is a [Help] handler
+                //
                 if (method.HasAttribute<HelpAttribute>())
                 {
-                    try
-                    {
-                        var help = GetHelpString();
+                    var help = GetHelpString();
 
-                        MethodInvoker.Invoke(method, obj, new[] { help });
-                    }
-                    catch (TargetParameterCountException ex)
-                    {
-                        throw new InvalidHelpHandlerException(method, ex);
-                    }
-                    catch (ArgumentException ex)
-                    {
-                        throw new InvalidHelpHandlerException(method, ex);
-                    }
+                    // method should execute because it was already passed validation
+                    //
+                    MethodInvoker.Invoke(method, obj, new[] { help });
                 }
                 else
                 {
-                    try
-                    {
-                        MethodInvoker.Invoke(method, obj, null);
-                    }
-                    catch (TargetParameterCountException ex)
-                    {
-                        throw new ArgumentMismatchException(
-                            "Method '{0}' is marked as [Empty] so it should not have any parameters".FormatWith(method),
-                            ex);
-                    }
+                    MethodInvoker.Invoke(method, obj, null);
                 }
             }
 

@@ -869,6 +869,22 @@ namespace Tests
         }
 
         [Test]
+        public void RegisterEmptyHelpHandler_EmptyArguments_Called()
+        {
+            var p = new Parser<Sample_25>();
+
+            string help = null;
+
+            p.Register.EmptyHelpHandler(h => help = h);
+
+            Assert.IsNull(help);
+
+            p.RunStatic(new string[] { });
+
+            Assert.IsNotNull(help);
+        }
+
+        [Test]
         [ExpectedException(typeof(MoreThanOneEmptyHandlerException))]
         public void RegisterEmptyHelpHandler_MoreThanOnce_Exception()
         {
