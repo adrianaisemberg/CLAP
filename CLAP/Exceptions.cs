@@ -44,14 +44,29 @@ namespace CLAP
     }
 
     [Serializable]
-    public class MissingVerbException : CommandLineException
+    public class VerbNotFoundException : CommandLineException
     {
         public string Verb { get; private set; }
 
-        public MissingVerbException(string verb)
+        public VerbNotFoundException(string verb)
             : base("Verb '{0}' was not found".FormatWith(verb))
         {
             Verb = verb;
+        }
+
+        public VerbNotFoundException(string message, Exception inner) : base(message, inner) { }
+        protected VerbNotFoundException(
+            System.Runtime.Serialization.SerializationInfo info,
+            System.Runtime.Serialization.StreamingContext context)
+            : base(info, context) { }
+    }
+
+    [Serializable]
+    public class MissingVerbException : CommandLineException
+    {
+        public MissingVerbException()
+            : this("Arguments contain no verb", null)
+        {
         }
 
         public MissingVerbException(string message, Exception inner) : base(message, inner) { }

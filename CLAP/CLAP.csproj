@@ -88,6 +88,7 @@
     <Compile Include="Interception\VerbExecutionContext.cs" />
     <Compile Include="Interception\VerbInterception.cs" />
     <Compile Include="Method.cs" />
+    <Compile Include="MethodInvoker.cs" />
     <Compile Include="MultiParser.cs" />
     <Compile Include="Parameter.cs" />
     <Compile Include="ParameterAttribute.cs" />

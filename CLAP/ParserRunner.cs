@@ -15,16 +15,20 @@ namespace CLAP
     {
         #region Fields
 
-        private readonly Type m_type;
-
         // The possible prefixes of a parameter
         //
-        internal readonly static string[] Prefixes = new[] { "/", "-" };
+        internal readonly static string[] ArgumentPrefixes = new[] { "/", "-" };
         private readonly static string s_fileInputSuffix = "@";
 
         private readonly ParserRegistration m_registration;
 
         #endregion Fields
+
+        #region Properties
+
+        internal Type Type { get; private set; }
+
+        #endregion Properties
 
         #region Constructors
 
@@ -32,7 +36,7 @@ namespace CLAP
         {
             Debug.Assert(type != null);
 
-            m_type = type;
+            Type = type;
 
             m_registration = parserRegistration;
 
@@ -200,9 +204,9 @@ namespace CLAP
                 // AND
                 // the first arg is not an input argument (doesn't start with "-" etc)
                 //
-                if (verb != null && !Prefixes.Any(p => p.Equals(verb[0].ToString())))
+                if (verb != null && !verb.StartsWith(ArgumentPrefixes))
                 {
-                    throw new MissingVerbException(verb);
+                    throw new VerbNotFoundException(verb);
                 }
 
                 method = typeVerbs.FirstOrDefault(v => v.IsDefault);
@@ -262,7 +266,7 @@ namespace CLAP
                 {
                     // invoke the method with the list of parameters
                     //
-                    method.MethodInfo.Invoke(target, parameters.Select(p => p.Value).ToArray());
+                    MethodInvoker.Invoke(method.MethodInfo, target, parameters.Select(p => p.Value).ToArray());
                 }
             }
             catch (TargetInvocationException tex)
@@ -317,7 +321,7 @@ namespace CLAP
             }
             else
             {
-                var postInterceptionMethods = m_type.GetMethodsWith<PostVerbExecutionAttribute>();
+                var postInterceptionMethods = Type.GetMethodsWith<PostVerbExecutionAttribute>();
 
                 // try a defined interceptor type
                 //
@@ -327,15 +331,15 @@ namespace CLAP
 
                     var postInterceptionMethod = postInterceptionMethods.First();
 
-                    postInterceptionMethod.Invoke(target, new[] { postVerbExecutionContext });
+                    MethodInvoker.Invoke(postInterceptionMethod, target, new[] { postVerbExecutionContext });
                 }
                 else
                 {
                     // try a defined interceptor type
                     //
-                    if (m_type.HasAttribute<VerbInterception>())
+                    if (Type.HasAttribute<VerbInterception>())
                     {
-                        var interception = m_type.GetAttribute<VerbInterception>();
+                        var interception = Type.GetAttribute<VerbInterception>();
 
                         var interceptor = (IPostVerbInterceptor)Activator.CreateInstance(interception.InterceptorType);
 
@@ -362,7 +366,7 @@ namespace CLAP
             {
                 // try a defined verb interceptor
                 //
-                var preInterceptionMethods = m_type.GetMethodsWith<PreVerbExecutionAttribute>();
+                var preInterceptionMethods = Type.GetMethodsWith<PreVerbExecutionAttribute>();
 
                 if (preInterceptionMethods.Any())
                 {
@@ -370,15 +374,15 @@ namespace CLAP
 
                     var preInterceptionMethod = preInterceptionMethods.First();
 
-                    preInterceptionMethod.Invoke(target, new[] { preVerbExecutionContext });
+                    MethodInvoker.Invoke(preInterceptionMethod, target, new[] { preVerbExecutionContext });
                 }
                 else
                 {
                     // try a defined interceptor type
                     //
-                    if (m_type.HasAttribute<VerbInterception>())
+                    if (Type.HasAttribute<VerbInterception>())
                     {
-                        var interception = m_type.GetAttribute<VerbInterception>();
+                        var interception = Type.GetAttribute<VerbInterception>();
 
                         var interceptor = (IPreVerbInterceptor)Activator.CreateInstance(interception.InterceptorType);
 
@@ -597,9 +601,9 @@ namespace CLAP
             {
                 // all arguments must start with a valid prefix
                 //
-                if (!Prefixes.Any(p => arg.StartsWith(p)))
+                if (!arg.StartsWith(ArgumentPrefixes))
                 {
-                    throw new MissingArgumentPrefixException(arg, string.Join(",", Prefixes));
+                    throw new MissingArgumentPrefixException(arg, string.Join(",", ArgumentPrefixes));
                 }
 
                 var prefix = arg.Substring(1);
@@ -663,7 +667,7 @@ namespace CLAP
         /// </summary>
         private IEnumerable<Method> GetVerbs()
         {
-            var verbMethods = m_type.GetMethodsWith<VerbAttribute>().
+            var verbMethods = Type.GetMethodsWith<VerbAttribute>().
                 Select(m => new Method(m));
 
             var defaultVerbs = verbMethods.Where(m => m.IsDefault);
@@ -710,7 +714,7 @@ namespace CLAP
 
         private IEnumerable<MethodInfo> GetDefinedGlobals()
         {
-            var globals = m_type.GetMethodsWith<GlobalAttribute>();
+            var globals = Type.GetMethodsWith<GlobalAttribute>();
 
             return globals;
         }
@@ -751,7 +755,7 @@ namespace CLAP
 
                     if (parameters.Length == 0)
                     {
-                        method.Invoke(obj, null);
+                        MethodInvoker.Invoke(method, obj, null);
                     }
                     else if (parameters.Length == 1)
                     {
@@ -788,7 +792,7 @@ namespace CLAP
                                 });
                             }
 
-                            method.Invoke(obj, new[] { value });
+                            MethodInvoker.Invoke(method, obj, new[] { value });
                         }
                     }
                     else
@@ -808,7 +812,7 @@ namespace CLAP
         {
             var arg = firstArg;
 
-            if (Prefixes.Contains(firstArg[0].ToString()))
+            if (ArgumentPrefixes.Contains(firstArg[0].ToString()))
             {
                 arg = firstArg.Substring(1);
             }
@@ -828,7 +832,7 @@ namespace CLAP
                 helpHandled = true;
             }
 
-            var definedHelpMethods = m_type.GetMethodsWith<HelpAttribute>();
+            var definedHelpMethods = Type.GetMethodsWith<HelpAttribute>();
 
             foreach (var method in definedHelpMethods)
             {
@@ -850,7 +854,7 @@ namespace CLAP
                             help = GetHelpString();
                         }
 
-                        method.Invoke(obj, new[] { help });
+                        MethodInvoker.Invoke(method, obj, new[] { help });
 
                         helpHandled = true;
                     }
@@ -875,7 +879,7 @@ namespace CLAP
                 m_registration.RegisteredEmptyHandler();
             }
 
-            var definedEmptyHandlers = m_type.GetMethodsWith<EmptyAttribute>();
+            var definedEmptyHandlers = Type.GetMethodsWith<EmptyAttribute>();
             var definedEmptyHandlersCount = definedEmptyHandlers.Count();
 
             Debug.Assert(definedEmptyHandlersCount <= 1);
@@ -895,7 +899,7 @@ namespace CLAP
                     {
                         var help = GetHelpString();
 
-                        method.Invoke(obj, new[] { help });
+                        MethodInvoker.Invoke(method, obj, new[] { help });
                     }
                     catch (TargetParameterCountException ex)
                     {
@@ -910,7 +914,7 @@ namespace CLAP
                 {
                     try
                     {
-                        method.Invoke(obj, null);
+                        MethodInvoker.Invoke(method, obj, null);
                     }
                     catch (TargetParameterCountException ex)
                     {
@@ -961,7 +965,7 @@ namespace CLAP
             }
             else
             {
-                var definedErrorHandlers = GetDefinedErrorHandlers(m_type);
+                var definedErrorHandlers = GetDefinedErrorHandlers(Type);
 
                 Debug.Assert(definedErrorHandlers.Count() <= 1);
 
@@ -973,14 +977,14 @@ namespace CLAP
 
                     if (parameters.None())
                     {
-                        handler.Method.Invoke(target, null);
+                        MethodInvoker.Invoke(handler.Method, target, null);
                     }
                     else
                     {
                         Debug.Assert(parameters.Length == 1);
                         Debug.Assert(parameters[0].ParameterType == typeof(Exception));
 
-                        handler.Method.Invoke(target, new[] { ex });
+                        MethodInvoker.Invoke(handler.Method, target, new[] { ex });
                     }
 
                     return handler.ReThrow;

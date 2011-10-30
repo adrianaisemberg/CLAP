@@ -953,6 +953,22 @@ namespace Tests
         }
     }
 
+    public class Sample_51
+    {
+        [Verb]
+        public static void Foo(string str)
+        {
+        }
+    }
+
+    public class Sample_52
+    {
+        [Verb]
+        public static void Foo(string str)
+        {
+        }
+    }
+
     public enum Case
     {
         Upper,

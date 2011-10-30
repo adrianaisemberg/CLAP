@@ -620,11 +620,9 @@ namespace Tests
 
             Sample_16.StaticPrinter = mock.Object;
 
-            var sample = new Sample_16();
-
             var p = new Parser<Sample_16>();
 
-            p.Run(new string[] { });
+            p.StaticRun(new string[] { });
 
             mock.Verify(o => o.Print("a"));
 
@@ -686,12 +684,9 @@ namespace Tests
         [ExpectedException(typeof(ParserExecutionTargetException))]
         public void Empty_Defined_NotStatic_TargetNull_Exception()
         {
-            var mock = new Mock<IPrinter>();
-            var sample = new Sample_15 { Printer = mock.Object };
-
             var p = new Parser<Sample_15>();
 
-            p.Run(new string[] { });
+            p.StaticRun(new string[] { });
         }
 
         [Test]
@@ -775,12 +770,9 @@ namespace Tests
         [ExpectedException(typeof(ParserExecutionTargetException))]
         public void Help_NonStatic_CalledWithNull_Exception()
         {
-            var mock = new Mock<IPrinter>();
-            var sample = new Sample_23 { Printer = mock.Object };
-
             var p = new Parser<Sample_23>();
 
-            p.Run(new[] { "-?" });
+            p.StaticRun(new[] { "-?" });
         }
 
         [Test]
@@ -790,11 +782,9 @@ namespace Tests
 
             Sample_22.StaticPrinter = mock.Object;
 
-            var sample = new Sample_22 { Printer = mock.Object };
-
             var p = new Parser<Sample_22>();
 
-            p.Run(new[] { "-?" });
+            p.StaticRun(new[] { "-?" });
 
             Sample_22.StaticPrinter = null;
         }
@@ -873,7 +863,7 @@ namespace Tests
 
             Assert.IsNull(help);
 
-            p.Run(new string[] { });
+            p.StaticRun(new string[] { });
 
             Assert.IsNotNull(help);
         }
@@ -900,12 +890,12 @@ namespace Tests
         }
 
         [Test]
-        [ExpectedException(typeof(MissingVerbException))]
+        [ExpectedException(typeof(VerbNotFoundException))]
         public void Run_Verb_NoMatchingMethod_Exception()
         {
             var p = new Parser<Sample_25>();
 
-            p.Run(new[] { "boo!" });
+            p.StaticRun(new[] { "boo!" });
         }
 
         [Test]
@@ -914,7 +904,7 @@ namespace Tests
         {
             var p = new Parser<Sample_25>();
 
-            p.Run(new string[] { "-x" });
+            p.StaticRun(new string[] { "-x" });
         }
 
         [Test]
@@ -1283,7 +1273,7 @@ namespace Tests
                 return false;
             });
 
-            p.Run(new string[] { });
+            p.StaticRun(new string[] { });
 
             Assert.IsTrue(handled);
         }
@@ -1299,7 +1289,7 @@ namespace Tests
                 handled = true;
             });
 
-            p.Run(new string[] { });
+            p.StaticRun(new string[] { });
 
             Assert.IsTrue(handled);
         }
@@ -1319,7 +1309,7 @@ namespace Tests
 
             try
             {
-                p.Run(new string[] { });
+                p.StaticRun(new string[] { });
 
                 Assert.Fail();
             }

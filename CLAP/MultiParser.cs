@@ -21,9 +21,27 @@ namespace CLAP
 
         #region Constructors
 
-        public MultiParser()
+        protected MultiParser(params Type[] types)
+        {
+            m_types = types;
+
+            Init();
+        }
+
+        protected MultiParser()
         {
             m_types = GetType().GetGenericArguments();
+
+            Init();
+        }
+
+        #endregion Constructors
+
+        #region Methods
+
+        private void Init()
+        {
+            Debug.Assert(m_types.Any());
 
             foreach (var type in m_types)
             {
@@ -33,22 +51,18 @@ namespace CLAP
             Register = new ParserRegistration(GetHelpString, ValuesFactory.GetValueForParameter);
         }
 
-        #endregion Constructors
-
-        #region Methods
-
-        public void Run(string[] args)
+        public void StaticRun(string[] args)
         {
-            Run(args, null);
+            RunTargets(args, null);
         }
 
-        public void Run(string[] args, object obj)
+        internal void RunTargets(string[] args, params object[] targets)
         {
             // no args
             //
             if (args.None() || args.All(a => string.IsNullOrEmpty(a)))
             {
-                HandleEmptyArguments(obj);
+                HandleEmptyArguments(targets);
 
                 return;
             }
@@ -57,21 +71,27 @@ namespace CLAP
 
             if (m_types.Length == 1)
             {
-                parser = GetSingleTypeParser(args, obj, Register);
+                parser = GetSingleTypeParser(args, targets, Register);
             }
             else
             {
                 Debug.Assert(m_types.Length > 1);
 
-                parser = GetMultiTypesParser(args, obj, Register);
+                parser = GetMultiTypesParser(args, targets, Register);
             }
 
             Debug.Assert(parser != null);
 
-            parser.Run(args, obj);
+            var index = m_types.IndexOf(parser.Type);
+
+            Debug.Assert(index >= 0);
+
+            var target = targets.None() ? null : targets[index];
+
+            parser.Run(args, target);
         }
 
-        private void HandleEmptyArguments(object target)
+        private void HandleEmptyArguments(object[] targets)
         {
             if (Register.RegisteredEmptyHandler != null)
             {
@@ -80,6 +100,8 @@ namespace CLAP
             else if (m_types.Length == 1)
             {
                 var parser = new ParserRunner(m_types.First(), Register);
+
+                var target = targets == null ? null : targets[0];
 
                 parser.HandleEmptyArguments(target);
             }
@@ -94,18 +116,15 @@ namespace CLAP
 
         private ParserRunner GetMultiTypesParser(string[] args, object obj, ParserRegistration registration)
         {
-            if (args.Length == 0)
-            {
-#warning TODO:
-                throw new Exception("Multi parser needs a verb");
-            }
+            Debug.Assert(args.Any());
 
             var verb = args[0];
 
-            if (ParserRunner.Prefixes.Any(p => verb.StartsWith(p)))
+            // if the first arg is not a verb - throw
+            //
+            if (verb.StartsWith(ParserRunner.ArgumentPrefixes))
             {
-#warning TODO:
-                throw new Exception("no verb");
+                throw new MissingVerbException();
             }
 
             if (!s_delimiters.Any(d => verb.Contains(d)))
@@ -147,7 +166,7 @@ namespace CLAP
 
             // if there is no verb - leave all the args as is
             //
-            if (ParserRunner.Prefixes.Any(p => verb.StartsWith(p)))
+            if (verb.StartsWith(ParserRunner.ArgumentPrefixes))
             {
                 return parser;
             }

@@ -20,7 +20,7 @@ namespace CLAP
 
                 return true;
             }
-            else if (str.StartsWith("{") || str.StartsWith("["))
+            else if (str.StartsWith(new[] { "{", "[" }))
             {
                 obj = DeserializeJson(str, type);
 
