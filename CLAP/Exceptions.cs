@@ -46,6 +46,9 @@ namespace CLAP
     [Serializable]
     public class VerbNotFoundException : CommandLineException
     {
+        /// <summary>
+        /// The verb string that wasn't found
+        /// </summary>
         public string Verb { get; private set; }
 
         public VerbNotFoundException(string verb)
@@ -124,7 +127,14 @@ namespace CLAP
     [Serializable]
     public class MissingRequiredArgumentException : CommandLineException
     {
+        /// <summary>
+        /// The name of the required parameter
+        /// </summary>
         public string ParameterName { get; private set; }
+
+        /// <summary>
+        /// The verb that requires the parameter
+        /// </summary>
         public string Verb { get; private set; }
 
         public MissingRequiredArgumentException(string verb, string parameter)
@@ -144,6 +154,9 @@ namespace CLAP
     [Serializable]
     public class MissingArgumentValueException : CommandLineException
     {
+        /// <summary>
+        /// The name of the parameter
+        /// </summary>
         public string ParameterName { get; private set; }
 
         public MissingArgumentValueException(string parameter)
@@ -162,6 +175,9 @@ namespace CLAP
     [Serializable]
     public class MissingArgumentPrefixException : CommandLineException
     {
+        /// <summary>
+        /// The name of the parameter
+        /// </summary>
         public string ParameterName { get; private set; }
 
         public MissingArgumentPrefixException(string parameter, string prefixes)
@@ -191,7 +207,14 @@ namespace CLAP
     [Serializable]
     public class TypeConvertionException : CommandLineException
     {
+        /// <summary>
+        /// The string value that failed to be converted
+        /// </summary>
         public string Value { get; private set; }
+
+        /// <summary>
+        /// The target type
+        /// </summary>
         public Type Type { get; private set; }
 
         public TypeConvertionException(string value, Type type, Exception inner)
@@ -290,6 +313,9 @@ namespace CLAP
     [Serializable]
     public class UnhandledParametersException : CommandLineException
     {
+        /// <summary>
+        /// The collection of unhandled arguments
+        /// </summary>
         public Dictionary<string, string> UnhandledParameters { get; private set; }
 
         public UnhandledParametersException(Dictionary<string, string> unhandledParameters)
@@ -307,6 +333,9 @@ namespace CLAP
     [Serializable]
     public class MoreThanOneDefaultVerbException : CommandLineException
     {
+        /// <summary>
+        /// The collection of the verbs that are defined as default
+        /// </summary>
         public IEnumerable<string> Verbs { get; private set; }
 
         public MoreThanOneDefaultVerbException(IEnumerable<string> verbs)
@@ -324,6 +353,9 @@ namespace CLAP
     [Serializable]
     public class InvalidHelpHandlerException : CommandLineException
     {
+        /// <summary>
+        /// The method that is defined as help
+        /// </summary>
         public MethodInfo Method { get; private set; }
 
         public InvalidHelpHandlerException(MethodInfo method)
