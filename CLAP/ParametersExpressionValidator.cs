@@ -3,9 +3,19 @@ using System.Linq;
 
 namespace CLAP
 {
+    /// <summary>
+    /// Validates a collection of named parameters or properties against a boolean expression
+    /// </summary>
     internal class ParametersExpressionValidator : ICollectionValidator
     {
+        /// <summary>
+        /// The expression
+        /// </summary>
         public string Expression { get; private set; }
+
+        /// <summary>
+        /// Whether the expression should be treated as case-sensitive
+        /// </summary>
         public bool CaseSensitive { get; private set; }
 
         internal ParametersExpressionValidator(string expression, bool caseSensitive)

@@ -5,6 +5,9 @@ using System.Text;
 
 namespace CLAP
 {
+    /// <summary>
+    /// A parser of one or more classes
+    /// </summary>
     public abstract class MultiParser
     {
         #region Fields
@@ -16,6 +19,9 @@ namespace CLAP
 
         #region Properties
 
+        /// <summary>
+        /// Parser registration
+        /// </summary>
         public ParserRegistration Register { get; private set; }
 
         #endregion Properties
@@ -38,7 +44,7 @@ namespace CLAP
 
         #endregion Constructors
 
-        #region Methods
+        #region Private Methods
 
         private void Init()
         {
@@ -50,65 +56,6 @@ namespace CLAP
             }
 
             Register = new ParserRegistration(GetHelpString, ValuesFactory.GetValueForParameter);
-        }
-
-        public void RunStatic(string[] args)
-        {
-            RunTargets(args, null);
-        }
-
-        public void RunTargets(string[] args, params object[] targets)
-        {
-            // no args
-            //
-            if (args.None() || args.All(a => string.IsNullOrEmpty(a)))
-            {
-                HandleEmptyArguments(targets);
-
-                return;
-            }
-
-            ParserRunner parser;
-
-            if (m_types.Length == 1)
-            {
-                parser = GetSingleTypeParser(args, targets, Register);
-            }
-            else
-            {
-                Debug.Assert(m_types.Length > 1);
-
-                parser = GetMultiTypesParser(args, targets, Register);
-            }
-
-            Debug.Assert(parser != null);
-
-            var index = m_types.ToList().IndexOf(parser.Type);
-
-            Debug.Assert(index >= 0);
-
-            var target = targets.None() ? null : targets[index];
-
-            parser.Run(args, target);
-        }
-
-        public string GetHelpString()
-        {
-            var sb = new StringBuilder();
-
-            foreach (var type in m_types)
-            {
-                var pr = new ParserRunner(type, Register);
-
-                sb.AppendLine(type.Name);
-                sb.AppendLine("".PadLeft(30, '-'));
-
-                sb.AppendLine(pr.GetHelpString());
-
-                sb.AppendLine();
-            }
-
-            return sb.ToString();
         }
 
         private void HandleEmptyArguments(object[] targets)
@@ -209,6 +156,82 @@ namespace CLAP
             return parser;
         }
 
-        #endregion Methods
+        #endregion Private Methods
+
+        #region Public Methods
+
+        /// <summary>
+        /// Run a parser of static verbs
+        /// </summary>
+        /// <param name="args">The user arguments</param>
+        public void RunStatic(string[] args)
+        {
+            RunTargets(args, null);
+        }
+
+        /// <summary>
+        /// Run a parser of instance verbs against instances of the verb classes
+        /// </summary>
+        /// <param name="args">The user arguments</param>
+        /// <param name="targets">The instances of the verb classes</param>
+        public void RunTargets(string[] args, params object[] targets)
+        {
+            // no args
+            //
+            if (args.None() || args.All(a => string.IsNullOrEmpty(a)))
+            {
+                HandleEmptyArguments(targets);
+
+                return;
+            }
+
+            ParserRunner parser;
+
+            if (m_types.Length == 1)
+            {
+                parser = GetSingleTypeParser(args, targets, Register);
+            }
+            else
+            {
+                Debug.Assert(m_types.Length > 1);
+
+                parser = GetMultiTypesParser(args, targets, Register);
+            }
+
+            Debug.Assert(parser != null);
+
+            var index = m_types.ToList().IndexOf(parser.Type);
+
+            Debug.Assert(index >= 0);
+
+            var target = targets.None() ? null : targets[index];
+
+            parser.Run(args, target);
+        }
+
+        /// <summary>
+        /// Gets a help string that describes all the parser information for the user
+        /// </summary>
+        public string GetHelpString()
+        {
+#warning TODO: this is crap
+            var sb = new StringBuilder();
+
+            foreach (var type in m_types)
+            {
+                var pr = new ParserRunner(type, Register);
+
+                sb.AppendLine(type.Name);
+                sb.AppendLine("".PadLeft(30, '-'));
+
+                sb.AppendLine(pr.GetHelpString());
+
+                sb.AppendLine();
+            }
+
+            return sb.ToString();
+        }
+
+        #endregion Public Methods
     }
 }

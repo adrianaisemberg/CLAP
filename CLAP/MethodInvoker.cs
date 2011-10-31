@@ -3,6 +3,9 @@ using System.Reflection;
 
 namespace CLAP
 {
+    /// <summary>
+    /// A helper for method invoking to allow mocking for tests
+    /// </summary>
     public static class MethodInvoker
     {
         public static IMethodInvoker Invoker { get; set; }

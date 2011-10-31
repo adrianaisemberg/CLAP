@@ -2,6 +2,9 @@
 
 namespace CLAP
 {
+    /// <summary>
+    /// A helper for file reading to allow mocking for tests
+    /// </summary>
     public static class FileSystemHelper
     {
         public static IFileSystem FileHandler { get; set; }

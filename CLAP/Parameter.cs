@@ -42,11 +42,7 @@ namespace CLAP
 
         #region Constructors
 
-        /// <summary>
-        /// Constructor
-        /// </summary>
-        /// <param name="parameter">The <see cref="ParameterInfo"/> to describe</param>
-        public Parameter(ParameterInfo parameter)
+        internal Parameter(ParameterInfo parameter)
         {
             Debug.Assert(parameter != null);
 

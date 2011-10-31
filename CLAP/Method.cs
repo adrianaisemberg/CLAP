@@ -36,11 +36,7 @@ namespace CLAP
 
         #region Constructors
 
-        /// <summary>
-        /// Constructor
-        /// </summary>
-        /// <param name="method">The <see cref="MethodInfo"/> to describe</param>
-        public Method(MethodInfo method)
+        internal Method(MethodInfo method)
         {
             Debug.Assert(method != null);
 
