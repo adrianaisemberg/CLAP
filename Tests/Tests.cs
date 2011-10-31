@@ -1285,8 +1285,6 @@ namespace Tests
             p.Register.ErrorHandler(ex =>
             {
                 handled = true;
-
-                return false;
             });
 
             p.RunStatic(new string[] { });
@@ -1320,7 +1318,7 @@ namespace Tests
             {
                 handled = true;
 
-                return true;
+                ex.ReThrow = true;
             });
 
             try

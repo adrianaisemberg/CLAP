@@ -714,15 +714,11 @@ namespace CLAP
             return globals;
         }
 
-        private static IEnumerable<ErrorHandler> GetDefinedErrorHandlers(Type type)
+        private static IEnumerable<MethodInfo> GetDefinedErrorHandlers(Type type)
         {
             var errorHandlers = type.GetMethodsWith<ErrorAttribute>();
 
-            return errorHandlers.Select(m => new ErrorHandler
-            {
-                Method = m,
-                ReThrow = m.GetAttribute<ErrorAttribute>().ReThrow,
-            }).ToList();
+            return errorHandlers;
         }
 
         /// <summary>
@@ -934,11 +930,13 @@ namespace CLAP
 
         private bool HandleError(Exception ex, object target)
         {
+            var context = new ExceptionContext(ex);
+
             if (m_registration.RegisteredErrorHandler != null)
             {
-                var rethrow = m_registration.RegisteredErrorHandler(ex);
+                m_registration.RegisteredErrorHandler(context);
 
-                return rethrow;
+                return context.ReThrow;
             }
             else
             {
@@ -950,21 +948,9 @@ namespace CLAP
 
                 if (handler != null)
                 {
-                    var parameters = handler.Method.GetParameters();
+                    MethodInvoker.Invoke(handler, target, new[] { context });
 
-                    if (parameters.None())
-                    {
-                        MethodInvoker.Invoke(handler.Method, target, null);
-                    }
-                    else
-                    {
-                        Debug.Assert(parameters.Length == 1);
-                        Debug.Assert(parameters[0].ParameterType == typeof(Exception));
-
-                        MethodInvoker.Invoke(handler.Method, target, new[] { ex });
-                    }
-
-                    return handler.ReThrow;
+                    return context.ReThrow;
                 }
 
                 // no handler - rethrow
@@ -995,29 +981,23 @@ namespace CLAP
 
             // there is only one defined handler
             //
-            var method = definedErrorHandlers.First().Method;
+            var method = definedErrorHandlers.First();
 
             var parameters = method.GetParameters();
 
-            // no parameters - good
-            //
-            if (parameters.None())
-            {
-                return;
-            }
-            else if (parameters.Length > 1)
+            if (parameters.Length > 1)
             {
                 throw new ArgumentMismatchException(
-                    "Method '{0}' is marked as [Error] so it should have a single Exception parameter or none".FormatWith(method));
+                    "Method '{0}' is marked as [Error] so it should have a single parameter of type CLAP.ExceptionContext".FormatWith(method));
             }
             else
             {
                 var parameter = parameters.First();
 
-                if (parameter.ParameterType != typeof(Exception))
+                if (parameter.ParameterType != typeof(ExceptionContext))
                 {
                     throw new ArgumentMismatchException(
-                        "Method '{0}' is marked as [Error] so it should have a single Exception parameter or none".FormatWith(method));
+                        "Method '{0}' is marked as [Error] so it should have a single parameter of type CLAP.ExceptionContext".FormatWith(method));
                 }
             }
         }
@@ -1030,15 +1010,5 @@ namespace CLAP
         }
 
         #endregion Private Methods
-
-        #region Types
-
-        private class ErrorHandler
-        {
-            internal MethodInfo Method { get; set; }
-            internal bool ReThrow { get; set; }
-        }
-
-        #endregion Types
     }
 }

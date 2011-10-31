@@ -79,6 +79,7 @@
     <Compile Include="CollectionValidationAttribute.cs" />
     <Compile Include="CoverageExcludeAttribute.cs" />
     <Compile Include="ErrorAttribute.cs" />
+    <Compile Include="ExceptionContext.cs" />
     <Compile Include="FileSystemHelper.cs" />
     <Compile Include="FW2Stuff.cs" />
     <Compile Include="EmptyAttribute.cs" />

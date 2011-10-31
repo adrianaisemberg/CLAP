@@ -11,9 +11,5 @@ namespace CLAP
     public sealed class ErrorAttribute : Attribute
     {
 #warning TODO: change to return a bool instead
-        /// <summary>
-        /// Whether to rethrow the execption after handling it
-        /// </summary>
-        public bool ReThrow { get; set; }
     }
 }

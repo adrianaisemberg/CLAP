@@ -580,10 +580,12 @@ namespace Tests
     {
         public Exception Ex { get; set; }
 
-        [Error(ReThrow = true)]
-        public void Error(Exception ex)
+        [Error]
+        public void Error(ExceptionContext ex)
         {
-            Ex = ex;
+            Ex = ex.Exception;
+
+            ex.ReThrow = true;
         }
 
         [Verb]
@@ -597,10 +599,12 @@ namespace Tests
     {
         public bool Handled { get; set; }
 
-        [Error(ReThrow = true)]
-        public void Error()
+        [Error]
+        public void Error(ExceptionContext ex)
         {
             Handled = true;
+
+            ex.ReThrow = true;
         }
 
         [Verb]
@@ -896,7 +900,7 @@ namespace Tests
         }
 
         [Error]
-        public void Error(Exception ex)
+        public void Error(ExceptionContext ex)
         {
         }
     }
@@ -917,9 +921,10 @@ namespace Tests
             Context = context;
         }
 
-        [Error(ReThrow = true)]
-        public void Error(Exception ex)
+        [Error]
+        public void Error(ExceptionContext ex)
         {
+            ex.ReThrow = true;
         }
     }
 

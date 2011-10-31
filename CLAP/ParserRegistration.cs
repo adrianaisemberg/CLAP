@@ -14,7 +14,7 @@ namespace CLAP
         internal Dictionary<string, GlobalParameterHandler> RegisteredGlobalHandlers { get; private set; }
         internal Dictionary<string, Action<string>> RegisteredHelpHandlers { get; private set; }
         internal Action RegisteredEmptyHandler { get; private set; }
-        internal Func<Exception, bool> RegisteredErrorHandler { get; private set; }
+        internal Action<ExceptionContext> RegisteredErrorHandler { get; private set; }
         internal Action<PreVerbExecutionContext> RegisteredPreVerbInterceptor { get; private set; }
         internal Action<PostVerbExecutionContext> RegisteredPostVerbInterceptor { get; private set; }
 
@@ -85,21 +85,7 @@ namespace CLAP
         /// Registers an error handler that is executed when an exception is thrown
         /// </summary>
         /// <param name="handler">The action to be executed</param>
-        public void ErrorHandler(Action<Exception> handler)
-        {
-            ErrorHandler(new Func<Exception, bool>(ex =>
-            {
-                handler(ex);
-
-                return false;
-            }));
-        }
-
-        /// <summary>
-        /// Registers an error handler that is executed when an exception is thrown
-        /// </summary>
-        /// <param name="handler">The action to be executed. Returning "true" will cause the parser to re-throw the original exception</param>
-        public void ErrorHandler(Func<Exception, bool> handler)
+        public void ErrorHandler(Action<ExceptionContext> handler)
         {
             if (RegisteredErrorHandler != null)
             {
