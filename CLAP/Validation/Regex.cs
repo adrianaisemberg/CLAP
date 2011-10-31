@@ -4,7 +4,8 @@ using System.Text.RegularExpressions;
 namespace CLAP.Validation
 {
     /// <summary>
-    /// Regex validation
+    /// Regex validation:
+    /// The string value of the marked parameter or property must match the specified regular expression
     /// </summary>
     [Serializable]
     [AttributeUsage(AttributeTargets.Parameter | AttributeTargets.Property)]

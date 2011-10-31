@@ -4,7 +4,8 @@ using System.IO;
 namespace CLAP.Validation
 {
     /// <summary>
-    /// Directory exists validation
+    /// Directory exists validation:
+    /// The string value of the marked parameter or property must be a path to an existing directory
     /// </summary>
     [Serializable]
     [AttributeUsage(AttributeTargets.Parameter | AttributeTargets.Property)]

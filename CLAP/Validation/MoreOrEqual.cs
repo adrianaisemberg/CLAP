@@ -3,7 +3,8 @@
 namespace CLAP.Validation
 {
     /// <summary>
-    /// More Or Equal-To validation
+    /// More-Or-Equal-To validation:
+    /// The numeric value of the marked parameter or property must be a more or equal to the specified number
     /// </summary>
     [Serializable]
     [AttributeUsage(AttributeTargets.Parameter | AttributeTargets.Property)]

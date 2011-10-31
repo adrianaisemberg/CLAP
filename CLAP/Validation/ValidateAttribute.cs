@@ -5,7 +5,7 @@ namespace CLAP.Validation
     /// <summary>
     /// Validates all the parameters against an expression
     /// </summary>
-    /// <example>param1 > param2</example>
+    /// <example>"param1 > param2"</example>
     /// <remarks>
     /// For full documentation, see MSDN:
     /// http://msdn.microsoft.com/en-us/library/system.data.datacolumn.expression.aspx

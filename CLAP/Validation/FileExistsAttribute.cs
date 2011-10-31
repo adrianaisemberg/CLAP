@@ -4,7 +4,8 @@ using System.IO;
 namespace CLAP.Validation
 {
     /// <summary>
-    /// File exists validation
+    /// File exists validation:
+    /// The string value of the marked parameter or property must be a path to an existing file
     /// </summary>
     [Serializable]
     [AttributeUsage(AttributeTargets.Parameter | AttributeTargets.Property)]

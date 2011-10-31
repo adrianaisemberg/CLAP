@@ -2,6 +2,9 @@
 
 namespace CLAP.Validation
 {
+    /// <summary>
+    /// Number validation
+    /// </summary>
     [Serializable]
     public abstract class NumberValidationAttribute : ValidationAttribute
     {
