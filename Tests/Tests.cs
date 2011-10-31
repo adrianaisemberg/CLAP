@@ -314,7 +314,7 @@ namespace Tests
 
                 Assert.Fail();
             }
-            catch (CommandLineException)
+            catch (CommandLineParserException)
             {
             }
         }

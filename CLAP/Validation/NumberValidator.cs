@@ -10,6 +10,9 @@ namespace CLAP.Validation
     {
         protected double Number { get; private set; }
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
         protected NumberValidationAttribute(double number)
         {
             Number = number;

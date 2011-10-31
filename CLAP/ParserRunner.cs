@@ -11,7 +11,7 @@ using System.Linq;
 
 namespace CLAP
 {
-    public class ParserRunner
+    internal class ParserRunner
     {
         #region Fields
 

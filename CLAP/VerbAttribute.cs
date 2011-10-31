@@ -3,7 +3,7 @@
 namespace CLAP
 {
     /// <summary>
-    /// A verb
+    /// Marks a method as a verb
     /// </summary>
     [Serializable]
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]

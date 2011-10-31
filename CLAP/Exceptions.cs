@@ -4,32 +4,35 @@ using System.Reflection;
 
 namespace CLAP
 {
+    /// <summary>
+    /// Base exception class for all parser exceptions
+    /// </summary>
     [Serializable]
-    public abstract class CommandLineException : Exception
+    public abstract class CommandLineParserException : Exception
     {
-        public CommandLineException() { }
-        public CommandLineException(string message) : base(message) { }
-        public CommandLineException(string message, Exception inner) : base(message, inner) { }
-        protected CommandLineException(
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        public CommandLineParserException() { }
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        public CommandLineParserException(string message) : base(message) { }
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        public CommandLineParserException(string message, Exception inner) : base(message, inner) { }
+
+        protected CommandLineParserException(
             System.Runtime.Serialization.SerializationInfo info,
             System.Runtime.Serialization.StreamingContext context)
             : base(info, context) { }
     }
 
     [Serializable]
-    public abstract class ParserException : Exception
-    {
-        public ParserException() { }
-        public ParserException(string message) : base(message) { }
-        public ParserException(string message, Exception inner) : base(message, inner) { }
-        protected ParserException(
-            System.Runtime.Serialization.SerializationInfo info,
-            System.Runtime.Serialization.StreamingContext context)
-            : base(info, context) { }
-    }
-
-    [Serializable]
-    public class MissingDefaultVerbException : CommandLineException
+    public class MissingDefaultVerbException : CommandLineParserException
     {
         public MissingDefaultVerbException()
             : this("No default verb was found")
@@ -44,7 +47,7 @@ namespace CLAP
     }
 
     [Serializable]
-    public class VerbNotFoundException : CommandLineException
+    public class VerbNotFoundException : CommandLineParserException
     {
         /// <summary>
         /// The verb string that wasn't found
@@ -65,7 +68,7 @@ namespace CLAP
     }
 
     [Serializable]
-    public class MissingVerbException : CommandLineException
+    public class MissingVerbException : CommandLineParserException
     {
         public MissingVerbException()
             : this("Arguments contain no verb", null)
@@ -80,7 +83,7 @@ namespace CLAP
     }
 
     [Serializable]
-    public class MultiParserMissingClassNameException : CommandLineException
+    public class MultiParserMissingClassNameException : CommandLineParserException
     {
         public MultiParserMissingClassNameException()
             : this("Arguments contain no class name", null)
@@ -95,7 +98,7 @@ namespace CLAP
     }
 
     [Serializable]
-    public class InvalidVerbException : CommandLineException
+    public class InvalidVerbException : CommandLineParserException
     {
         public InvalidVerbException()
             : this("Invalid verb: Contains more than two parts.", null)
@@ -110,7 +113,7 @@ namespace CLAP
     }
 
     [Serializable]
-    public class UnknownParserTypeException : CommandLineException
+    public class UnknownParserTypeException : CommandLineParserException
     {
         public UnknownParserTypeException(string typeName)
             : this("Parser type '{0}' not found".FormatWith(typeName), null)
@@ -125,7 +128,7 @@ namespace CLAP
     }
 
     [Serializable]
-    public class MissingRequiredArgumentException : CommandLineException
+    public class MissingRequiredArgumentException : CommandLineParserException
     {
         /// <summary>
         /// The name of the required parameter
@@ -152,7 +155,7 @@ namespace CLAP
     }
 
     [Serializable]
-    public class MissingArgumentValueException : CommandLineException
+    public class MissingArgumentValueException : CommandLineParserException
     {
         /// <summary>
         /// The name of the parameter
@@ -173,7 +176,7 @@ namespace CLAP
     }
 
     [Serializable]
-    public class MissingArgumentPrefixException : CommandLineException
+    public class MissingArgumentPrefixException : CommandLineParserException
     {
         /// <summary>
         /// The name of the parameter
@@ -194,7 +197,7 @@ namespace CLAP
     }
 
     [Serializable]
-    public class ValidationException : CommandLineException
+    public class ValidationException : CommandLineParserException
     {
         public ValidationException(string message) : base(message) { }
         public ValidationException(string message, Exception inner) : base(message, inner) { }
@@ -205,7 +208,7 @@ namespace CLAP
     }
 
     [Serializable]
-    public class TypeConvertionException : CommandLineException
+    public class TypeConvertionException : CommandLineParserException
     {
         /// <summary>
         /// The string value that failed to be converted
@@ -231,7 +234,7 @@ namespace CLAP
     }
 
     [Serializable]
-    public class MoreThanOneEmptyHandlerException : CommandLineException
+    public class MoreThanOneEmptyHandlerException : CommandLineParserException
     {
         public MoreThanOneEmptyHandlerException()
             : base("More than one empty handler was defined. Only a single method can be marked with [Empty] in a type and only a single action can be registered as an empty handler.")
@@ -245,7 +248,7 @@ namespace CLAP
     }
 
     [Serializable]
-    public class MoreThanOneErrorHandlerException : CommandLineException
+    public class MoreThanOneErrorHandlerException : CommandLineParserException
     {
         public MoreThanOneErrorHandlerException()
             : base("More than one error handler was defined. Only a single method can be marked with [Error] in a type and only a single action can be registered as an error handler.")
@@ -259,7 +262,7 @@ namespace CLAP
     }
 
     [Serializable]
-    public class MoreThanOnePreVerbInterceptorException : CommandLineException
+    public class MoreThanOnePreVerbInterceptorException : CommandLineParserException
     {
         public MoreThanOnePreVerbInterceptorException()
             : base("More than one pre-verb interceptor was defined. Only a single method can be marked with [PreVerbExecutionAttribute] in a type and only a single action can be registered as a pre-interceptor.")
@@ -273,7 +276,7 @@ namespace CLAP
     }
 
     [Serializable]
-    public class MoreThanOnePostVerbInterceptorException : CommandLineException
+    public class MoreThanOnePostVerbInterceptorException : CommandLineParserException
     {
         public MoreThanOnePostVerbInterceptorException()
             : base("More than one post-verb interceptor was defined. Only a single method can be marked with [PostVerbExecutionAttribute] in a type and only a single action can be registered as a post-interceptor.")
@@ -287,7 +290,7 @@ namespace CLAP
     }
 
     [Serializable]
-    public class ArgumentMismatchException : CommandLineException
+    public class ArgumentMismatchException : CommandLineParserException
     {
         public ArgumentMismatchException() { }
         public ArgumentMismatchException(string message) : base(message) { }
@@ -299,7 +302,7 @@ namespace CLAP
     }
 
     [Serializable]
-    public class ParserExecutionTargetException : ParserException
+    public class ParserExecutionTargetException : CommandLineParserException
     {
         public ParserExecutionTargetException() { }
         public ParserExecutionTargetException(string message) : base(message) { }
@@ -311,7 +314,7 @@ namespace CLAP
     }
 
     [Serializable]
-    public class UnhandledParametersException : CommandLineException
+    public class UnhandledParametersException : CommandLineParserException
     {
         /// <summary>
         /// The collection of unhandled arguments
@@ -331,7 +334,7 @@ namespace CLAP
     }
 
     [Serializable]
-    public class MoreThanOneDefaultVerbException : CommandLineException
+    public class MoreThanOneDefaultVerbException : CommandLineParserException
     {
         /// <summary>
         /// The collection of the verbs that are defined as default
@@ -351,7 +354,7 @@ namespace CLAP
     }
 
     [Serializable]
-    public class InvalidHelpHandlerException : CommandLineException
+    public class InvalidHelpHandlerException : CommandLineParserException
     {
         /// <summary>
         /// The method that is defined as help

@@ -11,16 +11,25 @@ namespace CLAP.Validation
     [AttributeUsage(AttributeTargets.Parameter | AttributeTargets.Property)]
     public sealed class FileExistsAttribute : ValidationAttribute
     {
+        /// <summary>
+        /// Constructor
+        /// </summary>
         public FileExistsAttribute()
         {
 
         }
 
+        /// <summary>
+        /// Gets a validator instance
+        /// </summary>
         public override IValueValidator GetValidator()
         {
             return new FileExistsValidator();
         }
 
+        /// <summary>
+        /// The validation description
+        /// </summary>
         public override string Description
         {
             get

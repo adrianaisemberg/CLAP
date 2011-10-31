@@ -60,7 +60,8 @@ namespace CLAP
         /// <summary>
         /// Executes a generic parser of some specified types
         /// </summary>
-        /// <typeparam name="T">The type of the parser</typeparam>
+        /// <typeparam name="T1">The type of the parser</typeparam>
+        /// <typeparam name="T2">The type of the parser</typeparam>
         /// <param name="args">The user arguments</param>
         /// <param name="t1">An instance of the verb class</param>
         /// <param name="t2">An instance of the verb class</param>
@@ -77,7 +78,9 @@ namespace CLAP
         /// <summary>
         /// Executes a generic parser of some specified types
         /// </summary>
-        /// <typeparam name="T">The type of the parser</typeparam>
+        /// <typeparam name="T1">The type of the parser</typeparam>
+        /// <typeparam name="T2">The type of the parser</typeparam>
+        /// <typeparam name="T3">The type of the parser</typeparam>
         /// <param name="args">The user arguments</param>
         /// <param name="t1">An instance of the verb class</param>
         /// <param name="t2">An instance of the verb class</param>
@@ -95,7 +98,10 @@ namespace CLAP
         /// <summary>
         /// Executes a generic parser of some specified types
         /// </summary>
-        /// <typeparam name="T">The type of the parser</typeparam>
+        /// <typeparam name="T1">The type of the parser</typeparam>
+        /// <typeparam name="T2">The type of the parser</typeparam>
+        /// <typeparam name="T3">The type of the parser</typeparam>
+        /// <typeparam name="T4">The type of the parser</typeparam>
         /// <param name="args">The user arguments</param>
         /// <param name="t1">An instance of the verb class</param>
         /// <param name="t2">An instance of the verb class</param>
@@ -114,7 +120,11 @@ namespace CLAP
         /// <summary>
         /// Executes a generic parser of some specified types
         /// </summary>
-        /// <typeparam name="T">The type of the parser</typeparam>
+        /// <typeparam name="T1">The type of the parser</typeparam>
+        /// <typeparam name="T2">The type of the parser</typeparam>
+        /// <typeparam name="T3">The type of the parser</typeparam>
+        /// <typeparam name="T4">The type of the parser</typeparam>
+        /// <typeparam name="T5">The type of the parser</typeparam>
         /// <param name="args">The user arguments</param>
         /// <param name="t1">An instance of the verb class</param>
         /// <param name="t2">An instance of the verb class</param>
@@ -134,7 +144,12 @@ namespace CLAP
         /// <summary>
         /// Executes a generic parser of some specified types
         /// </summary>
-        /// <typeparam name="T">The type of the parser</typeparam>
+        /// <typeparam name="T1">The type of the parser</typeparam>
+        /// <typeparam name="T2">The type of the parser</typeparam>
+        /// <typeparam name="T3">The type of the parser</typeparam>
+        /// <typeparam name="T4">The type of the parser</typeparam>
+        /// <typeparam name="T5">The type of the parser</typeparam>
+        /// <typeparam name="T6">The type of the parser</typeparam>
         /// <param name="args">The user arguments</param>
         /// <param name="t1">An instance of the verb class</param>
         /// <param name="t2">An instance of the verb class</param>
@@ -155,7 +170,13 @@ namespace CLAP
         /// <summary>
         /// Executes a generic parser of some specified types
         /// </summary>
-        /// <typeparam name="T">The type of the parser</typeparam>
+        /// <typeparam name="T1">The type of the parser</typeparam>
+        /// <typeparam name="T2">The type of the parser</typeparam>
+        /// <typeparam name="T3">The type of the parser</typeparam>
+        /// <typeparam name="T4">The type of the parser</typeparam>
+        /// <typeparam name="T5">The type of the parser</typeparam>
+        /// <typeparam name="T6">The type of the parser</typeparam>
+        /// <typeparam name="T7">The type of the parser</typeparam>
         /// <param name="args">The user arguments</param>
         /// <param name="t1">An instance of the verb class</param>
         /// <param name="t2">An instance of the verb class</param>
@@ -177,7 +198,14 @@ namespace CLAP
         /// <summary>
         /// Executes a generic parser of some specified types
         /// </summary>
-        /// <typeparam name="T">The type of the parser</typeparam>
+        /// <typeparam name="T1">The type of the parser</typeparam>
+        /// <typeparam name="T2">The type of the parser</typeparam>
+        /// <typeparam name="T3">The type of the parser</typeparam>
+        /// <typeparam name="T4">The type of the parser</typeparam>
+        /// <typeparam name="T5">The type of the parser</typeparam>
+        /// <typeparam name="T6">The type of the parser</typeparam>
+        /// <typeparam name="T7">The type of the parser</typeparam>
+        /// <typeparam name="T8">The type of the parser</typeparam>
         /// <param name="args">The user arguments</param>
         /// <param name="t1">An instance of the verb class</param>
         /// <param name="t2">An instance of the verb class</param>
@@ -200,7 +228,15 @@ namespace CLAP
         /// <summary>
         /// Executes a generic parser of some specified types
         /// </summary>
-        /// <typeparam name="T">The type of the parser</typeparam>
+        /// <typeparam name="T1">The type of the parser</typeparam>
+        /// <typeparam name="T2">The type of the parser</typeparam>
+        /// <typeparam name="T3">The type of the parser</typeparam>
+        /// <typeparam name="T4">The type of the parser</typeparam>
+        /// <typeparam name="T5">The type of the parser</typeparam>
+        /// <typeparam name="T6">The type of the parser</typeparam>
+        /// <typeparam name="T7">The type of the parser</typeparam>
+        /// <typeparam name="T8">The type of the parser</typeparam>
+        /// <typeparam name="T9">The type of the parser</typeparam>
         /// <param name="args">The user arguments</param>
         /// <param name="t1">An instance of the verb class</param>
         /// <param name="t2">An instance of the verb class</param>

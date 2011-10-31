@@ -7,7 +7,14 @@ namespace CLAP
     /// </summary>
     public abstract class CollectionValidationAttribute : Attribute, ICollectionValidation
     {
+        /// <summary>
+        /// Gets a validator instance
+        /// </summary>
         public abstract ICollectionValidator GetValidator();
+
+        /// <summary>
+        /// The validation description
+        /// </summary>
         public abstract string Description { get; }
     }
 }

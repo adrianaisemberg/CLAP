@@ -4,6 +4,9 @@ using CLAP.Interception;
 
 namespace CLAP
 {
+    /// <summary>
+    /// Provides registration features for parser instances
+    /// </summary>
     public sealed class ParserRegistration
     {
         #region Properties
@@ -22,7 +25,7 @@ namespace CLAP
 
         #region Constructors
 
-        public ParserRegistration(Func<string> helpGetter, Func<Type, string, string, object> parameterValueGetter)
+        internal ParserRegistration(Func<string> helpGetter, Func<Type, string, string, object> parameterValueGetter)
         {
             RegisteredGlobalHandlers = new Dictionary<string, GlobalParameterHandler>();
             RegisteredHelpHandlers = new Dictionary<string, Action<string>>();
@@ -35,11 +38,20 @@ namespace CLAP
 
         #region Public Methods
 
+        /// <summary>
+        /// Registers a help handler that is executed when the user requests for help
+        /// </summary>
+        /// <param name="names">The names (CSV) to be registered as help parameters. For example: "?,h,help"</param>
+        /// <param name="helpHandler">The action to be executed</param>
         public void HelpHandler(string names, Action<string> helpHandler)
         {
             RegisterHelpHandlerInternal(names, helpHandler);
         }
 
+        /// <summary>
+        /// Registers an empty help handler that is executed when there is no input
+        /// </summary>
+        /// <param name="handler">The action to be executed</param>
         public void EmptyHelpHandler(Action<string> handler)
         {
             if (RegisteredEmptyHandler != null)
@@ -55,6 +67,10 @@ namespace CLAP
             };
         }
 
+        /// <summary>
+        /// Registers an empty handler that is executed when there is no input
+        /// </summary>
+        /// <param name="handler">The action to be executed</param>
         public void EmptyHandler(Action handler)
         {
             if (RegisteredEmptyHandler != null)
@@ -65,6 +81,10 @@ namespace CLAP
             RegisteredEmptyHandler = handler;
         }
 
+        /// <summary>
+        /// Registers an error handler that is executed when an exception is thrown
+        /// </summary>
+        /// <param name="handler">The action to be executed</param>
         public void ErrorHandler(Action<Exception> handler)
         {
             ErrorHandler(new Func<Exception, bool>(ex =>
@@ -75,6 +95,10 @@ namespace CLAP
             }));
         }
 
+        /// <summary>
+        /// Registers an error handler that is executed when an exception is thrown
+        /// </summary>
+        /// <param name="handler">The action to be executed. Returning "true" will cause the parser to re-throw the original exception</param>
         public void ErrorHandler(Func<Exception, bool> handler)
         {
             if (RegisteredErrorHandler != null)
@@ -85,6 +109,10 @@ namespace CLAP
             RegisteredErrorHandler = handler;
         }
 
+        /// <summary>
+        /// Registers a pre-verb execution interceptor
+        /// </summary>
+        /// <param name="interceptor">The action to be executed before each verb is executed</param>
         public void PreVerbInterceptor(Action<PreVerbExecutionContext> interceptor)
         {
             if (RegisteredPreVerbInterceptor != null)
@@ -95,6 +123,10 @@ namespace CLAP
             RegisteredPreVerbInterceptor = interceptor;
         }
 
+        /// <summary>
+        /// Registers a post-verb execution interceptor
+        /// </summary>
+        /// <param name="interceptor">The action to be executed after each verb is executed</param>
         public void PostVerbInterceptor(Action<PostVerbExecutionContext> interceptor)
         {
             if (RegisteredPostVerbInterceptor != null)
@@ -105,6 +137,11 @@ namespace CLAP
             RegisteredPostVerbInterceptor = interceptor;
         }
 
+        /// <summary>
+        /// Registers a global parameter handler
+        /// </summary>
+        /// <param name="names">The names (CSV) to be registered as boolean parameters (switches)</param>
+        /// <param name="action">The action to execute</param>
         public void ParameterHandler(string names, Action action)
         {
             ParameterHandler(
@@ -113,6 +150,12 @@ namespace CLAP
                 null);
         }
 
+        /// <summary>
+        /// Registers a global parameter handler
+        /// </summary>
+        /// <param name="names">The names (CSV) to be registered as boolean parameters (switches)</param>
+        /// <param name="action">The action to execute</param>
+        /// <param name="description">The parameter description (for help generation)</param>
         public void ParameterHandler(string names, Action action, string description)
         {
             ParameterHandler(
@@ -121,6 +164,12 @@ namespace CLAP
                 description);
         }
 
+        /// <summary>
+        /// Registers a global parameter handler
+        /// </summary>
+        /// <typeparam name="TParameter">The type of the parameter</typeparam>
+        /// <param name="names">The names (CSV) to be registered as parameters</param>
+        /// <param name="action">The action to execute</param>
         public void ParameterHandler<TParameter>(string names, Action<TParameter> action)
         {
             ParameterHandler(
@@ -129,6 +178,13 @@ namespace CLAP
                 null);
         }
 
+        /// <summary>
+        /// Registers a global parameter handler
+        /// </summary>
+        /// <typeparam name="TParameter">The type of the parameter</typeparam>
+        /// <param name="names">The names (CSV) to be registered as parameters</param>
+        /// <param name="action">The action to execute</param>
+        /// <param name="description">The parameter description (for help generation)</param>
         public void ParameterHandler<TParameter>(string names, Action<TParameter> action, string description)
         {
             RegisterParameterHandlerInternal(
