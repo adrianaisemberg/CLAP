@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
-using System.Text;
 using CLAP.Interception;
 
 #if !FW2
@@ -28,6 +27,11 @@ namespace CLAP
 
         internal Type Type { get; private set; }
 
+        internal ParserRegistration Register
+        {
+            get { return m_registration; }
+        }
+
         #endregion Properties
 
         #region Constructors
@@ -50,92 +54,6 @@ namespace CLAP
         public void Run(string[] args, object obj)
         {
             TryRunInternal(args, obj);
-        }
-
-        /// <summary>
-        /// Returns a help string
-        /// </summary>
-        public string GetHelpString()
-        {
-            var verbs = GetVerbs();
-
-            if (verbs.None())
-            {
-                return string.Empty;
-            }
-
-            var sb = new StringBuilder();
-
-            foreach (var verb in verbs)
-            {
-                sb.AppendLine();
-
-                sb.Append(verb.Names.StringJoin("/")).Append(":");
-
-                if (verb.IsDefault)
-                {
-                    sb.Append(" [Default]");
-                }
-
-                if (!string.IsNullOrEmpty(verb.Description))
-                {
-                    sb.AppendFormat(" {0}", verb.Description);
-                }
-
-                var validators = verb.MethodInfo.GetInterfaceAttributes<ICollectionValidation>();
-
-                if (validators.Any())
-                {
-                    sb.AppendLine();
-                    sb.AppendLine("Validation:");
-
-                    foreach (var validator in validators)
-                    {
-                        sb.AppendLine("- {0}".FormatWith(validator.Description));
-                    }
-                }
-
-                sb.AppendLine();
-
-                var parameters = GetParameters(verb.MethodInfo);
-
-                foreach (var p in parameters)
-                {
-                    sb.AppendLine(" -{0}: {1}".FormatWith(p.Names.StringJoin("/"), GetParameterOption(p)));
-                }
-            }
-
-            var definedGlobals = GetDefinedGlobals();
-
-            if (m_registration.RegisteredGlobalHandlers.Any() || definedGlobals.Any())
-            {
-                sb.AppendLine();
-                sb.AppendLine("Global parameters:");
-
-                foreach (var handler in m_registration.RegisteredGlobalHandlers.Values)
-                {
-                    sb.AppendLine(" -{0}: {1} [{2}]".FormatWith(handler.Name, handler.Desription, handler.Type.Name));
-                }
-
-                foreach (var handler in definedGlobals)
-                {
-                    sb.AppendLine(" -{0}".FormatWith(GetDefinedGlobalHelpString(handler)));
-
-                    var validators = handler.GetInterfaceAttributes<ICollectionValidation>();
-
-                    if (validators.Any())
-                    {
-                        sb.AppendLine("  Validation:");
-
-                        foreach (var validator in validators)
-                        {
-                            sb.AppendLine("  {0}".FormatWith(validator.Description));
-                        }
-                    }
-                }
-            }
-
-            return sb.ToString();
         }
 
         #endregion Public Methods
@@ -493,45 +411,6 @@ namespace CLAP
             }
         }
 
-        private string GetDefinedGlobalHelpString(MethodInfo method)
-        {
-            var sb = new StringBuilder();
-
-            // name
-            //
-            var globalAtt = method.GetAttribute<GlobalAttribute>();
-            var name = globalAtt.Name ?? method.Name;
-            sb.Append(name);
-
-            foreach (var alias in globalAtt.Aliases)
-            {
-                sb.AppendFormat("/{0}", alias);
-            }
-
-            sb.Append(": ");
-
-            // description
-            //
-            sb.Append(globalAtt.Description);
-            sb.Append(" ");
-
-            // type
-            //
-            var parameters = GetParameters(method);
-            if (parameters.Any())
-            {
-                var p = parameters.First();
-
-                sb.Append(GetParameterOption(p));
-            }
-            else
-            {
-                sb.AppendFormat("[Boolean]");
-            }
-
-            return sb.ToString();
-        }
-
         private Action<string> GetHelpHandler(string input)
         {
             Debug.Assert(!string.IsNullOrEmpty(input));
@@ -544,45 +423,6 @@ namespace CLAP
             }
 
             return null;
-        }
-
-        /// <summary>
-        /// Used for GetHelpString
-        /// </summary>
-        private static string GetParameterOption(Parameter p)
-        {
-            var sb = new StringBuilder();
-
-            sb.AppendFormat("{0} [", p.Description);
-
-            sb.Append(p.ParameterInfo.ParameterType.Name);
-
-            if (p.ParameterInfo.ParameterType.IsEnum)
-            {
-                var values = Enum.GetNames(p.ParameterInfo.ParameterType);
-
-                sb.AppendFormat(":[{0}]", values.StringJoin(","));
-            }
-
-            if (p.Required)
-            {
-                sb.Append(", Required");
-            }
-            if (p.Default != null)
-            {
-                sb.AppendFormat(", Default = {0}", p.Default);
-            }
-
-            var validationAttributes = p.ParameterInfo.GetAttributes<ValidationAttribute>();
-
-            foreach (var validationAttribute in validationAttributes)
-            {
-                sb.AppendFormat(", {0}", validationAttribute.Description);
-            }
-
-            sb.Append("]");
-
-            return sb.ToString();
         }
 
         /// <summary>
@@ -636,7 +476,7 @@ namespace CLAP
         /// <summary>
         /// Create a list of parameters for the given method
         /// </summary>
-        private static IEnumerable<Parameter> GetParameters(MethodInfo method)
+        internal static IEnumerable<Parameter> GetParameters(MethodInfo method)
         {
             var parameters = method.GetParameters().Select(p => new Parameter(p));
 
@@ -660,7 +500,7 @@ namespace CLAP
         /// <summary>
         /// Create a list of methods (verbs) for the given type
         /// </summary>
-        private IEnumerable<Method> GetVerbs()
+        internal IEnumerable<Method> GetVerbs()
         {
             var verbMethods = Type.GetMethodsWith<VerbAttribute>().
                 Select(m => new Method(m));
@@ -707,7 +547,7 @@ namespace CLAP
             }
         }
 
-        private IEnumerable<MethodInfo> GetDefinedGlobals()
+        internal IEnumerable<MethodInfo> GetDefinedGlobals()
         {
             var globals = Type.GetMethodsWith<GlobalAttribute>();
 
@@ -816,7 +656,7 @@ namespace CLAP
 
             if (helpHandler != null)
             {
-                help = GetHelpString();
+                help = HelpGenerator.GetHelp(this);
 
                 helpHandler(help);
 
@@ -842,7 +682,7 @@ namespace CLAP
 
                         if (help == null)
                         {
-                            help = GetHelpString();
+                            help = HelpGenerator.GetHelp(this);
                         }
 
                         MethodInvoker.Invoke(method, obj, new[] { help });
@@ -886,7 +726,7 @@ namespace CLAP
                 //
                 if (method.HasAttribute<HelpAttribute>())
                 {
-                    var help = GetHelpString();
+                    var help = HelpGenerator.GetHelp(this);
 
                     // method should execute because it was already passed validation
                     //

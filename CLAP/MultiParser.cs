@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
 
 namespace CLAP
 {
@@ -18,6 +17,11 @@ namespace CLAP
         #endregion Fields
 
         #region Properties
+
+        internal Type[] Types
+        {
+            get { return m_types; }
+        }
 
         /// <summary>
         /// Parser registration
@@ -214,22 +218,7 @@ namespace CLAP
         /// </summary>
         public string GetHelpString()
         {
-#warning TODO: this is crap
-            var sb = new StringBuilder();
-
-            foreach (var type in m_types)
-            {
-                var pr = new ParserRunner(type, Register);
-
-                sb.AppendLine(type.Name);
-                sb.AppendLine("".PadLeft(30, '-'));
-
-                sb.AppendLine(pr.GetHelpString());
-
-                sb.AppendLine();
-            }
-
-            return sb.ToString();
+            return HelpGenerator.GetHelp(this);
         }
 
         #endregion Public Methods
