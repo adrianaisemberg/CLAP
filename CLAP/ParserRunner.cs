@@ -411,7 +411,7 @@ namespace CLAP
             }
         }
 
-        private Action<string> GetHelpHandler(string input)
+        private Action<string> GetRegisteredHelpHandler(string input)
         {
             Debug.Assert(!string.IsNullOrEmpty(input));
 
@@ -530,11 +530,15 @@ namespace CLAP
 
             foreach (var kvp in args)
             {
-                GlobalParameterHandler handler = null;
+                var key = m_registration.RegisteredGlobalHandlers.Keys.FirstOrDefault(
+                    k => k.CommaSplit().Contains(kvp.Key));
 
-                if (m_registration.RegisteredGlobalHandlers.TryGetValue(kvp.Key, out handler))
+                if (key != null)
                 {
+                    var handler = m_registration.RegisteredGlobalHandlers[key];
+
                     handler.Handler(kvp.Value);
+
                     handled.Add(kvp.Key);
                 }
             }
@@ -648,16 +652,14 @@ namespace CLAP
                 arg = firstArg.Substring(1);
             }
 
-            Action<string> helpHandler = GetHelpHandler(arg);
+            Action<string> helpHandler = GetRegisteredHelpHandler(arg);
 
-            string help = null;
+            var help = HelpGenerator.GetHelp(this);
 
             var helpHandled = false;
 
             if (helpHandler != null)
             {
-                help = HelpGenerator.GetHelp(this);
-
                 helpHandler(help);
 
                 helpHandled = true;
@@ -679,11 +681,6 @@ namespace CLAP
                         VerifyMethodAndTarget(method, target);
 
                         var obj = method.IsStatic ? null : target;
-
-                        if (help == null)
-                        {
-                            help = HelpGenerator.GetHelp(this);
-                        }
 
                         MethodInvoker.Invoke(method, obj, new[] { help });
 

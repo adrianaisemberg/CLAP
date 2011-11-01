@@ -185,14 +185,6 @@ namespace CLAP
 
         private void RegisterParameterHandlerInternal<TParameter>(string names, Action<TParameter> action, string description)
         {
-            RegisterParameterHandlerInternal(
-                names.CommaSplit(),
-                action,
-                description);
-        }
-
-        private void RegisterParameterHandlerInternal<TParameter>(IEnumerable<string> names, Action<TParameter> action, string description)
-        {
             var objectAction = new Action<string>(str =>
             {
                 object v = null;
@@ -209,18 +201,15 @@ namespace CLAP
                 action((TParameter)v);
             });
 
-            foreach (var name in names)
-            {
-                RegisteredGlobalHandlers.Add(
-                    name,
-                    new GlobalParameterHandler
-                    {
-                        Name = name,
-                        Handler = objectAction,
-                        Desription = description,
-                        Type = typeof(TParameter),
-                    });
-            }
+            RegisteredGlobalHandlers.Add(
+                names,
+                new GlobalParameterHandler
+                {
+                    Names = names.CommaSplit(),
+                    Handler = objectAction,
+                    Desription = description,
+                    Type = typeof(TParameter),
+                });
         }
 
         private void RegisterHelpHandlerInternal(string names, Action<string> helpHandler)
@@ -250,7 +239,7 @@ namespace CLAP
 
     internal class GlobalParameterHandler
     {
-        internal string Name { get; set; }
+        internal IEnumerable<string> Names { get; set; }
         internal Action<string> Handler { get; set; }
         internal string Desription { get; set; }
         internal Type Type { get; set; }

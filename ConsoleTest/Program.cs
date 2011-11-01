@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using CLAP;
 using CLAP.Validation;
+using System.Reflection;
 
 namespace ConsoleTest
 {
@@ -12,7 +13,12 @@ namespace ConsoleTest
     {
         static void Main(string[] args)
         {
-            Parser.Run<ClapApp>(args);
+            var p = new Parser<ClapApp>();
+
+            p.Register.ParameterHandler<List<string>>("blonda,blnd", list => { });
+            p.Register.ParameterHandler<List<string>>("kramer,krmr,k", list => { }, "a sample description");
+
+            p.RunStatic(args);
         }
     }
 
@@ -24,9 +30,9 @@ namespace ConsoleTest
             for (int i = 0; i < count; i++) Console.WriteLine("This parser {0}", bar);
         }
 
-        [Verb]
+        [Verb(Description = "bar somthing", Aliases = "b,barbar")]
         [SameLength]
-        public static void Bar(int[] numbers, string[] names)
+        public static void Bar(int[] numbers, [Parameter(Aliases = "n,nms", Required = true, Description = "some names")]string[] names)
         {
             for (int i = 0; i < numbers.Length; i++)
             {
@@ -34,9 +40,19 @@ namespace ConsoleTest
             }
         }
 
-        [Verb]
+        [Verb(IsDefault = true)]
         [Validate("num1 + num2 >= num3")]
-        public static void Zoo(int num1, int num2, int num3)
+        public static void Zoo(
+            int num1,
+            [MoreThan(10)] int num2,
+            [LessOrEqualTo(100)]
+            [Parameter(Default = 55, Description = "a number")] int num3,
+            BindingFlags bf,
+
+            [Parameter(Required = true)]
+            bool rsw,
+            bool sw,
+            ClapApp clap)
         {
         }
 
@@ -47,12 +63,17 @@ namespace ConsoleTest
         }
 
         [Global]
+        public static void Cat([CLAP.Validation.RegexMatches("adasdadoiy3829834723xb378423c")]string x)
+        {
+        }
+
+        [Global(Description = "pong pong pong.")]
         [Validate("num > 100")]
         public static void Pong(int num)
         {
         }
 
-        [Global(Aliases = "d")]
+        [Global(Aliases = "d", Description = "attach a debugger")]
         public static void Debug()
         {
             Debugger.Launch();

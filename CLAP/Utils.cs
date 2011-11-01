@@ -140,5 +140,23 @@ namespace CLAP
         {
             return values.Any(v => str.Contains(v));
         }
+
+        public static string GetGenericTypeName(this Type type)
+        {
+            if (!type.IsGenericType)
+            {
+                return type.Name;
+            }
+
+            var genericTypeName = type.GetGenericTypeDefinition().Name;
+
+            genericTypeName = genericTypeName.Remove(genericTypeName.IndexOf('`'));
+
+            var genericArgs = type.GetGenericArguments().
+                Select(a => GetGenericTypeName(a)).
+                StringJoin(",");
+
+            return "{0}<{1}>".FormatWith(genericTypeName, genericArgs);
+        }
     }
 }

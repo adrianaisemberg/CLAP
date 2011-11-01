@@ -479,7 +479,7 @@ namespace Tests
 
             // with and without description for coverage
             //
-            p.Register.ParameterHandler("dec", delegate { x--; });
+            p.Register.ParameterHandler("dec,d", delegate { x--; });
             p.Register.ParameterHandler("inc", delegate { x++; }, "description");
 
             p.Run("print /c=5 /msg=test /prefix=hello_ /inc".Split(' '), sample);
@@ -487,8 +487,9 @@ namespace Tests
             Assert.AreEqual(1, x);
 
             p.Run("print /c=5 /msg=test /prefix=hello_ /dec".Split(' '), sample);
+            p.Run("print /c=5 /msg=test /prefix=hello_ /d".Split(' '), sample);
 
-            Assert.AreEqual(0, x);
+            Assert.AreEqual(-1, x);
         }
 
         [Test]

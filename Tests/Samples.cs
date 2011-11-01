@@ -301,7 +301,7 @@ namespace Tests
 
         [Verb]
         [Validate("str like 'foo*'")]
-        public void Print2([Parameter(Required = true)]string str)
+        public void Print2([Parameter(Required = true, Description = "string!")]string str)
         {
         }
 
@@ -336,6 +336,16 @@ namespace Tests
         public void ShowHelp(string help)
         {
             Printer.Print("help");
+        }
+
+        [Global(Description = "cat!")]
+        public void Cat(Dictionary<string, Sample_10> x)
+        {
+        }
+
+        [Verb]
+        public void WithARequiredSwitch(string str, [Parameter(Required = true)] bool sw)
+        {
         }
     }
 
