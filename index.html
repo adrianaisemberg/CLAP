@@ -149,10 +149,10 @@
                     <ol>
                         <li>Get CLAP (either download the binaries or install it with NuGet. See the Download section)</li>
                         <li>Add a reference to the dll from your Console or Windows application</li>
-                        <li>Add a <span class="code">using</span> statement: <span class="code highlight">using CLAP;</span></li>
+                        <li>Add a <code>using</code> statement: <code class="highlight">using CLAP;</code></li>
                         <li>Implement a verbs class (see the Attributes section)</li>
                         <li>
-                            From your <span class="code">void Main</span> method, add a call to CLAP's parser using your class:<br/>
+                            From your <code>void Main</code> method, add a call to CLAP's parser using your class:<br/>
                             <pre class="brush: csharp, highlight: 3">
                                 static void Main(string[] args)
                                 {
@@ -184,32 +184,32 @@
                     <h3>Attributes</h3>
                     <p>Using CLAP with attributes is the easiest way to create your app's functionality.</p>
                     <p>CLAP's attributes allow you to define various verbs, parameters, global parameters, even error-handling and more.</p>
-                    <p>There's no reason for your <span class="code highlight">void Main()</span> method to be more than a single line of code.</p>
+                    <p>There's no reason for your <code class="highlight">void Main()</code> method to be more than a single line of code.</p>
                     <div class="attribute_wrapper" id="attribute_verb">
                         <div class="attribute">
-                            <div class="attribute_name code">Verb</div>
+                            <div class="attribute_name mono">Verb</div>
                             <div class="attribute_description">
                                 <p>Marks a method as an available verb.</p>
                             </div>
                             <div class="attribute_properties">
                                 <h3>Properties:</h3>
                                 <div class="attribute_property">
-                                    <div class="attribute_property_name code">IsDefault (Boolean)</div>
+                                    <div class="attribute_property_name mono">IsDefault (Boolean)</div>
                                     <div class="attribute_property_description">
                                         <p>Whether this verb is the class's default.</p>
                                         <p>A default verb is called when no verb argument was entered.</p>
                                         <p>
                                             Only a single verb can be set as default. Having more than one default verb
-                                            will throw a <span class="code">MoreThanOneDefaultVerbException</span>.
+                                            will throw a <code>MoreThanOneDefaultVerbException</code>.
                                         </p>
                                     </div>
                                 </div>
                                 <div class="attribute_property">
-                                    <div class="attribute_property_name code">Aliases (String)</div>
+                                    <div class="attribute_property_name mono">Aliases (String)</div>
                                     <div class="attribute_property_description">Additional aliases for the verb.</div>
                                 </div>
                                 <div class="attribute_property">
-                                    <div class="attribute_property_name code">Description (String)</div>
+                                    <div class="attribute_property_name mono">Description (String)</div>
                                     <div class="attribute_property_description">Used to describe the verb when displaying help.</div>
                                 </div>
                             </div>
@@ -229,7 +229,7 @@
                     </div>
                     <div class="attribute_wrapper" id="attribute_parameter">
                         <div class="attribute">
-                            <div class="attribute_name code">Parameter</div>
+                            <div class="attribute_name mono">Parameter</div>
                             <div class="attribute_description">
                                 <p>Adds additional properties to verb's parameters.</p>
                                 <p>Using the Parameter attribute is only required if any of the properties is needed, otherwise, it is optional.</p>
@@ -237,7 +237,7 @@
                                 <ul>
                                     <li>String</li>
                                     <li>Numeric (int, float etc)</li>
-                                    <li>Boolean (can also used as switches: <span class="code highlight">-p=true</span> is the same as <span class="code highlight">-p</span>)</li>
+                                    <li>Boolean (can also used as switches: <code class="highlight">-p=true</code> is the same as <code class="highlight">-p</code>)</li>
                                     <li>Enums</li>
                                     <li>Guid</li>
                                     <li>Uri</li>
@@ -248,19 +248,19 @@
                             <div class="attribute_properties">
                                 <h3>Properties:</h3>
                                 <div class="attribute_property">
-                                    <div class="attribute_property_name code">Default (Object)</div>
+                                    <div class="attribute_property_name mono">Default (Object)</div>
                                     <div class="attribute_property_description">The default value of the parameter, in case no input was provided</div>
                                 </div>
                                 <div class="attribute_property">
-                                    <div class="attribute_property_name code">Required (Boolean)</div>
+                                    <div class="attribute_property_name mono">Required (Boolean)</div>
                                     <div class="attribute_property_description">Whether the parameter is required</div>
                                 </div>
                                 <div class="attribute_property">
-                                    <div class="attribute_property_name code">Aliases (String)</div>
+                                    <div class="attribute_property_name mono">Aliases (String)</div>
                                     <div class="attribute_property_description">Additional aliases for the parameter</div>
                                 </div>
                                 <div class="attribute_property">
-                                    <div class="attribute_property_name code">Description (String)</div>
+                                    <div class="attribute_property_name mono">Description (String)</div>
                                     <div class="attribute_property_description">Used to describe the verb when displaying help</div>
                                 </div>
                             </div>
@@ -284,13 +284,13 @@
                     </div>
                     <div class="attribute_wrapper" id="attribute_empty">
                         <div class="attribute">
-                            <div class="attribute_name code">Empty</div>
+                            <div class="attribute_name mono">Empty</div>
                             <div class="attribute_description">
                                 <p>Marks a method to execute when no input was provided by the user.</p>
-                                <p>Only a single method can be marked with <span class="code highlight">[Empty]</span> in a class.</p>
+                                <p>Only a single method can be marked with <code class="highlight">[Empty]</code> in a class.</p>
                                 <p>
-                                    Trying to mark more than one <span class="code">[Empty]</span>
-                                    will throw a <span class="code">MoreThanOneEmptyHandlerException</span>.
+                                    Trying to mark more than one <code>[Empty]</code>
+                                    will throw a <code>MoreThanOneEmptyHandlerException</code>.
                                 </p>
                             </div>
                             <div class="attribute_samples">
@@ -314,15 +314,15 @@
                     </div>
                     <div class="attribute_wrapper" id="attribute_error">
                         <div class="attribute">
-                            <div class="attribute_name code">Error</div>
+                            <div class="attribute_name mono">Error</div>
                             <div class="attribute_description">
                                 <p>Marks a method to execute when an error occurs.</p>
-                                <p>Only a single method can be marked with <span class="code highlight">[Error]</span> and it must match the following signature:</p>
-                                <div class="code highlight">void Error(ExceptionContext context) {}</div>
+                                <p>Only a single method can be marked with <code class="highlight">[Error]</code> and it must match the following signature:</p>
+                                <code class="highlight">void Error(ExceptionContext context) {}</code>
                                 <h4>Notice that there is no restriction for the name of the method, only the signature.</h4>
                                 <p>
-                                    Trying to mark more than one <span class="code">[Error]</span>
-                                    will throw a <span class="code">MoreThanOneErrorHandlerException</span>.
+                                    Trying to mark more than one <code>[Error]</code>
+                                    will throw a <code>MoreThanOneErrorHandlerException</code>.
                                 </p>
                             </div>
                             <div class="attribute_samples">
@@ -350,11 +350,11 @@
                                 <h4>ExceptionContext</h4>
                                 <div class="attribute_properties">
                                     <div class="attribute_property">
-                                        <div class="attribute_property_name code">Exception (Exception)</div>
+                                        <div class="attribute_property_name mono">Exception (Exception)</div>
                                         <div class="attribute_property_description">The exception that was thrown during execution</div>
                                     </div>
                                     <div class="attribute_property">
-                                        <div class="attribute_property_name code">ReThrow (Boolean)</div>
+                                        <div class="attribute_property_name mono">ReThrow (Boolean)</div>
                                         <div class="attribute_property_description">Whether to re-throw the exception after handling it</div>
                                     </div>
                                 </div>
@@ -363,20 +363,20 @@
                     </div>
                     <div class="attribute_wrapper" id="attribute_help">
                         <div class="attribute">
-                            <div class="attribute_name code">Help</div>
+                            <div class="attribute_name mono">Help</div>
                             <div class="attribute_description">
                                 <p>Marks a method to execute when the user requests for help.</p>
                                 <p>The method must match the following signature:</p>
-                                <div class="code highlight">void Help(string help) {}</div>
+                                <code class="highlight">void Help(string help) {}</code>
                             </div>
                             <div class="attribute_properties">
                                 <h3>Properties:</h3>
                                 <div class="attribute_property">
-                                    <div class="attribute_property_name code">Name (String)</div>
+                                    <div class="attribute_property_name mono">Name (String)</div>
                                     <div class="attribute_property_description">The parameter name for the help. If none specified - the method name is used instead.</div>
                                 </div>
                                 <div class="attribute_property">
-                                    <div class="attribute_property_name code">Aliases (String)</div>
+                                    <div class="attribute_property_name mono">Aliases (String)</div>
                                     <div class="attribute_property_description">Additional aliases for the parameter name</div>
                                 </div>
                             </div>
@@ -401,7 +401,7 @@
                     </div>
                     <div class="attribute_wrapper" id="attribute_global">
                         <div class="attribute">
-                            <div class="attribute_name code">Global</div>
+                            <div class="attribute_name mono">Global</div>
                             <div class="attribute_description">
                                 <p>Marks a method as a global parameter. A global parameter is available for all verbs within a class.</p>
                                 <p>
@@ -413,15 +413,15 @@
                             <div class="attribute_properties">
                                 <h3>Properties:</h3>
                                 <div class="attribute_property">
-                                    <div class="attribute_property_name code">Name (String)</div>
+                                    <div class="attribute_property_name mono">Name (String)</div>
                                     <div class="attribute_property_description">The parameter name. If none specified - the method name is used instead.</div>
                                 </div>
                                 <div class="attribute_property">
-                                    <div class="attribute_property_name code">Aliases (String)</div>
+                                    <div class="attribute_property_name mono">Aliases (String)</div>
                                     <div class="attribute_property_description">Additional aliases for the parameter name</div>
                                 </div>
                                 <div class="attribute_property">
-                                    <div class="attribute_property_name code">Description (String)</div>
+                                    <div class="attribute_property_name mono">Description (String)</div>
                                     <div class="attribute_property_description">Used to describe the parameter when displaying help</div>
                                 </div>
                             </div>
@@ -454,7 +454,7 @@
                 <div sectionid="#file_input" class="content">
                     <h3>File Input</h3>
                     <p>
-                        In-addition to passing values to parameters in the regular way (<span class="code">-param=value</span>),
+                        In-addition to passing values to parameters in the regular way (<code>-param=value</code>),
                         CLAP supports passing the content of text files as input to parameters.
                     </p>
                     <p>
@@ -463,22 +463,22 @@
                         a text file.
                     </p>
                     <p>
-                        Passing the content of a file to a parameter is by adding a <span class="code highlight">@</span> 
+                        Passing the content of a file to a parameter is by adding a <code class="highlight">@</code> 
                         after the parameter name using the following syntax:
                     </p>
                     <p>
-                        <span class="code highlight">-param@=<em>file_path</em></span>
+                        <code class="highlight">-param@=<em>file_path</em></code>
                     </p>
                     <div class="note">
-                        <h4><span class="code">:</span> vs <span class="code">=</span></h4>
+                        <h4><code>:</code> vs <code>=</code></h4>
                         <p>
-                            As a parameter-value separator, CLAP supports both <span class="code highlight">:</span> and 
-                            <span class="code highlight">=</span>.
+                            As a parameter-value separator, CLAP supports both <code class="highlight">:</code> and 
+                            <code class="highlight">=</code>.
                         </p>
                         <p>
-                            It is better to use <span class="code highlight">=</span> because the console (cmd.exe) does not
-                            support tab-completion after the <span class="code highlight">:</span> character.
-                            Tab-completion is supported when using the <span class="code highlight">=</span> character.
+                            It is better to use <code class="highlight">=</code> because the console (cmd.exe) does not
+                            support tab-completion after the <code class="highlight">:</code> character.
+                            Tab-completion is supported when using the <code class="highlight">=</code> character.
                         </p>
                     </div>
                     <h4>For example:</h4>
@@ -574,7 +574,7 @@
                     <div class="note">
                         <h4>XML Beautifying</h4>
                         <p>
-                            Using some .NET XML tweaks, such as marking properties with <span class="code">[XmlAttribute]</span>,
+                            Using some .NET XML tweaks, such as marking properties with <code>[XmlAttribute]</code>,
                             The above XML sample can be represented as the following:
                         </p>
                         <pre class="brush: xml">
@@ -633,7 +633,7 @@
                     <p>CLAP comes with some built-in validation attributes and custom validation can be easily implemented.</p>
                     <div class="attribute_wrapper" id="validation_lessthan">
                         <div class="attribute">
-                            <div class="attribute_name code">LessThan(double number)</div>
+                            <div class="attribute_name mono">LessThan(double number)</div>
                             <div class="attribute_description">
                                 <p>Validates that a numeric value is less than a specified value.</p>
                             </div>
@@ -653,7 +653,7 @@
                     </div>
                     <div class="attribute_wrapper" id="validation_lessorequalto">
                         <div class="attribute">
-                            <div class="attribute_name code">LessOrEqualTo(double number)</div>
+                            <div class="attribute_name mono">LessOrEqualTo(double number)</div>
                             <div class="attribute_description">
                                 <p>Validates that a numeric value is less or equals a specified value.</p>
                             </div>
@@ -673,7 +673,7 @@
                     </div>
                     <div class="attribute_wrapper" id="validation_morethan">
                         <div class="attribute">
-                            <div class="attribute_name code">MoreThan(double number)</div>
+                            <div class="attribute_name mono">MoreThan(double number)</div>
                             <div class="attribute_description">
                                 <p>Validates that a numeric value is more than a specified value.</p>
                             </div>
@@ -693,7 +693,7 @@
                     </div>
                     <div class="attribute_wrapper" id="validation_moreorequalto">
                         <div class="attribute">
-                            <div class="attribute_name code">MoreOrEqualTo(double number)</div>
+                            <div class="attribute_name mono">MoreOrEqualTo(double number)</div>
                             <div class="attribute_description">
                                 <p>Validates that a numeric value is more or equals a specified value.</p>
                             </div>
@@ -713,7 +713,7 @@
                     </div>
                     <div class="attribute_wrapper" id="validation_regexmatches">
                         <div class="attribute">
-                            <div class="attribute_name code">RegexMatches(string pattern)</div>
+                            <div class="attribute_name mono">RegexMatches(string pattern)</div>
                             <div class="attribute_description">
                                 <p>Validates that a string value matches a specified regular-expression.</p>
                             </div>
@@ -733,7 +733,7 @@
                     </div>
                     <div class="attribute_wrapper" id="validation_fileexists">
                         <div class="attribute">
-                            <div class="attribute_name code">FileExists</div>
+                            <div class="attribute_name mono">FileExists</div>
                             <div class="attribute_description">
                                 <p>Validates that a file exists.</p>
                             </div>
@@ -753,7 +753,7 @@
                     </div>
                     <div class="attribute_wrapper" id="validation_directoryexists">
                         <div class="attribute">
-                            <div class="attribute_name code">DirectoryExists</div>
+                            <div class="attribute_name mono">DirectoryExists</div>
                             <div class="attribute_description">
                                 <p>Validates that a directory exists.</p>
                             </div>
@@ -773,7 +773,7 @@
                     </div>
                     <div class="attribute_wrapper" id="validation_pathexists">
                         <div class="attribute">
-                            <div class="attribute_name code">PathExists</div>
+                            <div class="attribute_name mono">PathExists</div>
                             <div class="attribute_description">
                                 <p>Validates that a file or a directory exists.</p>
                             </div>
@@ -793,7 +793,7 @@
                     </div>
                     <div class="attribute_wrapper" id="validation_expression">
                         <div class="attribute">
-                            <div class="attribute_name code">Validate(Expression)</div>
+                            <div class="attribute_name mono">Validate(Expression)</div>
                             <div class="attribute_description">
                                 <p>Validates all the arguments against an SQL expression.</p>
                                 <p><em>Notice that this is a multiple parameters validator so it is placed over the Verb (or Global) instead of the parameter</em></p>
@@ -845,7 +845,7 @@
                     </div>
                     <div class="attribute_wrapper" id="validation_properties">
                         <div class="attribute">
-                            <div class="attribute_name code">Properties Validation</div>
+                            <div class="attribute_name mono">Properties Validation</div>
                             <div class="attribute_description">
                                 <p>
                                     All validation attributes can be applied to properties of a custom type.
@@ -890,7 +890,7 @@
                                 </pre>
                                 <h4>Class vs Instance Expression Validation</h4>
                                 <p>
-                                    The <span class="code">Validate(Expression)</span> attribute can be applied
+                                    The <code>Validate(Expression)</code> attribute can be applied
                                     to both properties and also classes (in-addition to verbs).
                                 </p>
                                 <p>
@@ -902,12 +902,16 @@
                                 </p>
                                 <p>
                                     In the above example, the Name property of a Product's review must pass both validations:
-                                    <div class="code">Name NOT IN 'Adrian','Alon'</div>
-                                    <div class="code">Name NOT LIKE 'Bob*'</div>
+                                    <ul>
+                                        <li><code>Name NOT IN 'Adrian','Alon'</code></li>
+                                        <li><code>Name NOT LIKE 'Bob*'</code></li>
+                                    </ul>
                                 </p>
                                 <p>
                                     In any other instance of the Review class, not related to Product, the Name property must pass:
-                                    <div class="code">Name NOT LIKE 'Bob*'</div>
+                                    <ul>
+                                        <li><code>Name NOT LIKE 'Bob*'</code></li>
+                                    </ul>
                                 </p>
                             </div>
                         </div>
@@ -921,12 +925,12 @@
                     </p>
                     <div class="attribute_wrapper" id="custom_validation_single">
                         <div class="attribute">
-                            <div class="attribute_name code">ValidationAttribute, IParameterValidator</div>
+                            <div class="attribute_name mono">ValidationAttribute, IParameterValidator</div>
                             <div class="attribute_description">
                                 <p>A single parameter custom validation</p>
                             </div>
                             <div class="attribute_samples">
-                                <p>Start with implementing the <span class="code">IParameterValidator</span> interface:</p>
+                                <p>Start with implementing the <code>IParameterValidator</code> interface:</p>
                                 <pre class="brush: csharp, highlight: [1,10]">
                                     class LengthValidator : IParameterValidator
                                     {
@@ -950,14 +954,14 @@
                                     }
                                 </pre>
                                 <p>
-                                    Notice that the <span class="highlight code">parameter</span> argument is not used in this example.
+                                    Notice that the <code class="highlight">parameter</code> argument is not used in this example.
                                     The important part is the actual value being validated. The additional
-                                    <span class="code">parameter</span> argument is provided in case validation needs to be against 
+                                    <code>parameter</code> argument is provided in case validation needs to be against 
                                     reflected information about the parameter type, or, if that information is required for creating a
                                     validation error message.<br/>
                                     Anyway, it is provided and can be ignored.
                                 </p>
-                                <p>Then implement the attribute by deriving from <span class="code">ValidationAttribute</span>:</p>
+                                <p>Then implement the attribute by deriving from <code>ValidationAttribute</code>:</p>
                                 <pre class="brush: csharp, highlight: [2,13]">
                                     [AttributeUsage(AttributeTargets.Parameter)]
                                     class LengthAtLeastAttribute : ValidationAttribute
@@ -993,18 +997,18 @@
                                         {
                                         }
                                     </pre>
-                                    The <span class="code">text</span> argument must be at least 10 characters long, otherwise,
+                                    The <code>text</code> argument must be at least 10 characters long, otherwise,
                                     an exception will be thrown.
                                 </p>
                                 <p>
-                                    The <span class="code">Description</span> property is used when generating the help string.
+                                    The <code>Description</code> property is used when generating the help string.
                                 </p>
                             </div>
                         </div>
                     </div>
                     <div class="attribute_wrapper" id="custom_validation_multiple">
                         <div class="attribute">
-                            <div class="attribute_name code">ParametersValidationAttribute, IInfoValidator&lt;ParameterInfo></div>
+                            <div class="attribute_name mono">ParametersValidationAttribute, IInfoValidator&lt;ParameterInfo></div>
                             <div class="attribute_description">
                                 <p>Multiple parameters custom validation.</p>
                                 <p>Single parameters validators are used to validate parameters against their own values.</p>
@@ -1015,7 +1019,7 @@
                                 <p><em>Notice that multiple parameters validations are executed <strong>after</strong> all the single validators.</em></p>
                             </div>
                             <div class="attribute_samples">
-                                <p>Start with implementing the <span class="code">IInfoValidator&lt;ParameterInfo></span> interface:</p>
+                                <p>Start with implementing the <code>IInfoValidator&lt;ParameterInfo></code> interface:</p>
                                 <h3>Example:</h3>
                                 <p>Having the following verb:</p>
                                 <pre class="brush: csharp, highlight: [1,10]">
@@ -1063,7 +1067,7 @@
                                         }
                                     }
                                 </pre>
-                                <p>Then implement the attribute by deriving from <span class="code">ParametersValidationAttribute</span>:</p>
+                                <p>Then implement the attribute by deriving from <code>ParametersValidationAttribute</code>:</p>
                                 <pre class="brush: csharp, highlight: [2,6]">
                                     [AttributeUsage(AttributeTargets.Method)]
                                     public class SameLengthAttribute : ParametersValidationAttribute
@@ -1114,18 +1118,18 @@
                     <p>Interception can be used for logging, exception handling, verb cancellation and more.</p>
                     <div class="attribute_wrapper" id="interception_preverbexecution">
                         <div class="attribute">
-                            <div class="attribute_name code">PreVerbExecution</div>
+                            <div class="attribute_name mono">PreVerbExecution</div>
                             <div class="attribute_description">
                                 <p>Marks a method to execute <strong>before</strong> any verb is executed.</p>
                                 <p>
-                                    Only a single mathod can be marked as a <span class="code">[PreVerbExecution]</span>
+                                    Only a single mathod can be marked as a <code>[PreVerbExecution]</code>
                                     and it must match the following signature:
                                 </p>
-                                <div class="code highlight">void Before(PreVerbExecutionContext context) {}</div>
+                                <code class="highlight">void Before(PreVerbExecutionContext context) {}</code>
                                 <h4>Notice that there is no restriction for the name of the method, only the signature.</h4>
                                 <p>
-                                    Trying to mark more than one <span class="code">[PreVerbExecution]</span>
-                                    will throw a <span class="code">MoreThanOnePreVerbInterceptorException</span>.
+                                    Trying to mark more than one <code>[PreVerbExecution]</code>
+                                    will throw a <code>MoreThanOnePreVerbInterceptorException</code>.
                                 </p>
                             </div>
                             <div class="attribute_samples">
@@ -1144,18 +1148,18 @@
                     </div>
                     <div class="attribute_wrapper" id="interception_postverbexecution">
                         <div class="attribute">
-                            <div class="attribute_name code">PostVerbExecution</div>
+                            <div class="attribute_name mono">PostVerbExecution</div>
                             <div class="attribute_description">
                                 <p>Marks a method to execute <strong>after</strong> any verb is executed.</p>
                                 <p>
-                                    Only a single mathod can be marked as a <span class="code">[PostVerbExecution]</span>
+                                    Only a single mathod can be marked as a <code>[PostVerbExecution]</code>
                                     and it must match the following signature:
                                 </p>
-                                <div class="code highlight">void Before(PostVerbExecutionContext context) {}</div>
+                                <code class="highlight">void Before(PostVerbExecutionContext context) {}</code>
                                 <h4>Notice that there is no restriction for the name of the method, only the signature.</h4>
                                 <p>
-                                    Trying to mark more than one <span class="code">[PostVerbExecution]</span>
-                                    will throw a <span class="code">MoreThanOnePostVerbInterceptorException</span>.
+                                    Trying to mark more than one <code>[PostVerbExecution]</code>
+                                    will throw a <code>MoreThanOnePostVerbInterceptorException</code>.
                                 </p>
                             </div>
                             <div class="attribute_samples">
@@ -1174,14 +1178,14 @@
                     </div>
                     <div class="attribute_wrapper" id="interception_verbinterception">
                         <div class="attribute">
-                            <div class="attribute_name code">VerbInterception</div>
+                            <div class="attribute_name mono">VerbInterception</div>
                             <div class="attribute_description">
                                 <p>
-                                    Marks a class with a type that implements <span class="code highlight">IVerbInterceptor</span>.
+                                    Marks a class with a type that implements <code class="highlight">IVerbInterceptor</code>.
                                 </p>
                                 <p>
-                                    The <span class="code">IVerbInterceptor</span> interface requires implementing both
-                                    <span class="code">IPreVerbInterceptor</span> and <span class="code">IPostVerbInterceptor</span>.
+                                    The <code>IVerbInterceptor</code> interface requires implementing both
+                                    <code>IPreVerbInterceptor</code> and <code>IPostVerbInterceptor</code>.
                                 </p>
                                 <p>
                                     If only pre or post interception is required - implementing only one of the above interfaces is enough.
@@ -1215,7 +1219,7 @@
                     </div>
                     <div class="attribute_wrapper" id="interception_preverbexecutioncontext">
                         <div class="attribute">
-                            <div class="attribute_name code">PreVerbExecutionContext</div>
+                            <div class="attribute_name mono">PreVerbExecutionContext</div>
                             <div class="attribute_description">
                                 <p>
                                     A context object that is passed during verb interception before the verb is executed.
@@ -1224,27 +1228,27 @@
                             <div class="attribute_properties">
                                 <h4>Properties:</h4>
                                 <div class="attribute_property">
-                                    <div class="attribute_property_name code">Method (CLAP.Method)</div>
+                                    <div class="attribute_property_name mono">Method (CLAP.Method)</div>
                                     <div class="attribute_property_description">The verb method that will be executed.</div>
                                 </div>
                                 <div class="attribute_property">
-                                    <div class="attribute_property_name code">Target (object)</div>
+                                    <div class="attribute_property_name mono">Target (object)</div>
                                     <div class="attribute_property_description">
                                         Holds the instance of the class that owns the executed verb. In-case the verb is static, Target is null.
                                     </div>
                                 </div>
                                 <div class="attribute_property">
-                                    <div class="attribute_property_name code">Parameters (ParameterAndValue[])</div>
+                                    <div class="attribute_property_name mono">Parameters (ParameterAndValue[])</div>
                                     <div class="attribute_property_description">A collection of the parameters and their values.</div>
                                 </div>
                                 <div class="attribute_property">
-                                    <div class="attribute_property_name code">UserContext (Dictionary&lt;object, object>)</div>
+                                    <div class="attribute_property_name mono">UserContext (Dictionary&lt;object, object>)</div>
                                     <div class="attribute_property_description">
                                         A dictionary that can be used to pass data from the pre-interceptor to the post-interceptor.
                                     </div>
                                 </div>
                                 <div class="attribute_property">
-                                    <div class="attribute_property_name code">Cancel (Boolean)</div>
+                                    <div class="attribute_property_name mono">Cancel (Boolean)</div>
                                     <div class="attribute_property_description">
                                         A flag that informs the parser to cancel the execution of the verb. The post-interceptor will still be executed even if the verb is cancelled.
                                     </div>
@@ -1254,7 +1258,7 @@
                     </div>
                     <div class="attribute_wrapper" id="interception_postverbexecutioncontext">
                         <div class="attribute">
-                            <div class="attribute_name code">PostVerbExecutionContext</div>
+                            <div class="attribute_name mono">PostVerbExecutionContext</div>
                             <div class="attribute_description">
                                 <p>
                                     A context object that is passed during verb interception after the verb was executed.
@@ -1263,41 +1267,41 @@
                             <div class="attribute_properties">
                                 <h4>Properties:</h4>
                                 <div class="attribute_property">
-                                    <div class="attribute_property_name code">Method (CLAP.Method)</div>
+                                    <div class="attribute_property_name mono">Method (CLAP.Method)</div>
                                     <div class="attribute_property_description">The verb method that was executed.</div>
                                 </div>
                                 <div class="attribute_property">
-                                    <div class="attribute_property_name code">Target (object)</div>
+                                    <div class="attribute_property_name mono">Target (object)</div>
                                     <div class="attribute_property_description">
                                         Holds the instance of the class that owns the executed verb. In-case the verb is static, Target is null.
                                     </div>
                                 </div>
                                 <div class="attribute_property">
-                                    <div class="attribute_property_name code">Parameters (ParameterAndValue[])</div>
+                                    <div class="attribute_property_name mono">Parameters (ParameterAndValue[])</div>
                                     <div class="attribute_property_description">A collection of the parameters and their values.</div>
                                 </div>
                                 <div class="attribute_property">
-                                    <div class="attribute_property_name code">UserContext (Dictionary&lt;object, object>)</div>
+                                    <div class="attribute_property_name mono">UserContext (Dictionary&lt;object, object>)</div>
                                     <div class="attribute_property_description">
                                         A dictionary that can be used to pass data from the pre-interceptor to the post-interceptor.
                                     </div>
                                 </div>
                                 <div class="attribute_property">
-                                    <div class="attribute_property_name code">Cancelled (Boolean)</div>
+                                    <div class="attribute_property_name mono">Cancelled (Boolean)</div>
                                     <div class="attribute_property_description">
                                         Holds a flag indicating whether the verb execution was cancelled by the pre-interceptor.
                                     </div>
                                 </div>
                                 <div class="attribute_property">
-                                    <div class="attribute_property_name code">Exception (Exception)</div>
+                                    <div class="attribute_property_name mono">Exception (Exception)</div>
                                     <div class="attribute_property_description">
                                         Holds an exception instance that was thrown in case an error occured during the verb execution.
                                     </div>
                                 </div>
                                 <div class="attribute_property">
-                                    <div class="attribute_property_name code">Failed (Boolean)</div>
+                                    <div class="attribute_property_name mono">Failed (Boolean)</div>
                                     <div class="attribute_property_description">
-                                        In case an error occured an <span class="code">Exception</span> is not null, Failed is true.
+                                        In case an error occured an <code>Exception</code> is not null, Failed is true.
                                     </div>
                                 </div>
                             </div>
@@ -1320,12 +1324,12 @@
                     </p>
                     <div class="attribute_wrapper" id="expressions_empty">
                         <div class="attribute">
-                            <div class="attribute_name code">Register.EmptyHandler(Action handler)</div>
+                            <div class="attribute_name mono">Register.EmptyHandler(Action handler)</div>
                             <div class="attribute_description">
                                 <p>Registers an action that will be executed when no input was provided by the user.</p>
                                 <p>
                                     Only a single empty handler can be registered. Trying to register more than one
-                                    handler will throw a <span class="code">MoreThanOneEmptyHandlerException</span>.
+                                    handler will throw a <code>MoreThanOneEmptyHandlerException</code>.
                                 </p>
                             </div>
                             <div class="attribute_samples">
@@ -1361,7 +1365,7 @@
                     </div>
                     <div class="attribute_wrapper" id="expressions_help">
                         <div class="attribute">
-                            <div class="attribute_name code">Register.HelpHandler(string names, Action&lt;string> helpHandler)</div>
+                            <div class="attribute_name mono">Register.HelpHandler(string names, Action&lt;string> helpHandler)</div>
                             <div class="attribute_description">
                                 <p>Registers an action that will be executed when help is requested by the user.</p>
                             </div>
@@ -1378,8 +1382,8 @@
                                     }
                                 </pre>
                                 <p>
-                                    This will print the help string when either <span class="code highlight">-?</span>,
-                                    <span class="code highlight">-h</span> or <span class="code highlight">-help</span> are provided.
+                                    This will print the help string when either <code class="highlight">-?</code>,
+                                    <code class="highlight">-h</code> or <code class="highlight">-help</code> are provided.
                                 </p>
                                 <p>The help string is automatically generated.</p>
                             </div>
@@ -1387,12 +1391,12 @@
                     </div>
                     <div class="attribute_wrapper" id="expressions_emptyhelp">
                         <div class="attribute">
-                            <div class="attribute_name code">Register.EmptyHelpHandler(Action&lt;string> handler)</div>
+                            <div class="attribute_name mono">Register.EmptyHelpHandler(Action&lt;string> handler)</div>
                             <div class="attribute_description">
                                 <p>Print the help string when no input is provided by the user.</p>
                                 <p>
                                     Only a single empty help handler can be registered. Trying to register more than one
-                                    handler will throw a <span class="code">MoreThanOneEmptyHandlerException</span>.
+                                    handler will throw a <code>MoreThanOneEmptyHandlerException</code>.
                                 </p>
                             </div>
                             <div class="attribute_samples">
@@ -1413,14 +1417,14 @@
                     </div>
                     <div class="attribute_wrapper" id="expressions_error">
                         <div class="attribute">
-                            <div class="attribute_name code">Register.ErrorHandler(Action&lt;ExceptionContext> handler)</div>
+                            <div class="attribute_name mono">Register.ErrorHandler(Action&lt;ExceptionContext> handler)</div>
                             <div class="attribute_description">
                                 <p>Registers an action that will be executed when an error occurs.</p>
-                                <p>The action can assign a bool value to the <span class="code highlight">ReThrow</span> property of the context indicating whether the exception should be re-thrown after handling.</p>
-                                <p>If not assigning any value - <span class="code highlight">false</span> is the default</p>
+                                <p>The action can assign a bool value to the <code class="highlight">ReThrow</code> property of the context indicating whether the exception should be re-thrown after handling.</p>
+                                <p>If not assigning any value - <code class="highlight">false</code> is the default</p>
                                 <p>
                                     Only a single error handler can be registered. Trying to register more than one
-                                    handler will throw a <span class="code">MoreThanOneErrorHandlerException</span>.
+                                    handler will throw a <code>MoreThanOneErrorHandlerException</code>.
                                 </p>
                             </div>
                             <div class="attribute_samples">
@@ -1464,18 +1468,18 @@
                     </div>
                     <div class="attribute_wrapper" id="expressions_global">
                         <div class="attribute">
-                            <div class="attribute_name code">Register.ParameterHandler(string names, Action action, [string description])</div>
-                            <div class="attribute_name code">Register.ParameterHandler&lt;T>(string names, Action&lt;T> action, [string description])</div>
+                            <div class="attribute_name mono">Register.ParameterHandler(string names, Action action, [string description])</div>
+                            <div class="attribute_name mono">Register.ParameterHandler&lt;T>(string names, Action&lt;T> action, [string description])</div>
                             <div class="attribute_description">
                                 <p>Registers a parameter handler.</p>
                                 <p>
                                     A parameter handler can be either an action that accepts no arguments
                                     or an action that accepts one of the support argument types.
                                 </p>
-                                <p>If the action accept no arguments (<span class="code">Action</span>) it is treated as a boolean switch.</p>
+                                <p>If the action accept no arguments (<code>Action</code>) it is treated as a boolean switch.</p>
                                 <p>If the action accpets one parameter of the supported types, the value of the argument is passed to the handler.</p>
-                                <p><em>See the <span class="code">Parameter</span> attribute section for a list of supported types.</em></p>
-                                <p>The <span class="code">description</span> parameter is used to generate the help string.</p>
+                                <p><em>See the <code>Parameter</code> attribute section for a list of supported types.</em></p>
+                                <p>The <code>description</code> parameter is used to generate the help string.</p>
                             </div>
                             <div class="attribute_samples">
                                 <h3>Example:</h3>
@@ -1492,28 +1496,28 @@
                                         p.Run(args);
                                     }
                                 </pre>
-                                <p>This will launch the debugger when the user enters either <span class="code highlight">-d</span> or <span class="code highlight">-debug</span>.</p>
+                                <p>This will launch the debugger when the user enters either <code class="highlight">-d</code> or <code class="highlight">-debug</code>.</p>
                                 <p>
-                                    In-addition, when using <span class="code highlight">-p</span> or <span class="code highlight">-pause</span>,
-                                    the execution will pause for the specified seconds, for example: <span class="code highlight">-p=5</span>.
+                                    In-addition, when using <code class="highlight">-p</code> or <code class="highlight">-pause</code>,
+                                    the execution will pause for the specified seconds, for example: <code class="highlight">-p=5</code>.
                                 </p>
                                 <p>
                                     Arguments are handled in the input order.<br />
-                                    For example, entering <span class="code highlight">-d -p=5</span> will first trigger the debugger and will then pause.<br />
-                                    Entering <span class="code highlight">-p=5 -d</span> will first pause and then trigger the debugger.
+                                    For example, entering <code class="highlight">-d -p=5</code> will first trigger the debugger and will then pause.<br />
+                                    Entering <code class="highlight">-p=5 -d</code> will first pause and then trigger the debugger.
                                 </p>
                             </div>
                         </div>
                     </div>
                     <div class="attribute_wrapper" id="expressions_preverbinterceptor">
                         <div class="attribute">
-                            <div class="attribute_name code">Register.PreVerbInterceptor(Action&lt;PreVerbExecutionContext> interceptor)</div>
+                            <div class="attribute_name mono">Register.PreVerbInterceptor(Action&lt;PreVerbExecutionContext> interceptor)</div>
                             <div class="attribute_description">
                                 <p>Registers a verb interceptor that will be executed <strong>before</strong> any verb.</p>
-                                <p>See the <span class="code">PreVerbExecutionContext</span> section for more info about the context object.</p>
+                                <p>See the <code>PreVerbExecutionContext</code> section for more info about the context object.</p>
                                 <p>
                                     Only a single interceptor can be registered. Trying to register more than one
-                                    interceptor will throw a <span class="code">MoreThanOnePreVerbInterceptorException</span>.
+                                    interceptor will throw a <code>MoreThanOnePreVerbInterceptorException</code>.
                                 </p>
                             </div>
                             <div class="attribute_samples">
@@ -1542,13 +1546,13 @@
                     </div>
                     <div class="attribute_wrapper" id="expressions_postverbinterceptor">
                         <div class="attribute">
-                            <div class="attribute_name code">Register.PostVerbInterceptor(Action&lt;PostVerbExecutionContext> interceptor)</div>
+                            <div class="attribute_name mono">Register.PostVerbInterceptor(Action&lt;PostVerbExecutionContext> interceptor)</div>
                             <div class="attribute_description">
                                 <p>Registers a verb interceptor that will be executed <strong>after</strong> any verb.</p>
-                                <p>See the <span class="code">PostVerbExecutionContext</span> section for more info about the context object.</p>
+                                <p>See the <code>PostVerbExecutionContext</code> section for more info about the context object.</p>
                                 <p>
                                     Only a single interceptor can be registered. Trying to register more than one
-                                    interceptor will throw a <span class="code">MoreThanOnePostVerbInterceptorException</span>.
+                                    interceptor will throw a <code>MoreThanOnePostVerbInterceptorException</code>.
                                 </p>
                             </div>
                             <div class="attribute_samples">
@@ -1617,10 +1621,10 @@
                         <ul>
                             <li>Errors will be handled and printed in red</li>
                             <li>
-                                Either <span class="code highlight">-h</span>, <span class="code highlight">-?</span>,
-                                <span class="code highlight">-help</span> or an empty input will print the genareted help
+                                Either <code class="highlight">-h</code>, <code class="highlight">-?</code>,
+                                <code class="highlight">-help</code> or an empty input will print the genareted help
                             </li>
-                            <li><span class="code highlight">-debug</span> will launch the debugger</li>
+                            <li><code class="highlight">-debug</code> will launch the debugger</li>
                         </ul>
                     </div>
                     <h4>A class with some verbs and validation:</h4>
@@ -1683,31 +1687,31 @@
                                 }
                             }
                         </pre>
-                        <p>The first verb, <span class="code">Hello</span>, is the default verb and it has two parameters:</p>
+                        <p>The first verb, <code>Hello</code>, is the default verb and it has two parameters:</p>
                         <ol>
-                            <li><span class="code highlight">name</span>: Required and has an alias "n".</li>
+                            <li><code class="highlight">name</code>: Required and has an alias "n".</li>
                             <li>
-                                <span class="code highlight">count</span>: Has a default of 10 and an alias "c".
+                                <code class="highlight">count</code>: Has a default of 10 and an alias "c".
                                 The value has to be less or equal to 30 to be valid.
                             </li>
                         </ol>
                         <p>
-                            The second verb, <span class="code">Cartesian</span>, prints all possible combinations of two given arrays
+                            The second verb, <code>Cartesian</code>, prints all possible combinations of two given arrays
                             (a Cartesian product). The verb has two parameters:
                         </p>
                         <ol>
-                            <li><span class="code highlight">numbers</span>: A list of numbers.</li>
-                            <li><span class="code highlight">names</span>: A list of names.</li>
+                            <li><code class="highlight">numbers</code>: A list of numbers.</li>
+                            <li><code class="highlight">names</code>: A list of names.</li>
                         </ol>
                         <p>
-                            The third verb, <span class="code">Count</span>, prints a list of numbers 
+                            The third verb, <code>Count</code>, prints a list of numbers 
                             with left or right alignment and a pause between each line. The verb has four parameters:
                         </p>
                         <ol>
-                            <li><span class="code highlight">start</span>: The value has to be between 0 and 50.</li>
-                            <li><span class="code highlight">end</span>: The value has to between 50 and 100.</li>
-                            <li><span class="code highlight">pauseSeconds</span>: Default of 1.5 and aliases: "p" and "pause".</li>
-                            <li><span class="code highlight">alignment</span>: An enum with an alias "align".</li>
+                            <li><code class="highlight">start</code>: The value has to be between 0 and 50.</li>
+                            <li><code class="highlight">end</code>: The value has to between 50 and 100.</li>
+                            <li><code class="highlight">pauseSeconds</code>: Default of 1.5 and aliases: "p" and "pause".</li>
+                            <li><code class="highlight">alignment</code>: An enum with an alias "align".</li>
                         </ol>
                         <p>Sample run:</p>
                         <pre class="console">
