@@ -122,17 +122,17 @@
                         </pre>
                     </div>
                     <pre class="console seq" timeout="13000">
-C:\> <span class="commandline">myexe foo -bar=Ass! -count=10</span><span class="grumbler" text="Parsing is automatic!" angle="30" distance="5" showAfter="14000" hideAfter="3000"></span>
-<span class="seq" timeout="16000">This parser kicks Ass!</span>
-<span class="seq" timeout="16100">This parser kicks Ass!</span>
-<span class="seq" timeout="16200">This parser kicks Ass!</span>
-<span class="seq" timeout="16300">This parser kicks Ass!</span>
-<span class="seq" timeout="16400">This parser kicks Ass!</span>
-<span class="seq" timeout="16500">This parser kicks Ass!</span>
-<span class="seq" timeout="16600">This parser kicks Ass!</span>
-<span class="seq" timeout="16700">This parser kicks Ass!</span>
-<span class="seq" timeout="16800">This parser kicks Ass!</span>
-<span class="seq" timeout="16900">This parser kicks Ass!</span></pre>
+C:\> myexe foo -bar=Ass! -count=10<span class="grumbler" text="Parsing is automatic!" angle="30" distance="5" showAfter="14000" hideAfter="3000"></span>
+<span class="seq commandline" timeout="16000">This parser kicks Ass!</span>
+<span class="seq commandline" timeout="16100">This parser kicks Ass!</span>
+<span class="seq commandline" timeout="16200">This parser kicks Ass!</span>
+<span class="seq commandline" timeout="16300">This parser kicks Ass!</span>
+<span class="seq commandline" timeout="16400">This parser kicks Ass!</span>
+<span class="seq commandline" timeout="16500">This parser kicks Ass!</span>
+<span class="seq commandline" timeout="16600">This parser kicks Ass!</span>
+<span class="seq commandline" timeout="16700">This parser kicks Ass!</span>
+<span class="seq commandline" timeout="16800">This parser kicks Ass!</span>
+<span class="seq commandline" timeout="16900">This parser kicks Ass!</span></pre>
                 </div>
                 <div sectionid="#using" class="content">
                     <h3>Getting Started</h3>
@@ -303,17 +303,9 @@ C:\> <span class="commandline">myexe foo -bar=Ass! -count=10</span><span class="
                         <div class="attribute_name code">Error</div>
                         <div class="attribute_description">
                             <p>Marks a method to execute when an error occurs.</p>
-                            <p>Only a single method can be marked with <span class="code highlight">[Error]</span> and it must match one of the following signatures:</p>
-                            <div class="code highlight" style="margin-bottom:2px">void Error() {}</div>
-                            <div class="code highlight">void Error(Exception ex) {}</div>
+                            <p>Only a single method can be marked with <span class="code highlight">[Error]</span> and it must match the following signature:</p>
+                            <div class="code highlight">void Error(ExceptionContext context) {}</div>
                             <h4>Notice that there is no restriction for the name of the method, only the signature.</h4>
-                        </div>
-                        <div class="attribute_properties">
-                            <h3>Properties:</h3>
-                            <div class="attribute_property">
-                                <div class="attribute_property_name code">ReThrow (Boolean)</div>
-                                <div class="attribute_property_description">Whether to rethrow the execption after handling it</div>
-                            </div>
                         </div>
                         <div class="attribute_samples">
                             <h3>Example:</h3>
@@ -326,11 +318,28 @@ C:\> <span class="commandline">myexe foo -bar=Ass! -count=10</span><span class="
                                     }
 
                                     [Error]
-                                    public static void HandleError(Exception ex)
+                                    public static void HandleError(ExceptionContext context)
                                     {
+                                        if ( // something ...
+                                        {
+                                            context.ReThrow = true;
+                                        }
                                     }
                                 }
                             </pre>
+                        </div>
+                        <div class="note">
+                            <h4>ExceptionContext</h4>
+                            <div class="attribute_properties">
+                                <div class="attribute_property">
+                                    <div class="attribute_property_name code">Exception (Exception)</div>
+                                    <div class="attribute_property_description">The exception that was thrown during execution</div>
+                                </div>
+                                <div class="attribute_property">
+                                    <div class="attribute_property_name code">ReThrow (Boolean)</div>
+                                    <div class="attribute_property_description">Whether to re-throw the exception after handling it</div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     </div>
@@ -1298,10 +1307,10 @@ CLAP.ValidationException: Not all arrays have the same length.
                             class ConsoleBase
                             {
                                 [Error]
-                                public static void Error(Exception ex)
+                                public static void Error(ExceptionContext context)
                                 {
                                     Console.ForegroundColor = ConsoleColor.Red;
-                                    Console.WriteLine(ex.Message);
+                                    Console.WriteLine(context.Exception.Message);
                                     Console.ResetColor();
                                 }
 

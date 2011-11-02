@@ -55,7 +55,7 @@ function play(){
     });
     
     setTimeout(function(){
-        $(".clapapp").effect("highlight",{}, 4000);
+        $(".clapapp").effect("highlight",{}, 10000);
     },12500);
     
     played = true;
