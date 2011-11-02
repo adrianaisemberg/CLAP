@@ -75,9 +75,10 @@ code
 
 .console, .console *
 {
-    color: #FFFDAB;
+    color: white;
     font-family: "Consolas", "Bitstream Vera Sans Mono", "Courier New", Courier, monospace;
     font-size: 14px;
+    line-height: normal;
 }
 
 .commandline
@@ -126,6 +127,11 @@ h2
     width: 190px;
     position: fixed;
     top: 120px;
+}
+
+#left *
+{
+    line-height: normal;
 }
 
 #right

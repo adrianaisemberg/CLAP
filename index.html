@@ -96,6 +96,7 @@
                     <a href="#expressions_preverbinterceptor" class="sub_menu_item">Pre-Verb Interceptors</a>
                     <a href="#expressions_postverbinterceptor" class="sub_menu_item">Post-Verb Interceptors</a>
                 </div>
+                <a href="#multi_parsers" class="menu_item">MULTI PARSERS</a>
                 <a href="#examples" class="menu_item">EXAMPLES</a>
                 <a href="#license" class="menu_item">LICENSE</a>
                 <a href="#about" class="menu_item">ABOUT</a>
@@ -1584,6 +1585,54 @@
                         </div>
                     </div>
                 </div>
+
+                <div sectionid="#multi_parsers" class="content">
+                    <h3>Multi Parsers</h3>
+                    <p>A parser can be executed on multiple verb-classes.</p>
+                    <p>When a parser is executed on multiple classes, the user must add the class name (case-insensitive) as a prefix to each verb.</p>
+                    <div class="attribute_samples">
+                        <h3>Example:</h3>
+                        <pre class="brush: csharp, highlight: 3">
+                            static void Main(string[] args)
+                            {
+                                Parser.Run&lt;App1, App2, App3>(args);
+                            }
+                        </pre>
+                        <p>This will run a static parser (having only static verbs) of the three specified types.</p>
+                        <p>The same rules as a single parser regarding instance vs. static parsers apply also here:</p>
+                        <pre class="brush: csharp, highlight: 7">
+                            static void Main(string[] args)
+                            {
+                                var a1 = new App1();
+                                var a2 = new App2();
+                                var a3 = new App3();
+
+                                Parser.Run&lt;App1, App2, App3>(args, a1, a2, a3);
+                            }
+                        </pre>
+                        <p>
+                            Having the verb <code>foo</code> in each of the above classes,
+                            the user may call each one of them with the class name as a prefix:
+                        </p>
+                        <p class="console">> myexe <strong>app1.</strong>foo -param1 -param2 ...</p>
+                        <div class="note">
+                            <h4>Notes</h4>
+                            <ul>
+                                <li>
+                                    <strong>Global, Error, Help, Empty:</strong> They are all available only in the class's context and not
+                                    for the whole multi-parser.<br />
+                                    Having a global parameter in app1 will not make it available for app2.
+                                </li>
+                                <li>
+                                    <strong>Registered Expressions:</strong> Are available for the whole multi-parser.<br />
+                                    Having a registered global handler makes it available for each class.
+                                    The same goes for all expressions, such as interceptors and help handlers.
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
                 <div sectionid="#examples" class="content">
                     <h3>Examples</h3>
                     <p>
