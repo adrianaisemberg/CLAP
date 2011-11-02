@@ -18,6 +18,33 @@ namespace ConsoleTest
             p.Register.ParameterHandler<List<string>>("blonda,blnd", list => { });
             p.Register.ParameterHandler<List<string>>("kramer,krmr,k", list => { }, "a sample description");
 
+
+            p.Register.PreVerbInterceptor(context =>
+            {
+                // Log the method name
+                //
+                //Log.Write("START: " + context.Method.MethodInfo.Name);
+
+                // Add the current time to the context
+                //
+                context.UserContext.Add("START", DateTime.Now);
+            });
+
+            p.Register.PostVerbInterceptor(context =>
+            {
+                // Log the method name
+                //
+                //Log.Write("END: " + context.Method.MethodInfo.Name);
+
+                // Take the "START" user context value
+                //
+                var start = (DateTime)context.UserContext["START"];
+
+                // Log the time it took to execute the verb
+                //
+                //Log.Write(DateTime.Now.Subtract(start).ToString());
+            });
+
             p.RunStatic(args);
         }
     }

@@ -254,7 +254,7 @@ namespace CLAP
 
                         var interceptor = (IPostVerbInterceptor)Activator.CreateInstance(interception.InterceptorType);
 
-                        interceptor.Intercept(postVerbExecutionContext);
+                        interceptor.AfterVerbExecution(postVerbExecutionContext);
                     }
                 }
             }
@@ -297,7 +297,7 @@ namespace CLAP
 
                         var interceptor = (IPreVerbInterceptor)Activator.CreateInstance(interception.InterceptorType);
 
-                        interceptor.Intercept(preVerbExecutionContext);
+                        interceptor.BeforeVerbExecution(preVerbExecutionContext);
                     }
                 }
             }
@@ -353,21 +353,10 @@ namespace CLAP
             //
             ValidateDefinedEmptyHandlers(type);
 
-            // no more that one pre/post interception methods
+            // validate pre/post interceptors
             //
-            var preInterceptionMethods = type.GetMethodsWith<PreVerbExecutionAttribute>();
-
-            if (preInterceptionMethods.Count() > 1)
-            {
-                throw new MoreThanOnePreVerbInterceptorException();
-            }
-
-            var postInterceptionMethods = type.GetMethodsWith<PostVerbExecutionAttribute>();
-
-            if (postInterceptionMethods.Count() > 1)
-            {
-                throw new MoreThanOnePostVerbInterceptorException();
-            }
+            ValidateDefinedPreInterceptors(type);
+            ValidateDefinedPostInterceptors(type);
         }
 
         private static void ValidateDefinedEmptyHandlers(Type type)
@@ -835,6 +824,86 @@ namespace CLAP
                 {
                     throw new ArgumentMismatchException(
                         "Method '{0}' is marked as [Error] so it should have a single parameter of type CLAP.ExceptionContext".FormatWith(method));
+                }
+            }
+        }
+
+        private static void ValidateDefinedPreInterceptors(Type type)
+        {
+            // no more that one pre/post interception methods
+            //
+            var preInterceptionMethods = type.GetMethodsWith<PreVerbExecutionAttribute>();
+
+            var preInterceptionMethodsCount = preInterceptionMethods.Count();
+
+            if (preInterceptionMethodsCount == 0)
+            {
+                return;
+            }
+            else if (preInterceptionMethodsCount > 1)
+            {
+                throw new MoreThanOnePreVerbInterceptorException();
+            }
+
+            // there is only one defined interceptor
+            //
+            var method = preInterceptionMethods.First();
+
+            var parameters = method.GetParameters();
+
+            if (parameters.Length > 1)
+            {
+                throw new ArgumentMismatchException(
+                    "Method '{0}' is marked as [PreVerbExecution] so it should have a single parameter of type CLAP.PreVerbExecutionContext".FormatWith(method));
+            }
+            else
+            {
+                var parameter = parameters.First();
+
+                if (parameter.ParameterType != typeof(PreVerbExecutionContext))
+                {
+                    throw new ArgumentMismatchException(
+                        "Method '{0}' is marked as [PreVerbExecution] so it should have a single parameter of type CLAP.PreVerbExecutionContext".FormatWith(method));
+                }
+            }
+        }
+
+        private static void ValidateDefinedPostInterceptors(Type type)
+        {
+            // no more that one pre/post interception methods
+            //
+            var postInterceptionMethods = type.GetMethodsWith<PostVerbExecutionAttribute>();
+
+            var postInterceptionMethodsCount = postInterceptionMethods.Count();
+
+            if (postInterceptionMethodsCount == 0)
+            {
+                return;
+            }
+            else if (postInterceptionMethodsCount > 1)
+            {
+                throw new MoreThanOnePostVerbInterceptorException();
+            }
+
+            // there is only one defined interceptor
+            //
+            var method = postInterceptionMethods.First();
+
+            var parameters = method.GetParameters();
+
+            if (parameters.Length > 1)
+            {
+                throw new ArgumentMismatchException(
+                    "Method '{0}' is marked as [PostVerbExecution] so it should have a single parameter of type CLAP.PostVerbExecutionContext".FormatWith(method));
+            }
+            else
+            {
+                var parameter = parameters.First();
+
+                if (parameter.ParameterType != typeof(PostVerbExecutionContext))
+                {
+                    throw new ArgumentMismatchException(
+                        "Method '{0}' is marked as [PostVerbExecution] so it should have a single parameter of type CLAP.PostVerbExecutionContext".FormatWith(method));
                 }
             }
         }

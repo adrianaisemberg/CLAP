@@ -13,7 +13,7 @@ namespace CLAP.Interception
     /// </summary>
     public interface IPreVerbInterceptor
     {
-        void Intercept(PreVerbExecutionContext context);
+        void BeforeVerbExecution(PreVerbExecutionContext context);
     }
 
     /// <summary>
@@ -21,6 +21,6 @@ namespace CLAP.Interception
     /// </summary>
     public interface IPostVerbInterceptor
     {
-        void Intercept(PostVerbExecutionContext context);
+        void AfterVerbExecution(PostVerbExecutionContext context);
     }
 }

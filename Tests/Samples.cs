@@ -954,14 +954,14 @@ namespace Tests
             public PreVerbExecutionContext PreContext;
             public PostVerbExecutionContext PostContext;
 
-            public void Intercept(PreVerbExecutionContext context)
+            public void BeforeVerbExecution(PreVerbExecutionContext context)
             {
                 PreContext = context;
 
                 context.UserContext.Add("a", 54);
             }
 
-            public void Intercept(PostVerbExecutionContext context)
+            public void AfterVerbExecution(PostVerbExecutionContext context)
             {
                 PostContext = context;
             }
