@@ -1571,7 +1571,7 @@
 
                                             // Take the "START" user context value
                                             //
-                                            var start = context.UserContext["START"] as DateTime;
+                                            var start = (DateTime)context.UserContext["START"];
 
                                             // Log the time it took to execute the verb
                                             //
