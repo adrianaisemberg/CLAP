@@ -1199,14 +1199,11 @@ CLAP.ValidationException: Not all arrays have the same length.
                     </div>
                     <div class="attribute_wrapper" id="expressions_error">
                         <div class="attribute">
-                        <div class="attribute_name code">Register.ErrorHandler(Action&lt;Exception> handler)</div>
-                        <div class="attribute_name code">Register.ErrorHandler(Func&lt;Exception, bool> handler)</div>
+                        <div class="attribute_name code">Register.ErrorHandler(Action&lt;ExceptionContext> handler)</div>
                         <div class="attribute_description">
                             <p>Registers an action that will be executed when an error occurs.</p>
-                            <p>The action can return a bool value indicating whether the exception should be re-thrown after handling.</p>
-                            <p>if <span class="code">true</span> - the exception will be rethrown by the parser, keeping the original stack trace.</p>
-                            <p>if <span class="code">false</span> - the exception will not be rethrown after handling it. The default is <span class="code">false</span>.</p>
-                            <p>If not returning any value - <span class="code highlight">false</span> is the default</p>
+                            <p>The action can assign a bool value to the <span class="code highlight">ReThrow</span> property of the context indicating whether the exception should be re-thrown after handling.</p>
+                            <p>If not assigning any value - <span class="code highlight">false</span> is the default</p>
                             <p>
                                 Only a single error handler can be registered. Trying to register more than one
                                 handler will throw a <span class="code">MoreThanOneErrorHandlerException</span>.
@@ -1220,10 +1217,10 @@ CLAP.ValidationException: Not all arrays have the same length.
                                 {
                                     var p = new Parser&lt;TheApp>();
 
-                                    p.Register.ErrorHandler(ex =>
+                                    p.Register.ErrorHandler(context =>
                                     {
                                         Console.ForegroundColor = ConsoleColor.Red;
-                                        Console.WriteLine(ex.Message);
+                                        Console.WriteLine(context.Exception.Message);
                                         Console.ResetColor();
                                     });
 
@@ -1236,13 +1233,13 @@ CLAP.ValidationException: Not all arrays have the same length.
                                 {
                                     var p = new Parser&lt;TheApp>();
 
-                                    p.Register.ErrorHandler(ex =>
+                                    p.Register.ErrorHandler(context =>
                                     {
                                         Console.ForegroundColor = ConsoleColor.Red;
-                                        Console.WriteLine(ex.Message);
+                                        Console.WriteLine(context.Exception.Message);
                                         Console.ResetColor();
 
-                                        return true;
+                                        context.ReThrow = true;
                                     });
 
                                     p.Run(args);
