@@ -86,6 +86,14 @@
                     <a href="#expressions_error" class="sub_menu_item">Error Handlers</a>
                     <a href="#expressions_global" class="sub_menu_item">Global Handlers</a>
                 </div>
+                <a href="#interception" class="menu_item">INTERCEPTION</a>
+                <div class="sub_menu" menu_id="#interception">
+                    <a href="#interception_preverbexecution" class="sub_menu_item">PreVerbExecution</a>
+                    <a href="#interception_postverbexecution" class="sub_menu_item">PostVerbExecution</a>
+                    <a href="#interception_verbinterception" class="sub_menu_item">VerbInterception</a>
+                    <a href="#interception_preverbexecutioncontext" class="sub_menu_item">PreVerbExecutionContext</a>
+                    <a href="#interception_postverbexecutioncontext" class="sub_menu_item">PostVerbExecutionContext</a>
+                </div>
                 <a href="#examples" class="menu_item">EXAMPLES</a>
                 <a href="#license" class="menu_item">LICENSE</a>
                 <a href="#about" class="menu_item">ABOUT</a>
@@ -278,6 +286,10 @@
                         <div class="attribute_description">
                             <p>Marks a method to execute when no input was provided by the user.</p>
                             <p>Only a single method can be marked with <span class="code highlight">[Empty]</span> in a class.</p>
+                            <p>
+                                Trying to mark more than one <span class="code">[Empty]</span>
+                                will throw a <span class="code">MoreThanOneEmptyHandlerException</span>.
+                            </p>
                         </div>
                         <div class="attribute_samples">
                             <h3>Example:</h3>
@@ -306,6 +318,10 @@
                             <p>Only a single method can be marked with <span class="code highlight">[Error]</span> and it must match the following signature:</p>
                             <div class="code highlight">void Error(ExceptionContext context) {}</div>
                             <h4>Notice that there is no restriction for the name of the method, only the signature.</h4>
+                            <p>
+                                Trying to mark more than one <span class="code">[Error]</span>
+                                will throw a <span class="code">MoreThanOneErrorHandlerException</span>.
+                            </p>
                         </div>
                         <div class="attribute_samples">
                             <h3>Example:</h3>
@@ -1292,6 +1308,204 @@ CLAP.ValidationException: Not all arrays have the same length.
                     </div>
                     </div>
                 </div>
+
+                <div sectionid="#interception" class="content">
+                    <h3>Interception</h3>
+                    <p>Interception allows running code before and/or after each verb is executed.</p>
+                    <p>Interception can be used for logging, exception handling, verb cancellation and more.</p>
+                    <div class="attribute_wrapper" id="interception_preverbexecution">
+                        <div class="attribute">
+                            <div class="attribute_name code">PreVerbExecution</div>
+                            <div class="attribute_description">
+                                <p>Marks a method to execute <strong>before</strong> any verb is executed.</p>
+                                <p>
+                                    Only a single mathod can be marked as a <span class="code">[PreVerbExecution]</span>
+                                    and it must match the following signature:
+                                </p>
+                                <div class="code highlight">void Before(PreVerbExecutionContext context) {}</div>
+                                <h4>Notice that there is no restriction for the name of the method, only the signature.</h4>
+                                <p>
+                                    Trying to mark more than one <span class="code">[PreVerbExecution]</span>
+                                    will throw a <span class="code">MoreThanOnePreVerbInterceptorException</span>.
+                                </p>
+                            </div>
+                            <div class="attribute_samples">
+                                <h3>Example:</h3>
+                                <pre class="brush: csharp, highlight: 3">
+                                    class Program
+                                    {
+                                        [PreVerbExecution]
+                                        public static void Before(PreVerbExecutionContext context)
+                                        {
+                                        }
+                                    }
+                                </pre>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="attribute_wrapper" id="interception_postverbexecution">
+                        <div class="attribute">
+                            <div class="attribute_name code">PostVerbExecution</div>
+                            <div class="attribute_description">
+                                <p>Marks a method to execute <strong>after</strong> any verb is executed.</p>
+                                <p>
+                                    Only a single mathod can be marked as a <span class="code">[PostVerbExecution]</span>
+                                    and it must match the following signature:
+                                </p>
+                                <div class="code highlight">void Before(PostVerbExecutionContext context) {}</div>
+                                <h4>Notice that there is no restriction for the name of the method, only the signature.</h4>
+                                <p>
+                                    Trying to mark more than one <span class="code">[PostVerbExecution]</span>
+                                    will throw a <span class="code">MoreThanOnePostVerbInterceptorException</span>.
+                                </p>
+                            </div>
+                            <div class="attribute_samples">
+                                <h3>Example:</h3>
+                                <pre class="brush: csharp, highlight: 3">
+                                    class Program
+                                    {
+                                        [PostVerbExecution]
+                                        public static void After(PostVerbExecutionContext context)
+                                        {
+                                        }
+                                    }
+                                </pre>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="attribute_wrapper" id="interception_verbinterception">
+                        <div class="attribute">
+                            <div class="attribute_name code">VerbInterception</div>
+                            <div class="attribute_description">
+                                <p>
+                                    Marks a class with a type that implements <span class="code highlight">IVerbInterceptor</span>.
+                                </p>
+                                <p>
+                                    The <span class="code">IVerbInterceptor</span> interface requires implementing both
+                                    <span class="code">IPreVerbInterceptor</span> and <span class="code">IPostVerbInterceptor</span>.
+                                </p>
+                                <p>
+                                    If only pre or post interception is required - implementing only one of the above interfaces is enough.
+                                </p>
+                            </div>
+                            <div class="attribute_samples">
+                                <h3>Example:</h3>
+                                <pre class="brush: csharp, highlight: [1,10]">
+                                    [VerbInterception(typeof(MyInterception))]
+                                    class Program
+                                    {
+                                        [Verb]
+                                        public static void Foo()
+                                        {
+                                        }
+                                    }
+
+                                    class MyInterception : IVerbInterceptor
+                                    {
+                                        public void BeforeVerbExecution(PreVerbExecutionContext context)
+                                        {
+                                        }
+
+                                        public void AfterVerbExecution(PostVerbExecutionContext context)
+                                        {
+                                        }
+                                    }
+                                </pre>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="attribute_wrapper" id="interception_preverbexecutioncontext">
+                        <div class="attribute">
+                            <div class="attribute_name code">PreVerbExecutionContext</div>
+                            <div class="attribute_description">
+                                <p>
+                                    A context object that is passed during verb interception before the verb is executed.
+                                </p>
+                            </div>
+                            <div class="attribute_properties">
+                                <h4>Properties:</h4>
+                                <div class="attribute_property">
+                                    <div class="attribute_property_name code">Method (CLAP.Method)</div>
+                                    <div class="attribute_property_description">The verb method that will be executed.</div>
+                                </div>
+                                <div class="attribute_property">
+                                    <div class="attribute_property_name code">Target (object)</div>
+                                    <div class="attribute_property_description">
+                                        Holds the instance of the class that owns the executed verb. In-case the verb is static, Target is null.
+                                    </div>
+                                </div>
+                                <div class="attribute_property">
+                                    <div class="attribute_property_name code">Parameters (ParameterAndValue[])</div>
+                                    <div class="attribute_property_description">A collection of the parameters and their values.</div>
+                                </div>
+                                <div class="attribute_property">
+                                    <div class="attribute_property_name code">UserContext (Dictionary&lt;object, object>)</div>
+                                    <div class="attribute_property_description">
+                                        A dictionary that can be used to pass data from the pre-interceptor to the post-interceptor.
+                                    </div>
+                                </div>
+                                <div class="attribute_property">
+                                    <div class="attribute_property_name code">Cancel (Boolean)</div>
+                                    <div class="attribute_property_description">
+                                        A flag that informs the parser to cancel the execution of the verb. The post-interceptor will still be executed even if the verb is cancelled.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="attribute_wrapper" id="interception_postverbexecutioncontext">
+                        <div class="attribute">
+                            <div class="attribute_name code">PostVerbExecutionContext</div>
+                            <div class="attribute_description">
+                                <p>
+                                    A context object that is passed during verb interception after the verb was executed.
+                                </p>
+                            </div>
+                            <div class="attribute_properties">
+                                <h4>Properties:</h4>
+                                <div class="attribute_property">
+                                    <div class="attribute_property_name code">Method (CLAP.Method)</div>
+                                    <div class="attribute_property_description">The verb method that was executed.</div>
+                                </div>
+                                <div class="attribute_property">
+                                    <div class="attribute_property_name code">Target (object)</div>
+                                    <div class="attribute_property_description">
+                                        Holds the instance of the class that owns the executed verb. In-case the verb is static, Target is null.
+                                    </div>
+                                </div>
+                                <div class="attribute_property">
+                                    <div class="attribute_property_name code">Parameters (ParameterAndValue[])</div>
+                                    <div class="attribute_property_description">A collection of the parameters and their values.</div>
+                                </div>
+                                <div class="attribute_property">
+                                    <div class="attribute_property_name code">UserContext (Dictionary&lt;object, object>)</div>
+                                    <div class="attribute_property_description">
+                                        A dictionary that can be used to pass data from the pre-interceptor to the post-interceptor.
+                                    </div>
+                                </div>
+                                <div class="attribute_property">
+                                    <div class="attribute_property_name code">Cancelled (Boolean)</div>
+                                    <div class="attribute_property_description">
+                                        Holds a flag indicating whether the verb execution was cancelled by the pre-interceptor.
+                                    </div>
+                                </div>
+                                <div class="attribute_property">
+                                    <div class="attribute_property_name code">Exception (Exception)</div>
+                                    <div class="attribute_property_description">
+                                        Holds an exception instance that was thrown in case an error occured during the verb execution.
+                                    </div>
+                                </div>
+                                <div class="attribute_property">
+                                    <div class="attribute_property_name code">Failed (Boolean)</div>
+                                    <div class="attribute_property_description">
+                                        In case an error occured an <span class="code">Exception</span> is not null, Failed is true.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div sectionid="#examples" class="content">
                     <h3>Examples</h3>
                     <p>
