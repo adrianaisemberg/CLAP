@@ -92,6 +92,11 @@ code
     border: 1px solid #B8CADE;
 }
 
+#intro_code *
+{
+    line-height: normal;
+}
+
 .fixedfont *
 {
     font-family: "Consolas", "Bitstream Vera Sans Mono", "Courier New", Courier, monospace;
@@ -125,7 +130,7 @@ h2
 {
     display: inline-block;
     width: 190px;
-    position: fixed;
+    position: absolute;
     top: 120px;
 }
 
