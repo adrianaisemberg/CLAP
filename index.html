@@ -221,7 +221,7 @@
                                     class Program
                                     {
                                         [Verb(IsDefault = true)]
-                                        public static void Foo()
+                                        void Foo()
                                         {
                                         }
                                     }
@@ -272,7 +272,7 @@
                                     class Program
                                     {
                                         [Verb]
-                                        public static void Foo(
+                                        void Foo(
                                             [Parameter(Required = true)] string name,
                                             [Parameter(Default = 5)] int count,
                                             bool upperCase,
@@ -301,12 +301,12 @@
                                     class Program
                                     {
                                         [Verb]
-                                        public static void Foo()
+                                        void Foo()
                                         {
                                         }
 
                                         [Empty]
-                                        public static void NoInput()
+                                        void NoInput()
                                         {
                                         }
                                     }
@@ -333,12 +333,12 @@
                                     class Program
                                     {
                                         [Verb]
-                                        public static void Foo()
+                                        void Foo()
                                         {
                                         }
 
                                         [Error]
-                                        public static void HandleError(ExceptionContext context)
+                                        void HandleError(ExceptionContext context)
                                         {
                                             if ( // something ...
                                             {
@@ -388,12 +388,12 @@
                                     class Program
                                     {
                                         [Verb]
-                                        public static void Foo()
+                                        void Foo()
                                         {
                                         }
 
                                         [Help]
-                                        public static void ShowHelp(string help)
+                                        void ShowHelp(string help)
                                         {
                                         }
                                     }
@@ -433,17 +433,17 @@
                                     class Program
                                     {
                                         [Verb]
-                                        public static void Foo()
+                                        void Foo()
                                         {
                                         }
 
                                         [Global]
-                                        public static void Log(string message)
+                                        void Log(string message)
                                         {
                                         }
 
                                         [Global(Aliases="d")]
-                                        public static void Debug()
+                                        void Debug()
                                         {
                                             Debugger.Launch();
                                         }
@@ -519,7 +519,7 @@
                     <p>We can now create a verb that accepts an instance of that class:</p>
                     <pre class="brush: csharp">
                         [Verb]
-                        public static void SavePerson(Person p)
+                        void SavePerson(Person p)
                         {
                             // do something with the Person instance
                         }
@@ -601,7 +601,7 @@
                     <p>Collections are also supported, as in the following example:</p>
                     <pre class="brush: csharp">
                         [Verb]
-                        public static void SavePersons(IEnumerable&lt;Person> p)
+                        void SavePersons(IEnumerable&lt;Person> p)
                         {
                             // do something with the Persons collection
                         }
@@ -645,7 +645,7 @@
                                     class Program
                                     {
                                         [Verb]
-                                        public static void Foo([LessThan(10)] int count)
+                                        void Foo([LessThan(10)] int count)
                                         {
                                         }
                                     }
@@ -665,7 +665,7 @@
                                     class Program
                                     {
                                         [Verb]
-                                        public static void Foo([LessOrEqualTo(30.5)] double angle)
+                                        void Foo([LessOrEqualTo(30.5)] double angle)
                                         {
                                         }
                                     }
@@ -685,7 +685,7 @@
                                     class Program
                                     {
                                         [Verb]
-                                        public static void Foo([MoreThan(10)] int count)
+                                        void Foo([MoreThan(10)] int count)
                                         {
                                         }
                                     }
@@ -705,7 +705,7 @@
                                     class Program
                                     {
                                         [Verb]
-                                        public static void Foo([MoreOrEqualTo(30.5)] double angle)
+                                        void Foo([MoreOrEqualTo(30.5)] double angle)
                                         {
                                         }
                                     }
@@ -725,7 +725,7 @@
                                     class Program
                                     {
                                         [Verb]
-                                        public static void Foo([RegexMatches(@"[0-9a-zA-Z]*")] string name)
+                                        void Foo([RegexMatches(@"[0-9a-zA-Z]*")] string name)
                                         {
                                         }
                                     }
@@ -745,7 +745,7 @@
                                     class Program
                                     {
                                         [Verb]
-                                        public static void Foo([FileExists] string filePath)
+                                        void Foo([FileExists] string filePath)
                                         {
                                         }
                                     }
@@ -765,7 +765,7 @@
                                     class Program
                                     {
                                         [Verb]
-                                        public static void Foo([DirectoryExists] string path)
+                                        void Foo([DirectoryExists] string path)
                                         {
                                         }
                                     }
@@ -785,7 +785,7 @@
                                     class Program
                                     {
                                         [Verb]
-                                        public static void Foo([PathExists] string path)
+                                        void Foo([PathExists] string path)
                                         {
                                         }
                                     }
@@ -813,31 +813,31 @@
                                     {
                                         [Verb]
                                         [Validate("num1 > num2")]
-                                        public static void Foo1(int num1, int num2)
+                                        void Foo1(int num1, int num2)
                                         {
                                         }
 
                                         [Verb]
                                         [Validate("num1 > num2 AND num2 > 100")]
-                                        public static void Foo2(int num1, int num2)
+                                        void Foo2(int num1, int num2)
                                         {
                                         }
 
                                         [Verb]
                                         [Validate("name LIKE 'John*'", CaseSensitive = true)]
-                                        public static void Foo3(string name)
+                                        void Foo3(string name)
                                         {
                                         }
 
                                         [Verb]
                                         [Validate("name IN ('ping','pong')")]
-                                        public static void Foo4(string name)
+                                        void Foo4(string name)
                                         {
                                         }
 
                                         [Verb]
                                         [Validate("num1 + num2 >= num3")]
-                                        public static void Foo5(int num1, int num2, int num3)
+                                        void Foo5(int num1, int num2, int num3)
                                         {
                                         }
                                     }
@@ -995,7 +995,7 @@
                                     For example:
                                     <pre class="brush: csharp, highlight: [2,7]">
                                         [Verb]
-                                        public static void Foo([LengthAtLeast(10)] string text)
+                                        void Foo([LengthAtLeast(10)] string text)
                                         {
                                         }
                                     </pre>
@@ -1026,7 +1026,7 @@
                                 <p>Having the following verb:</p>
                                 <pre class="brush: csharp, highlight: [1,10]">
                                     [Verb]
-                                    public void Foo(int[] numbers, string[] names)
+                                    void Foo(int[] numbers, string[] names)
                                     {
                                         for (int i = 0; i < numbers.Length; i++)
                                         {
@@ -1089,7 +1089,7 @@
                                 <pre class="brush: csharp, highlight: 2">
                                     [Verb]
                                     [SameLength]
-                                    public void Foo(int[] numbers, string[] names)
+                                    void Foo(int[] numbers, string[] names)
                                     {
                                         for (int i = 0; i < numbers.Length; i++)
                                         {
@@ -1140,7 +1140,7 @@ CLAP.ValidationException: Not all arrays have the same length.
                                     class Program
                                     {
                                         [PreVerbExecution]
-                                        public static void Before(PreVerbExecutionContext context)
+                                        void Before(PreVerbExecutionContext context)
                                         {
                                         }
                                     }
@@ -1170,7 +1170,7 @@ CLAP.ValidationException: Not all arrays have the same length.
                                     class Program
                                     {
                                         [PostVerbExecution]
-                                        public static void After(PostVerbExecutionContext context)
+                                        void After(PostVerbExecutionContext context)
                                         {
                                         }
                                     }
@@ -1200,7 +1200,7 @@ CLAP.ValidationException: Not all arrays have the same length.
                                     class Program
                                     {
                                         [Verb]
-                                        public static void Foo()
+                                        void Foo()
                                         {
                                         }
                                     }
@@ -1644,7 +1644,7 @@ CLAP.ValidationException: Not all arrays have the same length.
                             class ConsoleBase
                             {
                                 [Error]
-                                public static void Error(ExceptionContext context)
+                                void Error(ExceptionContext context)
                                 {
                                     Console.ForegroundColor = ConsoleColor.Red;
                                     Console.WriteLine(context.Exception.Message);
@@ -1653,13 +1653,13 @@ CLAP.ValidationException: Not all arrays have the same length.
 
                                 [Empty]
                                 [Help(Aliases = "h,?")]
-                                public static void Help(string help)
+                                void Help(string help)
                                 {
                                     Console.WriteLine(help);
                                 }
 
                                 [Global]
-                                public static void Debug()
+                                void Debug()
                                 {
                                     Debugger.Launch();
                                 }
@@ -1681,7 +1681,7 @@ CLAP.ValidationException: Not all arrays have the same length.
                             class TheApp : BaseApp
                             {
                                 [Verb(IsDefault = true, Description = "Prints 'Hello' and a name")]
-                                public static void Hello(
+                                void Hello(
                                     
                                     [Parameter(Aliases = "n", Required = true, Description = "The name")]
                                     string name,
@@ -1698,7 +1698,7 @@ CLAP.ValidationException: Not all arrays have the same length.
                                 }
 
                                 [Verb(Aliases = "cart")]
-                                public static void Cartesian(int[] numbers, string[] names)
+                                void Cartesian(int[] numbers, string[] names)
                                 {
                                     foreach (var number in numbers)
                                     {
@@ -1710,7 +1710,7 @@ CLAP.ValidationException: Not all arrays have the same length.
                                 }
 
                                 [Verb]
-                                public static void Count(
+                                void Count(
                                     [LessOrEqualTo(50), MoreOrEqualTo(0)] int start,
                                     [LessOrEqualTo(100), MoreThan(50)] int end,
                                     [Parameter(Aliases = "p,pause", Default = 1.5)] double pauseSeconds,
