@@ -53,6 +53,7 @@
                 <a href="#what" class="menu_item selected">INTRO</a>
                 <a href="#using" class="menu_item">GETTING STARTED</a>
                 <a href="#download" class="menu_item"><strong>DOWNLOAD</strong></a>
+                <a href="#history" class="menu_item last_menu_item">HISTORY</a>
                 <a href="#attributes" class="menu_item">ATTRIBUTES</a>
                 <div class="sub_menu" menu_id="#attributes">
                     <a href="#attribute_verb" class="sub_menu_item">Verb</a>
@@ -96,8 +97,8 @@
                     <a href="#expressions_preverbinterceptor" class="sub_menu_item">Pre-Verb Interceptors</a>
                     <a href="#expressions_postverbinterceptor" class="sub_menu_item">Post-Verb Interceptors</a>
                 </div>
-                <a href="#multi_parsers" class="menu_item">MULTI PARSERS</a>
-                <a href="#examples" class="menu_item">EXAMPLES</a>
+                <a href="#multi_parsers" class="menu_item last_menu_item">MULTI PARSERS</a>
+                <a href="#examples" class="menu_item last_menu_item">EXAMPLES</a>
                 <a href="#license" class="menu_item">LICENSE</a>
                 <a href="#about" class="menu_item">ABOUT</a>
             </div>
@@ -1585,7 +1586,6 @@ CLAP.ValidationException: Not all arrays have the same length.
                         </div>
                     </div>
                 </div>
-
                 <div sectionid="#multi_parsers" class="content">
                     <h3>Multi Parsers</h3>
                     <p>A parser can be executed on multiple verb-classes.</p>
@@ -1632,7 +1632,6 @@ CLAP.ValidationException: Not all arrays have the same length.
                         </div>
                     </div>
                 </div>
-
                 <div sectionid="#examples" class="content">
                     <h3>Examples</h3>
                     <p>
@@ -1822,6 +1821,28 @@ Hello CLAP</pre>
                                 Pay attention to download the package that best matches your application's framework version,
                                 either for .NET Framework 2.0 or 3.5+.
                             </p>
+                        </li>
+                    </ul>
+                </div>
+                <div sectionid="#history" class="content">
+                    <h3>History</h3>
+                    <ul>
+                        <li>
+                            <h4>v3.0 (Nov 02, 2011)</h4>
+                            <ul>
+                                <li><strong>NEW:</strong> Interception (<a target="_blank" href="https://github.com/kurtaj">kurtaj</a>)</li>
+                                <li><strong>NEW:</strong> Multi-Parsers</li>
+                                <li><strong>BREAKING CHANGE:</strong> Error handling using <code class="highlight">ExceptionContext</code> instead of <code>Exception</code></li>
+                                <li><strong>BREAKING CHANGE:</strong> <code class="highlight">ReThrow</code> was moved from <code>ErrorAttribute</code> to <code>ExceptionContext</code></li>
+                            </ul>
+                        </li>
+                        <li>
+                            <h4>v2.4 (Oct 25, 2011)</h4>
+                            <ul>
+                                <li><strong>NEW:</strong> File-Input</li>
+                                <li><strong>NEW:</strong> Complex Types support using JSON/XML</li>
+                                <li><strong>NEW:</strong> Properties validation (in-addition to parameters validation)</li>
+                            </ul>
                         </li>
                     </ul>
                 </div>

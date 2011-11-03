@@ -160,6 +160,13 @@ h2
     margin-bottom: 11px;
 }
 
+.last_menu_item
+{
+    border-bottom:1px solid #ccc;
+    padding-bottom: 8px;
+    margin-bottom: 8px;
+}
+
 .sub_menu_item
 {
     margin-bottom: 7px;
