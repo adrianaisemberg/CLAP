@@ -30,7 +30,7 @@ namespace CLAP
 
         internal static string GetHelp(ParserRunner parser)
         {
-            var verbs = parser.GetVerbs();
+            var verbs = parser.GetVerbs().ToList();
 
             if (verbs.None())
             {
@@ -39,8 +39,10 @@ namespace CLAP
 
             var sb = new StringBuilder();
 
-            foreach (var verb in verbs)
+            for (int i = 0; i < verbs.Count; i++)
             {
+                var verb = verbs[i];
+
                 sb.AppendLine();
 
                 // verb name (title)
@@ -121,7 +123,13 @@ namespace CLAP
                 }
 
                 sb.AppendLine();
-                sb.AppendLine(string.Empty.PadLeft(80, '='));
+
+                // don't add a line after the last verb
+                //
+                if (i != verbs.Count - 1)
+                {
+                    sb.AppendLine(string.Empty.PadLeft(80, '='));
+                }
             }
 
             // globals

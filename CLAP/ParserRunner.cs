@@ -758,6 +758,10 @@ namespace CLAP
                 {
                     MethodInvoker.Invoke(method, obj, null);
                 }
+
+                // don't handle the default verb
+                //
+                return;
             }
 
             var defaultVerb = GetDefaultVerb();
