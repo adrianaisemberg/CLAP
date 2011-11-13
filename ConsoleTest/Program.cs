@@ -13,7 +13,22 @@ namespace ConsoleTest
     {
         static void Main(string[] args)
         {
-            Parser.Run<EmptyApp>(args);
+            Parser.Run<SomeApp>(args);
+        }
+    }
+
+    class SomeApp
+    {
+        [Verb(IsDefault = true)]
+        static void Foo(string x)
+        {
+            Console.WriteLine(x);
+        }
+
+        [Empty, Help]
+        static void Help(string h)
+        {
+            Console.WriteLine(h);
         }
     }
 

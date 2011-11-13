@@ -2077,38 +2077,6 @@ namespace Tests
         }
 
         [Test]
-        [ExpectedException(typeof(AmbiguousEmptyHandlerException))]
-        public void TestAmbiguous_Exception_1()
-        {
-            Parser.Run<Sample_53>(new string[] { });
-        }
-
-        [Test]
-        [ExpectedException(typeof(AmbiguousEmptyHandlerException))]
-        public void TestAmbiguous_Exception_2()
-        {
-            Parser.Run<Sample_54>(new string[] { });
-        }
-
-        [Test]
-        [ExpectedException(typeof(AmbiguousEmptyHandlerException))]
-        public void TestAmbiguous_Exception_3()
-        {
-            var p = new Parser<Sample_55>();
-
-            p.Register.EmptyHandler(delegate { });
-        }
-
-        [Test]
-        [ExpectedException(typeof(AmbiguousEmptyHandlerException))]
-        public void TestAmbiguous_Exception_4()
-        {
-            var p = new Parser<Sample_55>();
-
-            p.Register.EmptyHelpHandler(delegate { });
-        }
-
-        [Test]
         [ExpectedException(typeof(ArgumentNullException))]
         public void Register_EmptyHandler_Null_Exception()
         {

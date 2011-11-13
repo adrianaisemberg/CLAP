@@ -98,8 +98,6 @@ namespace CLAP
             }
 
             RegisteredEmptyHandler = handler;
-
-            ValidateEmptyAndDefault();
         }
 
         /// <summary>
@@ -287,21 +285,6 @@ namespace CLAP
                 }
 
                 RegisteredHelpHandlers.Add(key, helpHandler);
-            }
-        }
-
-        private void ValidateEmptyAndDefault()
-        {
-            Debug.Assert(RegisteredEmptyHandler != null);
-
-            foreach (var type in m_types)
-            {
-                var defaultEmpty = ParserRunner.GetDefaultEmptyVerb(type);
-
-                if (defaultEmpty != null)
-                {
-                    throw new AmbiguousEmptyHandlerException(type, defaultEmpty.MethodInfo);
-                }
             }
         }
 
