@@ -357,6 +357,42 @@ namespace CLAP
             //
             ValidateDefinedPreInterceptors(type);
             ValidateDefinedPostInterceptors(type);
+
+            // can't have both empty handler and default empty verb
+            //
+            ValidateEmptyAndDefault(type);
+        }
+
+        private static void ValidateEmptyAndDefault(Type type)
+        {
+            var definedEmptyHandlers = type.GetMethodsWith<EmptyAttribute>();
+
+            if (!definedEmptyHandlers.Any())
+            {
+                return;
+            }
+
+            var defaultEmptyVerb = GetDefaultEmptyVerb(type);
+
+            // if the default verb has no args - throw
+            //
+            if (defaultEmptyVerb != null)
+            {
+                throw new AmbiguousEmptyHandlerException(defaultEmptyVerb.MethodInfo, definedEmptyHandlers.First());
+            }
+        }
+
+        internal static Method GetDefaultEmptyVerb(Type type)
+        {
+            var verbMethods = type.GetMethodsWith<VerbAttribute>().
+                Select(m => new Method(m)).
+                Where(m => m.IsDefault && !m.MethodInfo.GetParameters().Any());
+
+            // this should have been validated already
+            //
+            Debug.Assert(verbMethods.Count() <= 1);
+
+            return verbMethods.FirstOrDefault();
         }
 
         private static void ValidateDefinedEmptyHandlers(Type type)

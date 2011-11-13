@@ -377,4 +377,37 @@ namespace CLAP
             System.Runtime.Serialization.StreamingContext context)
             : base(info, context) { }
     }
+
+    [Serializable]
+    public class AmbiguousEmptyHandlerException : CommandLineParserException
+    {
+        /// <summary>
+        /// The default verb that has no arguments
+        /// </summary>
+        public MethodInfo Verb { get; private set; }
+
+        /// <summary>
+        /// The method that is defined as Empty
+        /// </summary>
+        public MethodInfo Empty { get; private set; }
+
+        public AmbiguousEmptyHandlerException(Type type, MethodInfo verb)
+            : base("Ambiguous empty handlers: {0}.{1}. When a verb that has no parameters is declared as IsDefault, an empty handler cannot be registered.".
+                FormatWith(type.Name, verb.Name))
+        {
+        }
+
+        public AmbiguousEmptyHandlerException(MethodInfo verb, MethodInfo empty)
+            : base("Ambiguous empty handlers: {0}, {1}. When a method is marked as [Empty], a verb that has no parameters cannot be declared as IsDefault.".
+                FormatWith(verb.Name, empty.Name))
+        {
+            Verb = verb;
+            Empty = empty;
+        }
+
+        protected AmbiguousEmptyHandlerException(
+            System.Runtime.Serialization.SerializationInfo info,
+            System.Runtime.Serialization.StreamingContext context)
+            : base(info, context) { }
+    }
 }

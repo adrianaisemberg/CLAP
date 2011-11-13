@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using CLAP.Interception;
 
 namespace CLAP
@@ -9,6 +10,12 @@ namespace CLAP
     /// </summary>
     public sealed class ParserRegistration
     {
+        #region Fields
+
+        private readonly Type[] m_types;
+
+        #endregion Fields
+
         #region Properties
 
         internal Dictionary<string, GlobalParameterHandler> RegisteredGlobalHandlers { get; private set; }
@@ -25,8 +32,10 @@ namespace CLAP
 
         #region Constructors
 
-        internal ParserRegistration(Func<string> helpGetter, Func<Type, string, string, object> parameterValueGetter)
+        internal ParserRegistration(Type[] types, Func<string> helpGetter, Func<Type, string, string, object> parameterValueGetter)
         {
+            m_types = types;
+
             RegisteredGlobalHandlers = new Dictionary<string, GlobalParameterHandler>();
             RegisteredHelpHandlers = new Dictionary<string, Action<string>>();
 
@@ -45,6 +54,11 @@ namespace CLAP
         /// <param name="helpHandler">The action to be executed</param>
         public void HelpHandler(string names, Action<string> helpHandler)
         {
+            if (helpHandler == null)
+            {
+                throw new ArgumentNullException("helpHandler");
+            }
+
             RegisterHelpHandlerInternal(names, helpHandler);
         }
 
@@ -54,17 +68,17 @@ namespace CLAP
         /// <param name="handler">The action to be executed</param>
         public void EmptyHelpHandler(Action<string> handler)
         {
-            if (RegisteredEmptyHandler != null)
+            if (handler == null)
             {
-                throw new MoreThanOneEmptyHandlerException();
+                throw new ArgumentNullException("handler");
             }
 
             var help = HelpGetter();
 
-            RegisteredEmptyHandler = delegate
+            EmptyHandler(delegate
             {
                 handler(help);
-            };
+            });
         }
 
         /// <summary>
@@ -73,12 +87,19 @@ namespace CLAP
         /// <param name="handler">The action to be executed</param>
         public void EmptyHandler(Action handler)
         {
+            if (handler == null)
+            {
+                throw new ArgumentNullException("handler");
+            }
+
             if (RegisteredEmptyHandler != null)
             {
                 throw new MoreThanOneEmptyHandlerException();
             }
 
             RegisteredEmptyHandler = handler;
+
+            ValidateEmptyAndDefault();
         }
 
         /// <summary>
@@ -87,6 +108,11 @@ namespace CLAP
         /// <param name="handler">The action to be executed</param>
         public void ErrorHandler(Action<ExceptionContext> handler)
         {
+            if (handler == null)
+            {
+                throw new ArgumentNullException("handler");
+            }
+
             if (RegisteredErrorHandler != null)
             {
                 throw new MoreThanOneErrorHandlerException();
@@ -101,6 +127,11 @@ namespace CLAP
         /// <param name="interceptor">The action to be executed before each verb is executed</param>
         public void PreVerbInterceptor(Action<PreVerbExecutionContext> interceptor)
         {
+            if (interceptor == null)
+            {
+                throw new ArgumentNullException("interceptor");
+            }
+
             if (RegisteredPreVerbInterceptor != null)
             {
                 throw new MoreThanOnePreVerbInterceptorException();
@@ -115,6 +146,11 @@ namespace CLAP
         /// <param name="interceptor">The action to be executed after each verb is executed</param>
         public void PostVerbInterceptor(Action<PostVerbExecutionContext> interceptor)
         {
+            if (interceptor == null)
+            {
+                throw new ArgumentNullException("interceptor");
+            }
+
             if (RegisteredPostVerbInterceptor != null)
             {
                 throw new MoreThanOnePostVerbInterceptorException();
@@ -130,6 +166,11 @@ namespace CLAP
         /// <param name="action">The action to execute</param>
         public void ParameterHandler(string names, Action action)
         {
+            if (action == null)
+            {
+                throw new ArgumentNullException("action");
+            }
+
             ParameterHandler(
                 names,
                 new Action<bool>(delegate { action(); }),
@@ -144,6 +185,11 @@ namespace CLAP
         /// <param name="description">The parameter description (for help generation)</param>
         public void ParameterHandler(string names, Action action, string description)
         {
+            if (action == null)
+            {
+                throw new ArgumentNullException("action");
+            }
+
             ParameterHandler(
                 names,
                 new Action<bool>(delegate { action(); }),
@@ -158,6 +204,11 @@ namespace CLAP
         /// <param name="action">The action to execute</param>
         public void ParameterHandler<TParameter>(string names, Action<TParameter> action)
         {
+            if (action == null)
+            {
+                throw new ArgumentNullException("action");
+            }
+
             ParameterHandler(
                 names,
                 action,
@@ -173,6 +224,11 @@ namespace CLAP
         /// <param name="description">The parameter description (for help generation)</param>
         public void ParameterHandler<TParameter>(string names, Action<TParameter> action, string description)
         {
+            if (action == null)
+            {
+                throw new ArgumentNullException("action");
+            }
+
             RegisterParameterHandlerInternal(
                 names,
                 action,
@@ -231,6 +287,21 @@ namespace CLAP
                 }
 
                 RegisteredHelpHandlers.Add(key, helpHandler);
+            }
+        }
+
+        private void ValidateEmptyAndDefault()
+        {
+            Debug.Assert(RegisteredEmptyHandler != null);
+
+            foreach (var type in m_types)
+            {
+                var defaultEmpty = ParserRunner.GetDefaultEmptyVerb(type);
+
+                if (defaultEmpty != null)
+                {
+                    throw new AmbiguousEmptyHandlerException(type, defaultEmpty.MethodInfo);
+                }
             }
         }
 

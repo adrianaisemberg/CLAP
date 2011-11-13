@@ -2075,5 +2075,155 @@ namespace Tests
 
             Assert.IsTrue(s.VerbExecuted);
         }
+
+        [Test]
+        [ExpectedException(typeof(AmbiguousEmptyHandlerException))]
+        public void TestAmbiguous_Exception_1()
+        {
+            Parser.Run<Sample_53>(new string[] { });
+        }
+
+        [Test]
+        [ExpectedException(typeof(AmbiguousEmptyHandlerException))]
+        public void TestAmbiguous_Exception_2()
+        {
+            Parser.Run<Sample_54>(new string[] { });
+        }
+
+        [Test]
+        [ExpectedException(typeof(AmbiguousEmptyHandlerException))]
+        public void TestAmbiguous_Exception_3()
+        {
+            var p = new Parser<Sample_55>();
+
+            p.Register.EmptyHandler(delegate { });
+        }
+
+        [Test]
+        [ExpectedException(typeof(AmbiguousEmptyHandlerException))]
+        public void TestAmbiguous_Exception_4()
+        {
+            var p = new Parser<Sample_55>();
+
+            p.Register.EmptyHelpHandler(delegate { });
+        }
+
+        [Test]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void Register_EmptyHandler_Null_Exception()
+        {
+            var p = new Parser<Sample_02>();
+
+            p.Register.EmptyHandler(null);
+        }
+
+        [Test]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void Register_EmptyHelpHandler_Null_Exception()
+        {
+            var p = new Parser<Sample_02>();
+
+            p.Register.EmptyHelpHandler(null);
+        }
+
+        [Test]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void Register_ErrorHandler_Null_Exception()
+        {
+            var p = new Parser<Sample_02>();
+
+            p.Register.ErrorHandler(null);
+        }
+
+        [Test]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void Register_HelpHandler_Null_Exception()
+        {
+            var p = new Parser<Sample_02>();
+
+            p.Register.HelpHandler("help", null);
+        }
+
+        [Test]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void Register_ParameterHandler_Null_Exception_1()
+        {
+            var p = new Parser<Sample_02>();
+
+            p.Register.ParameterHandler("p", null);
+        }
+
+        [Test]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void Register_ParameterHandler_Null_Exception_2()
+        {
+            var p = new Parser<Sample_02>();
+
+            p.Register.ParameterHandler<int>("p", null);
+        }
+
+        [Test]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void Register_ParameterHandler_Null_Exception_3()
+        {
+            var p = new Parser<Sample_02>();
+
+            p.Register.ParameterHandler("p", null, "description");
+        }
+
+        [Test]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void Register_ParameterHandler_Null_Exception_4()
+        {
+            var p = new Parser<Sample_02>();
+
+            p.Register.ParameterHandler<string>("p", null, "description");
+        }
+
+        [Test]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void Register_PostVerbInterceptor_Null_Exception()
+        {
+            var p = new Parser<Sample_02>();
+
+            p.Register.PostVerbInterceptor(null);
+        }
+
+        [Test]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void Register_PreVerbInterceptor_Null_Exception()
+        {
+            var p = new Parser<Sample_02>();
+
+            p.Register.PreVerbInterceptor(null);
+        }
+
+        [Test]
+        [ExpectedException(typeof(ArgumentMismatchException))]
+        public void PreVerbExecution_MismatchArgs_Exception_1()
+        {
+            Parser.Run<Sample_56>(new[] { "" });
+        }
+
+        [Test]
+        [ExpectedException(typeof(ArgumentMismatchException))]
+        public void PostVerbExecution_MismatchArgs_Exception_1()
+        {
+            Parser.Run<Sample_57>(new[] { "" });
+        }
+
+        [Test]
+        [ExpectedException(typeof(ArgumentMismatchException))]
+        public void PreVerbExecution_MismatchArgs_Exception_2()
+        {
+            Parser.Run<Sample_58>(new[] { "" });
+        }
+
+        [Test]
+        [ExpectedException(typeof(ArgumentMismatchException))]
+        public void PostVerbExecution_MismatchArgs_Exception_2()
+        {
+            Parser.Run<Sample_59>(new[] { "" });
+        }
     }
 }

@@ -984,6 +984,72 @@ namespace Tests
         }
     }
 
+    public class Sample_53
+    {
+        [Verb(IsDefault = true)]
+        public static void Foo()
+        {
+        }
+
+        [Empty]
+        public static void Bar()
+        {
+        }
+    }
+
+    public class Sample_54
+    {
+        [Verb(IsDefault = true)]
+        public static void Foo()
+        {
+        }
+
+        [Empty, Help]
+        public static void Bar()
+        {
+        }
+    }
+
+    public class Sample_55
+    {
+        [Verb(IsDefault = true)]
+        public static void Foo()
+        {
+        }
+    }
+
+    public class Sample_56
+    {
+        [PreVerbExecution]
+        static void Pre(PreVerbExecutionContext x, string y)
+        {
+        }
+    }
+
+    public class Sample_57
+    {
+        [PostVerbExecution]
+        static void Post(PostVerbExecutionContext c, string y)
+        {
+        }
+    }
+
+    public class Sample_58
+    {
+        [PreVerbExecution]
+        static void Post(int c)
+        {
+        }
+    }
+
+    public class Sample_59
+    {
+        [PostVerbExecution]
+        static void Post(int c)
+        {
+        }
+    }
+
     public enum Case
     {
         Upper,

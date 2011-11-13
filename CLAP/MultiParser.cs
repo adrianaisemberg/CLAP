@@ -59,7 +59,7 @@ namespace CLAP
                 ParserRunner.Validate(type);
             }
 
-            Register = new ParserRegistration(GetHelpString, ValuesFactory.GetValueForParameter);
+            Register = new ParserRegistration(m_types, GetHelpString, ValuesFactory.GetValueForParameter);
         }
 
         private void HandleEmptyArguments(object[] targets)
