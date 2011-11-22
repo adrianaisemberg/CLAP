@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using CLAP.Interception;
+using System.ComponentModel;
 
 namespace CLAP
 {
@@ -123,6 +124,19 @@ namespace CLAP
             else if (type == typeof(Uri))
             {
                 return string.IsNullOrEmpty(value) ? (object)null : new Uri(Environment.ExpandEnvironmentVariables(value));
+            }
+            else if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
+            {
+                if (string.IsNullOrEmpty(value))
+                {
+                    return null;
+                }
+                else
+                {
+                    var converter = new NullableConverter(type);
+
+                    return Convert.ChangeType(value, converter.UnderlyingType);
+                }
             }
             else
             {

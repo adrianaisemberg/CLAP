@@ -1050,6 +1050,38 @@ namespace Tests
         }
     }
 
+    public class Sample_60
+    {
+        [Verb]
+        static void Foo([Parameter(Aliases = "c")]int c)
+        {
+        }
+    }
+
+    public class Sample_61
+    {
+        public int? P1 { get; set; }
+        public int? P2 { get; set; }
+        public int? P3 { get; set; }
+        public int? P4 { get; set; }
+        public int? P5 { get; set; }
+
+        [Verb]
+        void Bar(
+            int? p1,
+            [Parameter(Default = 5)] int? p2,
+            [Parameter(Default = "5")] int? p3,
+            [Parameter(Default = "")] int? p4,
+            [Parameter(Default = null)] int? p5)
+        {
+            P1 = p1;
+            P2 = p2;
+            P3 = p3;
+            P4 = p4;
+            P5 = p5;
+        }
+    }
+
     public enum Case
     {
         Upper,
