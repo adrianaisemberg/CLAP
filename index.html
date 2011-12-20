@@ -65,8 +65,8 @@
                 </div>
                 <a href="#file_input" class="menu_item">FILE INPUT</a>
                 <a href="#custom_types" class="menu_item">CUSTOM TYPES</a>
-                <a href="#custom_validation" class="menu_item">CUSTOM VALIDATION</a><span class="grumbler" text="Lots of features here" angle="50" distance="100" showAfter="18000" hideAfter="3000"></span>
-                <a href="#validation" class="menu_item">VALIDATION</a>
+                <a href="#validation" class="menu_item">VALIDATION</a><span class="grumbler" text="Lots of features here" angle="50" distance="100" showAfter="18000" hideAfter="3000"></span>
+                <a href="#custom_validation" class="menu_item">CUSTOM VALIDATION</a>
                 <div class="sub_menu" menu_id="#validation">
                     <a href="#validation_lessthan" class="sub_menu_item">LessThan</a>
                     <a href="#validation_lessorequalto" class="sub_menu_item">LessOrEqualTo</a>
@@ -499,6 +499,10 @@
                         In-addition to primitive types, enums and single-dimention arrays, CLAP also supports
                         any type you can represent using a JSON/XML string.
                     </p>
+                    <div class="note">
+                        <h4>Note</h4>
+                        <p>CLAP does not support JSON in .NET Framework v2.0 but only in v3.5 and above.</p>
+                    </div>
                     <h4>Example</h4>
                     <p>Suppose we have the following class which contains several properties and a list of another class:</p>
                     <pre class="brush: csharp">
