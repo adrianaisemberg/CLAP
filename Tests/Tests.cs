@@ -2194,15 +2194,15 @@ namespace Tests
             Parser.Run<Sample_59>(new[] { "" });
         }
 
-        [Test, Ignore]
-        public void Parameter_NameAsAlias()
-        {
-            Parser.Run<Sample_60>(new[]
-            {
-                "foo",
-                "-c=5",
-            });
-        }
+        //[Test, Ignore]
+        //public void Parameter_NameAsAlias()
+        //{
+        //    Parser.Run<Sample_60>(new[]
+        //    {
+        //        "foo",
+        //        "-c=5",
+        //    });
+        //}
 
         [Test]
         public void Parameter_NullableInt()

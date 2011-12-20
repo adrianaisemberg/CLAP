@@ -1,6 +1,9 @@
 ﻿using System.Diagnostics;
-using System.Linq;
 using System.Reflection;
+
+#if !FW2
+using System.Linq;
+#endif
 
 namespace CLAP
 {

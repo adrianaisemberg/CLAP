@@ -9,8 +9,13 @@ namespace CLAP
     #region Delegates
 
     public delegate void Action();
+    public delegate void Action<T>(T arg);
+    public delegate void Action<T1, T2>(T1 arg1, T2 arg2);
 
+    public delegate TResult Func<TResult>();
     public delegate TResult Func<T, TResult>(T arg);
+    public delegate TResult Func<T1, T2, TResult>(T1 arg1, T2 arg2);
+    public delegate TResult Func<T1, T2, T3, TResult>(T1 arg1, T2 arg2, T3 arg3);
 
     #endregion Delegates
 
@@ -160,6 +165,25 @@ namespace CLAP
             }
 
             return arr;
+        }
+
+        public static IEnumerable<TItem> OrderBy<TItem, TResult>(
+            this IEnumerable<TItem> collection,
+            Func<TItem, TResult> func)
+        {
+            var items = collection.ToArray();
+            var keysList = new List<TResult>();
+
+            foreach (var item in collection)
+            {
+                keysList.Add(func(item));
+            }
+
+            var keys = keysList.ToArray();
+
+            Array.Sort(keys, items);
+
+            return items;
         }
 
         public static IEnumerable<T> Skip<T>(this IEnumerable<T> collection, int count)

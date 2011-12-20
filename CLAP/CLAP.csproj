@@ -10,7 +10,8 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>CLAP</RootNamespace>
     <AssemblyName>CLAP</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion Condition=" '$(Configuration)' == 'ReleaseFW2' ">v2.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion Condition=" '$(Configuration)' != 'ReleaseFW2' ">v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
     <PublishUrl>publish\</PublishUrl>
@@ -70,11 +71,12 @@
     <CodeAnalysisFailOnMissingRules>false</CodeAnalysisFailOnMissingRules>
     <DocumentationFile>bin\ReleaseFW2\CLAP.XML</DocumentationFile>
     <NoWarn>1591</NoWarn>
+    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Web.Extensions" />
+    <Reference Condition=" '$(Configuration)' != 'ReleaseFW2'" Include="System.Web.Extensions" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>

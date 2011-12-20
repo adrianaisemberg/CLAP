@@ -1,7 +1,10 @@
 ﻿using System;
 using System.IO;
-using System.Web.Script.Serialization;
 using System.Xml.Serialization;
+
+#if !FW2
+using System.Web.Script.Serialization;
+#endif
 
 namespace CLAP
 {
@@ -20,6 +23,12 @@ namespace CLAP
 
                 return true;
             }
+#if FW2
+            else
+            {
+                return false;
+            }
+#else
             else if (str.StartsWith(new[] { "{", "[" }))
             {
                 obj = DeserializeJson(str, type);
@@ -28,9 +37,11 @@ namespace CLAP
             }
 
             return false;
+#endif
         }
 
-        public static object DeserializeJson(string json, Type type)
+#if !FW2
+        private static object DeserializeJson(string json, Type type)
         {
             var serializer = new JavaScriptSerializer();
 
@@ -42,6 +53,7 @@ namespace CLAP
 
             return obj;
         }
+#endif
 
         public static object DeserializeXml(string xml, Type type)
         {

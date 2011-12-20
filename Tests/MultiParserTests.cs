@@ -1,8 +1,8 @@
 ﻿using System;
+using System.Linq;
 using System.Reflection;
 using CLAP;
 using NUnit.Framework;
-using System.Linq;
 
 namespace Tests
 {
