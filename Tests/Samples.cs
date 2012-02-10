@@ -799,6 +799,11 @@ namespace Tests
         }
 
         [Verb]
+        public void ValCollection(MyValidatedType[] t)
+        {
+        }
+
+        [Verb]
         public void Complex(MyComplexType t)
         {
         }
@@ -810,6 +815,11 @@ namespace Tests
 
         [Verb]
         public void Zoo(TypeWithProps t)
+        {
+        }
+
+        [Verb]
+        public void ZooCollection(TypeWithProps[] t)
         {
         }
     }

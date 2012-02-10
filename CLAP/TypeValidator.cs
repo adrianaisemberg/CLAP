@@ -3,6 +3,7 @@ using System.Reflection;
 
 #if !FW2
 using System.Linq;
+using System.Collections;
 #endif
 
 namespace CLAP
@@ -38,54 +39,70 @@ namespace CLAP
                 validator.Validate(propsAndValues);
             }
 
-            // property validators:
-            // validate each property value, in case property is a custom class
+            // no need to validate properties of GAC objects
             //
-            foreach (var property in properties)
+            if (!type.Assembly.GlobalAssemblyCache &&
+                !type.IsArray)
             {
-                var value = property.GetValue(obj, null);
-
-                // single validators
+                // property validators:
+                // validate each property value, in case property is a custom class
                 //
-                var propertySingleValidators = property.
-                    GetAttributes<ValidationAttribute>().
-                    Select(a => a.GetValidator());
-
-                foreach (var propertySingleValidator in propertySingleValidators)
+                foreach (var property in properties)
                 {
-                    propertySingleValidator.Validate(new ValueInfo(property.Name, property.PropertyType, value));
+                    var value = property.GetValue(obj, null);
+
+                    // single validators
+                    //
+                    var propertySingleValidators = property.
+                        GetAttributes<ValidationAttribute>().
+                        Select(a => a.GetValidator());
+
+                    foreach (var propertySingleValidator in propertySingleValidators)
+                    {
+                        propertySingleValidator.Validate(new ValueInfo(property.Name, property.PropertyType, value));
+                    }
+
+                    // no need to validate primitives etc with collection validators
+                    //
+                    if (!Ignore(value))
+                    {
+                        // collection validators
+                        //
+                        var propertyCollectionValidators = property.
+                            GetAttributes<CollectionValidationAttribute>().
+                            Select(a => a.GetValidator());
+
+                        foreach (var propertyValidator in propertyCollectionValidators)
+                        {
+                            var propertyPropsAndValues = value.GetType().
+                                GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).
+                                Select(p => new ValueInfo(p.Name, p.PropertyType, p.GetValue(value, null))).
+                                ToArray();
+
+                            propertyValidator.Validate(propertyPropsAndValues);
+                        }
+                    }
                 }
 
-                // no need to validate primitives etc with collection validators
+                // recursion:
+                // validate all values, in case their type has additional validation
                 //
-                if (Ignore(value))
+                foreach (var value in propsAndValues.Select(p => p.Value))
                 {
-                    continue;
-                }
-
-                // collection validators
-                //
-                var propertyCollectionValidators = property.
-                    GetAttributes<CollectionValidationAttribute>().
-                    Select(a => a.GetValidator());
-
-                foreach (var propertyValidator in propertyCollectionValidators)
-                {
-                    var propertyPropsAndValues = value.GetType().
-                        GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).
-                        Select(p => new ValueInfo(p.Name, p.PropertyType, p.GetValue(value, null))).
-                        ToArray();
-
-                    propertyValidator.Validate(propertyPropsAndValues);
+                    Validate(value);
                 }
             }
 
-            // recursion:
-            // validate all values, in case their type has additional validation
+            // IEnumerable
             //
-            foreach (var value in propsAndValues.Select(p => p.Value))
+            var collection = obj as IEnumerable;
+
+            if (collection != null)
             {
-                Validate(value);
+                foreach (var item in collection)
+                {
+                    Validate(item);
+                }
             }
         }
 
@@ -95,6 +112,11 @@ namespace CLAP
                 obj is string)
             {
                 return true;
+            }
+
+            if (obj is IEnumerable)
+            {
+                return false;
             }
 
             var type = obj.GetType();

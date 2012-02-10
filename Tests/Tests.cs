@@ -1840,6 +1840,32 @@ namespace Tests
         }
 
         [Test]
+        [ExpectedException(typeof(ValidationException))]
+        public void ArrayOfComplexType_WithTypeValidation_Fail_1()
+        {
+            var s = new Sample_42();
+
+            Parser.Run(new[]
+            {
+                "ZooCollection",
+                "-t:[{Number: 100},{Number: 5}]",
+            }, s);
+        }
+
+        [Test]
+        [ExpectedException(typeof(ValidationException))]
+        public void ArrayOfComplexType_WithTypeValidation_Fail_2()
+        {
+            var s = new Sample_42();
+
+            Parser.Run(new[]
+            {
+                "ValCollection",
+                "-t:[{Number: 100},{Number: 5}]",
+            }, s);
+        }
+
+        [Test]
         public void ComplexType_WithTypeValidation_Pass()
         {
             var s = new Sample_42();
