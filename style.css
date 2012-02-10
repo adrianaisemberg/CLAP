@@ -167,9 +167,7 @@ h2
 
 .last_menu_item
 {
-    border-bottom:1px solid #ccc;
-    padding-bottom: 8px;
-    margin-bottom: 8px;
+    padding-bottom: 16px;
 }
 
 .sub_menu_item
