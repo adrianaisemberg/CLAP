@@ -734,10 +734,12 @@ namespace CLAP
             //
             if (defaultVerb != null)
             {
-                // create an array of (null) arguments that matches the method
+                // create an array of arguments that matches the method
                 //
-                var parameters = defaultVerb.MethodInfo.GetParameters().
-                    Select(p => new ParameterAndValue(new Parameter(p), (object)null)).ToArray();
+                var parameters = ValuesFactory.CreateParameterValues(
+                    defaultVerb.MethodInfo.Name,
+                    new Dictionary<string, string>(),
+                    GetParameters(defaultVerb.MethodInfo));
 
                 Execute(target, defaultVerb, parameters);
             }

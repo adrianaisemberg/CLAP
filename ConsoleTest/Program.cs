@@ -13,7 +13,16 @@ namespace ConsoleTest
     {
         static void Main(string[] args)
         {
-            Parser.Run<SomeApp>(args);
+            Parser.Run<DefaultApp>(args);
+        }
+    }
+
+    class DefaultApp
+    {
+        [Verb(IsDefault = true)]
+        public static void Foo([Parameter(Default = "zoo")]string bar)
+        {
+            Console.WriteLine("bar = {0}", bar);
         }
     }
 

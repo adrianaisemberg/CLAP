@@ -46,6 +46,32 @@ namespace Tests
         }
 
         [Test]
+        public void Execute_DefaultVerbWithDefaultValue()
+        {
+            var printer = new Printer();
+            var sample = new Sample_02_Default { Printer = printer };
+
+            Parser.Run(new string[]
+            {
+            }, sample);
+
+            Assert.AreEqual("bar", printer.PrintedTexts[0]);
+        }
+
+        [Test]
+        public void Execute_DefaultVerbWithoutDefaultValue()
+        {
+            var printer = new Printer();
+            var sample = new Sample_02_No_Default { Printer = printer };
+
+            Parser.Run(new string[]
+            {
+            }, sample);
+
+            Assert.AreEqual(null, printer.PrintedTexts[0]);
+        }
+
+        [Test]
         public void Execute_DefaultVerb_Switch()
         {
             var printer = new Printer();

@@ -52,6 +52,24 @@ namespace Tests
         }
     }
 
+    public class Sample_02_Default : BaseSample
+    {
+        [Verb(IsDefault = true)]
+        public void Print([Parameter(Default = "bar")]string foo)
+        {
+            Printer.Print(foo);
+        }
+    }
+
+    public class Sample_02_No_Default : BaseSample
+    {
+        [Verb(IsDefault = true)]
+        public void Print(string foo)
+        {
+            Printer.Print(foo);
+        }
+    }
+
     public class ValidationSample_01 : BaseSample
     {
         [Verb]
