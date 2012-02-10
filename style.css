@@ -20,17 +20,14 @@ h1,h2,h3,h4,h5
 
 #footer
 {
-    /*
-    position: absolute;
-    bottom: 0;
-    */
     margin: -35px 0 0 0;
     text-align: center;
     padding: 10px 0;
     width: 100%;
     border-top: 1px solid #E3EAF1;
-
     background-color: whitesmoke;
+    position: relative;
+    z-index: 999;
 }
 
 a
@@ -113,14 +110,9 @@ h2
     margin-top: 0;
 }
 
-#center
-{
-    margin-left: 50px;
-}
-
 #header
 {
-    padding: 20px 0 40px 250px;
+    padding: 20px 0 40px 270px;
     max-width: 500px;
     color: #2768B1;
     font-size: 21px;
@@ -135,8 +127,16 @@ h2
 {
     display: inline-block;
     width: 190px;
-    position: absolute;
-    top: 120px;
+    position: fixed;
+    top: 0;
+    height: 100%;
+    padding-top: 50px;
+    padding-left: 50px;
+    padding-right: 3px;
+    overflow: auto;
+    background-color: #fafafa;
+    border-right: 1px solid #f0f0f0;
+    box-shadow: 2px 0 10px #bbb;
 }
 
 #left *
@@ -149,7 +149,7 @@ h2
     display: inline-block;
     vertical-align: top;
     position: relative;
-    left: 200px;
+    left: 270px;
     background: white;
     width: 700px;
     margin-bottom: 50px;
@@ -322,6 +322,7 @@ h4 + p
     left: 10px;
     opacity: 0.6;
     min-width: 200px;
+    z-index: 9999;
 }
 
 #share:hover
