@@ -1,12 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Reflection;
 using CLAP.Interception;
-using System.ComponentModel;
-
-#if !FW2
-using System.Linq;
-#endif
 
 namespace CLAP
 {

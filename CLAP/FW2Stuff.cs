@@ -1,8 +1,6 @@
-﻿#if FW2
-
-using System.Collections.Generic;
+﻿using System;
 using System.Collections;
-using System;
+using System.Collections.Generic;
 
 namespace CLAP
 {
@@ -291,5 +289,3 @@ namespace System.Runtime.CompilerServices
     {
     }
 }
-
-#endif

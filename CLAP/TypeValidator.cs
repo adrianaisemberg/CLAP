@@ -1,10 +1,6 @@
-﻿using System.Diagnostics;
+﻿using System.Collections;
+using System.Diagnostics;
 using System.Reflection;
-
-#if !FW2
-using System.Linq;
-using System.Collections;
-#endif
 
 namespace CLAP
 {

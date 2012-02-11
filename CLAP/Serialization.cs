@@ -1,10 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Xml.Serialization;
-
-#if !FW2
-using System.Web.Script.Serialization;
-#endif
+using Newtonsoft.Json;
 
 namespace CLAP
 {
@@ -23,12 +20,6 @@ namespace CLAP
 
                 return true;
             }
-#if FW2
-            else
-            {
-                return false;
-            }
-#else
             else if (str.StartsWith(new[] { "{", "[" }))
             {
                 obj = DeserializeJson(str, type);
@@ -37,23 +28,12 @@ namespace CLAP
             }
 
             return false;
-#endif
         }
 
-#if !FW2
         private static object DeserializeJson(string json, Type type)
         {
-            var serializer = new JavaScriptSerializer();
-
-            var method = serializer.GetType().
-                GetMethod("Deserialize", new[] { typeof(string) }).
-                MakeGenericMethod(type);
-
-            var obj = method.Invoke(serializer, new[] { json });
-
-            return obj;
+            return JsonConvert.DeserializeObject(json, type);
         }
-#endif
 
         public static object DeserializeXml(string xml, Type type)
         {
