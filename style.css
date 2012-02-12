@@ -249,7 +249,8 @@ h4 + p
 .attribute_property_name
 {
     text-indent: 8px;
-    color: #424242;
+    color: #2768B1;
+    font-weight: bold;
 }
 
 .attribute_description
