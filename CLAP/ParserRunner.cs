@@ -4,6 +4,10 @@ using System.Diagnostics;
 using System.Reflection;
 using CLAP.Interception;
 
+#if !FW2
+using System.Linq;
+#endif
+
 namespace CLAP
 {
     internal class ParserRunner

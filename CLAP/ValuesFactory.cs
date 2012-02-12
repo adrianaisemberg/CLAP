@@ -4,6 +4,10 @@ using System.ComponentModel;
 using System.Reflection;
 using CLAP.Interception;
 
+#if !FW2
+using System.Linq;
+#endif
+
 namespace CLAP
 {
     internal static class ValuesFactory

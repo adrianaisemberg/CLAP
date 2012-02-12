@@ -1,6 +1,10 @@
 ﻿using System;
 using System.Diagnostics;
 
+#if !FW2
+using System.Linq;
+#endif
+
 namespace CLAP
 {
     /// <summary>

@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if FW2
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -289,3 +290,4 @@ namespace System.Runtime.CompilerServices
     {
     }
 }
+#endif
