@@ -13,7 +13,7 @@ namespace ConsoleTest
     {
         static void Main(string[] args)
         {
-            Parser.Run<DefaultApp>(args);
+            Parser.RunConsole<DefaultApp>(args);
         }
     }
 
@@ -23,6 +23,11 @@ namespace ConsoleTest
         public static void Foo([Parameter(Default = "zoo")]string bar)
         {
             Console.WriteLine("bar = {0}", bar);
+
+            if (bar == "x")
+            {
+                throw new Exception("blah!");
+            }
         }
     }
 

@@ -78,10 +78,14 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CollectionValidationAttribute.cs" />
+    <Compile Include="Parser.WinForms.cs" />
+    <Compile Include="EnvironmentParserHandlers.cs" />
+    <Compile Include="Parser.Console.cs" />
     <Compile Include="CoverageExcludeAttribute.cs" />
     <Compile Include="ErrorAttribute.cs" />
     <Compile Include="ExceptionContext.cs" />

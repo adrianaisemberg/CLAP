@@ -10,7 +10,7 @@ namespace CLAP
     /// <summary>
     /// A command-line arguments parser
     /// </summary>
-    public class Parser : MultiParser
+    public partial class Parser : MultiParser
     {
         /// <summary>
         /// Creates a parser based on the specified types
