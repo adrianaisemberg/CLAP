@@ -1644,7 +1644,7 @@ CLAP.ValidationException: Not all arrays have the same length.
                             class ConsoleBase
                             {
                                 [Error]
-                                void Error(ExceptionContext context)
+                                internal (static) void Error(ExceptionContext context)
                                 {
                                     Console.ForegroundColor = ConsoleColor.Red;
                                     Console.WriteLine(context.Exception.Message);
@@ -1653,13 +1653,13 @@ CLAP.ValidationException: Not all arrays have the same length.
 
                                 [Empty]
                                 [Help(Aliases = "h,?")]
-                                void Help(string help)
+                                internal (static) void Help(string help)
                                 {
                                     Console.WriteLine(help);
                                 }
 
                                 [Global]
-                                void Debug()
+                                internal (static) void Debug()
                                 {
                                     Debugger.Launch();
                                 }
