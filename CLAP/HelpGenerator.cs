@@ -1,6 +1,4 @@
-﻿using System;
-using System.Reflection;
-using System.Text;
+﻿using System.Collections.Generic;
 
 #if !FW2
 using System.Linq;
@@ -12,315 +10,76 @@ namespace CLAP
     {
         internal static string GetHelp(MultiParser parser)
         {
-            var sb = new StringBuilder();
+            var parsers = parser.Types.Select(t => new ParserRunner(t, parser.Register));
 
-            foreach (var type in parser.Types)
-            {
-                var pr = new ParserRunner(type, parser.Register);
-
-                sb.AppendLine(type.Name);
-                sb.AppendLine("".PadLeft(30, '-'));
-
-                sb.AppendLine(GetHelp(pr));
-
-                sb.AppendLine();
-            }
-
-            return sb.ToString();
+            return GetHelp(parsers);
         }
 
         internal static string GetHelp(ParserRunner parser)
         {
-            var verbs = parser.GetVerbs().ToList();
-
-            if (verbs.None())
-            {
-                return string.Empty;
-            }
-
-            var sb = new StringBuilder();
-
-            for (int i = 0; i < verbs.Count; i++)
-            {
-                var verb = verbs[i];
-
-                sb.AppendLine();
-
-                // verb name (title)
-                //
-                var name = verb.IsDefault ? verb.MethodInfo.Name + " [DEFAULT]" : verb.MethodInfo.Name;
-
-                sb.AppendLine(name);
-                sb.AppendLine(string.Empty.PadLeft(name.Length, '~'));
-
-                // description
-                //
-                if (!string.IsNullOrEmpty(verb.Description))
-                {
-                    sb.AppendLine(verb.Description);
-
-                    sb.AppendLine();
-                }
-
-                // all names
-                //
-                sb.Append(
-                    verb.Names.
-                    OrderBy(n => n.Length).
-                    Select(n => n.ToUpperInvariant()).
-                    StringJoin("|")).Append(" ");
-
-                //  parameters
-                //
-                var parameters = ParserRunner.GetParameters(verb.MethodInfo);
-
-                foreach (var p in parameters)
-                {
-                    if (!p.Required)
-                    {
-                        sb.Append("[");
-                    }
-
-                    sb.AppendFormat("/{0}", GetParameterNameAndType(p));
-
-                    if (!p.Required)
-                    {
-                        sb.Append("]");
-                    }
-
-                    sb.Append(" ");
-                }
-
-                sb.AppendLine();
-
-                // parameters options
-                //
-                if (parameters.Any())
-                {
-                    sb.AppendLine();
-                }
-
-                foreach (var p in parameters)
-                {
-                    sb.Append("    /");
-                    sb.Append(GetParameterNameAndType(p));
-                    sb.AppendLine(GetParameterOption(p));
-                }
-
-                // verb validation
-                //
-                var validators = verb.MethodInfo.GetInterfaceAttributes<ICollectionValidation>();
-
-                if (validators.Any())
-                {
-                    sb.AppendLine();
-                    sb.AppendLine("Validation:");
-                    sb.AppendLine("-----------");
-
-                    foreach (var validator in validators)
-                    {
-                        sb.AppendLine("    - {0}".FormatWith(validator.Description));
-                    }
-                }
-
-                sb.AppendLine();
-
-                // don't add a line after the last verb
-                //
-                if (i != verbs.Count - 1)
-                {
-                    sb.AppendLine(string.Empty.PadLeft(80, '='));
-                }
-            }
-
-            // globals
-            //
-            var definedGlobals = parser.GetDefinedGlobals();
-
-            if (parser.Register.RegisteredGlobalHandlers.Any() || definedGlobals.Any())
-            {
-                sb.AppendLine();
-                sb.AppendLine("Global Parameters:");
-                sb.AppendLine("------------------");
-                sb.AppendLine();
-
-                foreach (var handler in parser.Register.RegisteredGlobalHandlers.Values)
-                {
-                    sb.AppendLine("    /{0}=<{1}>".FormatWith(
-                        handler.Names.
-                            OrderBy(n => n.Length).
-                            Select(n => n.ToUpperInvariant()).
-                            StringJoin("|"),
-                        handler.Type.GetGenericTypeName()));
-
-                    if (!string.IsNullOrEmpty(handler.Desription))
-                    {
-                        sb.AppendLine("        {0}".FormatWith(handler.Desription));
-                        sb.AppendLine();
-                    }
-                }
-
-                foreach (var handler in definedGlobals)
-                {
-                    sb.AppendLine("    /{0}".FormatWith(GetDefinedGlobalHelpString(handler)));
-                }
-            }
-
-            return sb.ToString();
+            return GetHelp(new[] { parser });
         }
 
-        private static string GetDefinedGlobalHelpString(MethodInfo method)
+        internal static string GetHelp(IEnumerable<ParserRunner> parsers)
         {
-            var sb = new StringBuilder();
+            var help = new HelpInfo();
 
-            var globalAtt = method.GetAttribute<GlobalAttribute>();
+            help.Parsers = parsers.Select(p => GetParserHelp(p)).ToList();
 
-            // name
-            //
-            var name = globalAtt.Name ?? method.Name;
+            var helpString = GetHelpString(help);
 
-            var names = globalAtt.Aliases.CommaSplit().
-                Union(new[] { name }).
-                OrderBy(n => n.Length).
-                Select(n => n.ToUpperInvariant()).
-                StringJoin("|");
-
-            sb.Append(names);
-
-            // type
-            //
-            var parameters = ParserRunner.GetParameters(method);
-            if (parameters.Any())
-            {
-                // can't be more than one parameter
-                //
-                var p = parameters.First();
-
-                sb.Append("=<{0}>".FormatWith(p.ParameterInfo.ParameterType.GetGenericTypeName()));
-
-                sb.Append(GetParameterOption(p));
-            }
-            else // bool switch
-            {
-
-            }
-
-            var lineAdded = false;
-
-            // description
-            //
-            if (!string.IsNullOrEmpty(globalAtt.Description))
-            {
-                sb.AppendLine();
-                sb.AppendLine("        {0}".FormatWith(globalAtt.Description));
-
-                lineAdded = true;
-            }
-
-            // validations
-            //
-            var validators = method.GetInterfaceAttributes<ICollectionValidation>();
-
-            if (validators.Any() && !lineAdded)
-            {
-                sb.AppendLine();
-            }
-
-            foreach (var validator in validators)
-            {
-                sb.AppendLine("        {0}".FormatWith(validator.Description));
-            }
-
-            return sb.ToString();
+            return helpString;
         }
 
-        private static string GetParameterNameAndType(Parameter p)
+        private static string GetHelpString(HelpInfo helpInfo)
         {
-            var sb = new StringBuilder();
-
-            sb.Append(p.Names.
-                OrderBy(n => n.Length).
-                Select(n => n.ToUpperInvariant()).
-                StringJoin("|"));
-
-            // not a switch - print the type
-            //
-            if (p.ParameterInfo.ParameterType != typeof(bool))
-            {
-                sb.AppendFormat("=<{0}>", p.ParameterInfo.ParameterType.GetGenericTypeName());
-            }
-
-            // if it is a required switch
-            //
-            else if (p.Required)
-            {
-                sb.Append("[=<true|false>]");
-            }
-
-            return sb.ToString();
+            return "";
         }
 
-        private static string GetParameterOption(Parameter p)
+        private static ParserHelpInfo GetParserHelp(ParserRunner parser)
         {
-            var sb = new StringBuilder();
-
-            // required
-            //
-            if (p.Required)
+            return new ParserHelpInfo
             {
-                sb.Append(", Required");
-            }
-
-            // default value
-            //
-            if (p.Default != null)
-            {
-                sb.AppendFormat(", Default = {0}", p.Default);
-            }
-
-            // enum values
-            //
-            if (p.ParameterInfo.ParameterType.IsEnum)
-            {
-                sb.AppendLine();
-                sb.AppendLine("        Options:");
-                sb.AppendLine("        --------");
-
-                var values = Enum.GetNames(p.ParameterInfo.ParameterType);
-
-                foreach (var v in values)
+                Type = parser.Type,
+                Verbs = parser.GetVerbs().Select(verb => new VerbHelpInfo
                 {
-                    sb.AppendLine("        {0}".FormatWith(v));
-                }
-            }
+                    Names = verb.Names.Union(new[] { verb.MethodInfo.Name }).ToList(),
+                    Description = verb.Description,
+                    IsDefault = verb.IsDefault,
+                    Validations = verb.MethodInfo.GetInterfaceAttributes<ICollectionValidation>().Select(v => v.Description).ToList(),
+                    Parameters = ParserRunner.GetParameters(verb.MethodInfo).
+                        Select(p => new ParameterHelpInfo
+                        {
+                            Required = p.Required,
+                            Names = p.Names,
+                            Type = p.ParameterInfo.ParameterType,
+                            Default = p.Default,
+                            Description = p.Description,
+                            Validations = p.ParameterInfo.GetAttributes<ValidationAttribute>().Select(v => v.Description).ToList(),
+                        }).ToList(),
+                }).ToList(),
+                Globals = parser.GetDefinedGlobals().
+                    Select(g =>
+                    {
+                        var att = g.GetAttribute<GlobalAttribute>();
+                        var parameter = ParserRunner.GetParameters(g).FirstOrDefault();
 
-            var lineAdded = false;
-
-            // description
-            //
-            if (!string.IsNullOrEmpty(p.Description))
-            {
-                sb.AppendLine();
-                sb.AppendLine("        {0}".FormatWith(p.Description));
-
-                lineAdded = true;
-            }
-
-            // validations
-            //
-            var validationAttributes = p.ParameterInfo.GetAttributes<ValidationAttribute>();
-
-            if (validationAttributes.Any() && !lineAdded)
-            {
-                sb.AppendLine();
-            }
-
-            foreach (var validationAttribute in validationAttributes)
-            {
-                sb.AppendLine("        {0}".FormatWith(validationAttribute.Description));
-            }
-
-            return sb.ToString();
+                        return new ParameterHelpInfo
+                        {
+                            IsGlobal = true,
+                            Names = att.Aliases.CommaSplit().Union(new[] { att.Name ?? g.Name }).ToList(),
+                            Type = parameter != null ? parameter.ParameterInfo.ParameterType : typeof(bool),
+                            Description = att.Description,
+                            Validations = g.GetInterfaceAttributes<ICollectionValidation>().Select(v => v.Description).ToList(),
+                        };
+                    })
+                    .Union(parser.Register.RegisteredGlobalHandlers.Values.Select(handler => new ParameterHelpInfo
+                    {
+                        Names = handler.Names.ToList(),
+                        Type = handler.Type,
+                        Description = handler.Desription,
+                    })).ToList(),
+            };
         }
     }
 }

@@ -83,6 +83,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CollectionValidationAttribute.cs" />
+    <Compile Include="HelpInfo.cs" />
     <Compile Include="Parser.WinForms.cs" />
     <Compile Include="EnvironmentParserHandlers.cs" />
     <Compile Include="Parser.Console.cs" />
