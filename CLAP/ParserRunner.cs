@@ -144,7 +144,7 @@ namespace CLAP
 
             // a list of values, used when invoking the method
             //
-            var parameterValues = ValuesFactory.CreateParameterValues(verb, inputArgs, paremetersList);
+            var parameterValues = ValuesFactory.CreateParameterValues(method, obj, inputArgs, paremetersList);
 
             ValidateVerbInput(method, parameterValues.Select(kvp => kvp.Value).ToList());
 
@@ -357,6 +357,39 @@ namespace CLAP
             //
             ValidateDefinedPreInterceptors(type);
             ValidateDefinedPostInterceptors(type);
+
+            // parameters can't have both Default and DefaultProvider
+            //
+            ValidateParameterDefaults(verbMethods);
+        }
+
+        private static void ValidateParameterDefaults(IEnumerable<Method> verbs)
+        {
+            var parameters = verbs.SelectMany(v => v.MethodInfo.GetParameters());
+            var dict = parameters.
+                Where(p => p.HasAttribute<ParameterAttribute>()).
+                ToDictionary(p => p.GetAttribute<ParameterAttribute>(), p => p);
+
+            // find one with both a Default and a DefaultProvider
+            //
+            var bad = dict.Where(kvp => kvp.Key.DefaultProvider != null && kvp.Key.Default != null);
+
+            if (bad.Any())
+            {
+                throw new AmbiguousParameterDefaultException(bad.First().Value);
+            }
+
+
+            // make sure all default providers are DefaultProvider
+            //
+            bad = dict.Where(kvp => 
+                kvp.Key.DefaultProvider != null && 
+                !typeof(DefaultProvider).IsAssignableFrom(kvp.Key.DefaultProvider));
+
+            if (bad.Any())
+            {
+                throw new InvalidParameterDefaultProviderException(bad.First().Value);
+            }
         }
 
         private static void ValidateDefinedEmptyHandlers(Type type)
@@ -737,7 +770,8 @@ namespace CLAP
                 // create an array of arguments that matches the method
                 //
                 var parameters = ValuesFactory.CreateParameterValues(
-                    defaultVerb.MethodInfo.Name,
+                    defaultVerb,
+                    target,
                     new Dictionary<string, string>(),
                     GetParameters(defaultVerb.MethodInfo));
 

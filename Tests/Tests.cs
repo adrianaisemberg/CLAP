@@ -2273,5 +2273,67 @@ namespace Tests
             Assert.AreEqual(null, s.P4);
             Assert.AreEqual(null, s.P5);
         }
+
+        [Test]
+        public void Parameter_WithDefault_1()
+        {
+            var t = new ParameterWithDefaults_1();
+
+            Parser.Run(new string[] { "foo" }, t);
+
+            Assert.AreEqual("def1", t.P1);
+            Assert.AreEqual("def2", t.P2);
+        }
+
+        [Test]
+        public void Parameter_WithDefault_2()
+        {
+            var t = new ParameterWithDefaults_1();
+
+            Parser.Run(new string[] { "foo", "-p2=bar" }, t);
+
+            Assert.AreEqual("def1", t.P1);
+            Assert.AreEqual("bar", t.P2);
+        }
+
+        [Test]
+        public void Parameter_WithDefault_3()
+        {
+            var t = new ParameterWithDefaults_1();
+
+            Parser.Run(new string[] { "foo", "-p1=zoo" }, t);
+
+            Assert.AreEqual("zoo", t.P1);
+            Assert.AreEqual("def2", t.P2);
+        }
+
+        [Test]
+        public void Parameter_WithDefault_4()
+        {
+            var t = new ParameterWithDefaults_1();
+
+            Parser.Run(new string[] { "foo", "-p1=zoo", "-p2=bar" }, t);
+
+            Assert.AreEqual("zoo", t.P1);
+            Assert.AreEqual("bar", t.P2);
+        }
+
+        [Test]
+        [ExpectedException(typeof(AmbiguousParameterDefaultException))]
+        public void Parameter_WithDefault_AmbiguousDefaults()
+        {
+            var t = new ParameterWithDefaults_2();
+
+            Parser.Run(new string[] { "foo" }, t);
+        }
+
+        [Test]
+        [ExpectedException(typeof(InvalidParameterDefaultProviderException))]
+        public void Parameter_WithDefault_BadDefaultProvider()
+        {
+            var t = new ParameterWithDefaults_3();
+
+            Parser.Run(new string[] { "foo" }, t);
+        }
     }
 }

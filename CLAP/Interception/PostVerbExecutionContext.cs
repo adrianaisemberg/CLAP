@@ -6,7 +6,7 @@ namespace CLAP.Interception
     /// <summary>
     /// The context after a verb was executed
     /// </summary>
-    public sealed class PostVerbExecutionContext : VerbExecutionContext
+    public sealed class PostVerbExecutionContext : UserVerbExecutionContext
     {
         #region Properties
 

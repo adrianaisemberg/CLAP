@@ -103,6 +103,7 @@
     <Compile Include="Samples.cs" />
     <Compile Include="StaticSamples.cs" />
     <Compile Include="Tests.cs" />
+    <Compile Include="UtilsTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CLAP\CLAP.csproj">

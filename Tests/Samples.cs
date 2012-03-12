@@ -1152,4 +1152,53 @@ namespace Tests
         [MoreThan(10)]
         public int Number { get; set; }
     }
+
+    public class ParameterWithDefaults_1
+    {
+        public string P1 { get; set; }
+        public string P2 { get; set; }
+
+        [Verb]
+        public void Foo(
+            [Parameter(Default = "def1")] string p1,
+            [Parameter(DefaultProvider = typeof(MyDefault))] string p2)
+        {
+            P1 = p1;
+            P2 = p2;
+        }
+
+        public class MyDefault : DefaultProvider
+        {
+            public override object GetDefault(VerbExecutionContext context)
+            {
+                return "def2";
+            }
+        }
+    }
+
+    public class ParameterWithDefaults_2
+    {
+        [Verb]
+        public void Foo(
+            [Parameter(Default = "def1", DefaultProvider = typeof(MyDefault))] string p1)
+        {
+        }
+
+        public class MyDefault : DefaultProvider
+        {
+            public override object GetDefault(VerbExecutionContext context)
+            {
+                return "def2";
+            }
+        }
+    }
+
+    public class ParameterWithDefaults_3
+    {
+        [Verb]
+        public void Foo(
+            [Parameter(DefaultProvider = typeof(System.Text.StringBuilder))] string p1)
+        {
+        }
+    }
 }

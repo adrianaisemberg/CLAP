@@ -19,6 +19,11 @@ namespace CLAP
         public object Default { get; private set; }
 
         /// <summary>
+        /// The default value provider
+        /// </summary>
+        public DefaultProvider DefaultProvider { get; private set; }
+
+        /// <summary>
         /// Whether this parameter is required
         /// </summary>
         public Boolean Required { get; private set; }
@@ -63,6 +68,12 @@ namespace CLAP
             if (parameterAttribute != null)
             {
                 Default = parameterAttribute.Default;
+
+                if (parameterAttribute.DefaultProvider != null)
+                {
+                    DefaultProvider = (DefaultProvider)Activator.CreateInstance(parameterAttribute.DefaultProvider);
+                }
+
                 Required = parameterAttribute.Required;
                 Description = parameterAttribute.Description;
 

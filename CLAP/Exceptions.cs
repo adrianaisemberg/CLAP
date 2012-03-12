@@ -138,12 +138,12 @@ namespace CLAP
         /// <summary>
         /// The verb that requires the parameter
         /// </summary>
-        public string Verb { get; private set; }
+        public Method Method { get; private set; }
 
-        public MissingRequiredArgumentException(string verb, string parameter)
+        public MissingRequiredArgumentException(Method method, string parameter)
             : base("Missing argument for required parameter '{0}'".FormatWith(parameter))
         {
-            Verb = verb;
+            Method = method;
             ParameterName = parameter;
         }
 
@@ -373,6 +373,46 @@ namespace CLAP
         }
 
         protected InvalidHelpHandlerException(
+            System.Runtime.Serialization.SerializationInfo info,
+            System.Runtime.Serialization.StreamingContext context)
+            : base(info, context) { }
+    }
+
+    [Serializable]
+    public class AmbiguousParameterDefaultException : CommandLineParserException
+    {
+        /// <summary>
+        /// The method that is defined as help
+        /// </summary>
+        public ParameterInfo Parameter { get; private set; }
+
+        public AmbiguousParameterDefaultException(ParameterInfo parameter)
+            : base("Parameter '{0}' of '{1}' has both a Default and a DefaultProvider".FormatWith(parameter.Name, parameter.Member.Name))
+        {
+            Parameter = parameter;
+        }
+
+        protected AmbiguousParameterDefaultException(
+            System.Runtime.Serialization.SerializationInfo info,
+            System.Runtime.Serialization.StreamingContext context)
+            : base(info, context) { }
+    }
+
+    [Serializable]
+    public class InvalidParameterDefaultProviderException : CommandLineParserException
+    {
+        /// <summary>
+        /// The method that is defined as help
+        /// </summary>
+        public ParameterInfo Parameter { get; private set; }
+
+        public InvalidParameterDefaultProviderException(ParameterInfo parameter)
+            : base("Parameter '{0}' of '{1}' has an invalid DefaultProvider".FormatWith(parameter.Name, parameter.Member.Name))
+        {
+            Parameter = parameter;
+        }
+
+        protected InvalidParameterDefaultProviderException(
             System.Runtime.Serialization.SerializationInfo info,
             System.Runtime.Serialization.StreamingContext context)
             : base(info, context) { }

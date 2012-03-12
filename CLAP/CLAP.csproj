@@ -83,7 +83,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CollectionValidationAttribute.cs" />
+    <Compile Include="DefaultProvider.cs" />
     <Compile Include="HelpInfo.cs" />
+    <Compile Include="Interception\UserVerbExecutionContext.cs" />
     <Compile Include="Parser.WinForms.cs" />
     <Compile Include="EnvironmentParserHandlers.cs" />
     <Compile Include="Parser.Console.cs" />
@@ -102,7 +104,7 @@
     <Compile Include="Interception\ParameterAndValue.cs" />
     <Compile Include="Interception\PreVerbExecutionAttribute.cs" />
     <Compile Include="Interception\PreVerbExecutionContext.cs" />
-    <Compile Include="Interception\VerbExecutionContext.cs" />
+    <Compile Include="VerbExecutionContext.cs" />
     <Compile Include="Interception\VerbInterception.cs" />
     <Compile Include="Method.cs" />
     <Compile Include="MethodInvoker.cs" />

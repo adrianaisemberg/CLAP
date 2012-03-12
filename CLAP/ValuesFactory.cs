@@ -156,11 +156,17 @@ namespace CLAP
         }
 
         internal static ParameterAndValue[] CreateParameterValues(
-            string verb,
+            Method method,
+            object target,
             Dictionary<string, string> inputArgs,
             IEnumerable<Parameter> list)
         {
             var parameters = new List<ParameterAndValue>();
+
+            // inputArgs is getting emptied.
+            // create a copy for the VerbExecutionContext
+            //
+            var inputArgsCopy = inputArgs.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 
             foreach (var p in list)
             {
@@ -186,12 +192,19 @@ namespace CLAP
                 {
                     if (p.Required)
                     {
-                        throw new MissingRequiredArgumentException(verb, parameterInfo.Name);
+                        throw new MissingRequiredArgumentException(method, parameterInfo.Name);
                     }
 
-                    // the default is the value
-                    //
-                    value = p.Default;
+                    if (p.DefaultProvider != null)
+                    {
+                        value = p.DefaultProvider.GetDefault(new VerbExecutionContext(method, target, inputArgsCopy));
+                    }
+                    else
+                    {
+                        // the default is the value
+                        //
+                        value = p.Default;
+                    }
 
                     // convert the default value, if different from parameter's value (guid, for example)
                     //

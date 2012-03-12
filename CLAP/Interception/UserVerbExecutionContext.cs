@@ -2,10 +2,7 @@
 
 namespace CLAP.Interception
 {
-    /// <summary>
-    /// A verb execution context
-    /// </summary>
-    public abstract class VerbExecutionContext
+    public abstract class UserVerbExecutionContext
     {
         /// <summary>
         /// The method that is executed
@@ -19,17 +16,17 @@ namespace CLAP.Interception
         public object Target { get; private set; }
 
         /// <summary>
-        /// The list of parameters and their values
-        /// </summary>
-        public ParameterAndValue[] Parameters { get; private set; }
-
-        /// <summary>
         /// A user-context that can be filled with custom keys and values.
         /// Once filled in the pre-execution context - it is available in the post-execution context.
         /// </summary>
         public Dictionary<object, object> UserContext { get; private set; }
 
-        protected VerbExecutionContext(
+        /// <summary>
+        /// The list of parameters and their values
+        /// </summary>
+        public ParameterAndValue[] Parameters { get; private set; }
+
+        protected UserVerbExecutionContext(
             Method method,
             object target,
             ParameterAndValue[] parameters,

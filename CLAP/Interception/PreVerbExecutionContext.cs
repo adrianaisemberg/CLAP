@@ -5,7 +5,7 @@ namespace CLAP.Interception
     /// <summary>
     /// The context before a verb is to be executed
     /// </summary>
-    public sealed class PreVerbExecutionContext : VerbExecutionContext
+    public sealed class PreVerbExecutionContext : UserVerbExecutionContext
     {
         #region Properties
 

@@ -53,7 +53,7 @@ namespace CLAP
                             Required = p.Required,
                             Names = p.Names,
                             Type = p.ParameterInfo.ParameterType,
-                            Default = p.Default,
+                            Default = p.DefaultProvider != null ? p.DefaultProvider.Description : p.Default,
                             Description = p.Description,
                             Validations = p.ParameterInfo.GetAttributes<ValidationAttribute>().Select(v => v.Description).ToList(),
                         }).ToList(),

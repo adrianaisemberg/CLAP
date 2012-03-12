@@ -15,6 +15,15 @@ namespace CLAP
         public object Default { get; set; }
 
         /// <summary>
+        /// The default provider type
+        /// </summary>
+        /// <remarks>
+        /// The type must derive from CLAP.DefaultProvider.
+        /// A parameter cannot have both a Default and a DefaultProvider defined.
+        /// </remarks>
+        public Type DefaultProvider { get; set; }
+
+        /// <summary>
         /// Whether this parameter is required
         /// </summary>
         public Boolean Required { get; set; }
