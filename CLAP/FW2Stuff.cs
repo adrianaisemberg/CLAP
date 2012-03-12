@@ -279,6 +279,21 @@ namespace CLAP
 
             return list;
         }
+
+        public static Dictionary<TKey, TElement> ToDictionary<TSource, TKey, TElement>(
+            this IEnumerable<TSource> source,
+            Func<TSource, TKey> keySelector,
+            Func<TSource, TElement> elementSelector)
+        {
+            var dict = new Dictionary<TKey, TElement>();
+
+            foreach (var item in source)
+            {
+                dict.Add(keySelector(item), elementSelector(item));
+            }
+
+            return dict;
+        }
     }
 
     #endregion Enumerable
