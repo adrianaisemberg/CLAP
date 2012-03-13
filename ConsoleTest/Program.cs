@@ -13,7 +13,7 @@ namespace ConsoleTest
     {
         static void Main(string[] args)
         {
-            Parser.RunConsole<DefaultApp>(args);
+            Parser.RunConsole<ClapApp, SomeApp, TheApp>(args);
         }
     }
 
@@ -90,9 +90,34 @@ namespace ConsoleTest
 
             [Parameter(Required = true)]
             bool rsw,
-            bool sw,
+            [Parameter(DefaultProvider = typeof(MyDefaultProvider1))] bool sw1,
+            [Parameter(DefaultProvider = typeof(MyDefaultProvider2))] bool sw2,
             ClapApp clap)
         {
+        }
+
+        public class MyDefaultProvider1 : DefaultProvider
+        {
+            public override object GetDefault(VerbExecutionContext context)
+            {
+                return "foo";
+            }
+        }
+
+        public class MyDefaultProvider2 : DefaultProvider
+        {
+            public override object GetDefault(VerbExecutionContext context)
+            {
+                return "foo";
+            }
+
+            public override string Description
+            {
+                get
+                {
+                    return "A Default Provider";
+                }
+            }
         }
 
         [Help, Empty]
@@ -132,10 +157,10 @@ namespace ConsoleTest
     class BaseApp
     {
         [Error]
-        public static void Error(Exception ex)
+        public static void Error(ExceptionContext ex)
         {
             Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine(ex.Message);
+            Console.WriteLine(ex.Exception.Message);
             Console.ResetColor();
         }
 

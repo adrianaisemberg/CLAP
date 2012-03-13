@@ -73,10 +73,10 @@ namespace CLAP
                 throw new ArgumentNullException("handler");
             }
 
-            var help = HelpGetter();
-
             EmptyHandler(delegate
             {
+                var help = HelpGetter();
+
                 handler(help);
             });
         }

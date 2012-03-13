@@ -382,8 +382,8 @@ namespace CLAP
 
             // make sure all default providers are DefaultProvider
             //
-            bad = dict.Where(kvp => 
-                kvp.Key.DefaultProvider != null && 
+            bad = dict.Where(kvp =>
+                kvp.Key.DefaultProvider != null &&
                 !typeof(DefaultProvider).IsAssignableFrom(kvp.Key.DefaultProvider));
 
             if (bad.Any())
@@ -676,15 +676,11 @@ namespace CLAP
 
             Action<string> helpHandler = GetRegisteredHelpHandler(arg);
 
-            var help = HelpGenerator.GetHelp(this);
-
-            var helpHandled = false;
-
             if (helpHandler != null)
             {
-                helpHandler(help);
+                helpHandler(HelpGenerator.GetHelp(this));
 
-                helpHandled = true;
+                return true;
             }
 
             var definedHelpMethods = Type.GetMethodsWith<HelpAttribute>();
@@ -704,9 +700,9 @@ namespace CLAP
 
                         var obj = method.IsStatic ? null : target;
 
-                        MethodInvoker.Invoke(method, obj, new[] { help });
+                        MethodInvoker.Invoke(method, obj, new[] { HelpGenerator.GetHelp(this) });
 
-                        helpHandled = true;
+                        return true;
                     }
                     catch (TargetParameterCountException ex)
                     {
@@ -719,7 +715,7 @@ namespace CLAP
                 }
             }
 
-            return helpHandled;
+            return false;
         }
 
         internal void HandleEmptyArguments(object target)

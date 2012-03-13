@@ -56,8 +56,7 @@ namespace CLAP
 
             if (verbAttribute.Aliases != null)
             {
-                Names.AddRange(
-                    verbAttribute.Aliases.ToLowerInvariant().CommaSplit());
+                Names.AddRange(verbAttribute.Aliases.ToLowerInvariant().CommaSplit());
             }
         }
 
