@@ -101,7 +101,7 @@ namespace CLAP
 
             var parts = verb.Split(s_delimiters, StringSplitOptions.RemoveEmptyEntries);
 
-            if (parts.Length > 2)
+            if (parts.Length != 2)
             {
                 throw new InvalidVerbException();
             }

@@ -86,7 +86,7 @@ namespace CLAP
     public class MultiParserMissingClassNameException : CommandLineParserException
     {
         public MultiParserMissingClassNameException()
-            : this("Arguments contain no class name", null)
+            : this("Arguments contain no class name nor verb", null)
         {
         }
 
@@ -101,7 +101,7 @@ namespace CLAP
     public class InvalidVerbException : CommandLineParserException
     {
         public InvalidVerbException()
-            : this("Invalid verb: Contains more than two parts.", null)
+            : this("Invalid verb", null)
         {
         }
 
