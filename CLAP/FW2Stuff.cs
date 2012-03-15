@@ -185,6 +185,17 @@ namespace CLAP
             return items;
         }
 
+        public static IEnumerable<TItem> OrderByDescending<TItem, TResult>(
+            this IEnumerable<TItem> collection,
+            Func<TItem, TResult> func)
+        {
+            var arr = OrderBy(collection, func).ToArray();
+
+            Array.Reverse(arr);
+
+            return arr;
+        }
+
         public static IEnumerable<T> Skip<T>(this IEnumerable<T> collection, int count)
         {
             foreach (var item in collection)
@@ -293,6 +304,23 @@ namespace CLAP
             }
 
             return dict;
+        }
+
+        public static int Max<TSource>(this IEnumerable<TSource> source, Func<TSource, int> selector)
+        {
+            int? max = null;
+
+            foreach (var item in source)
+            {
+                var v = selector(item);
+
+                if (!max.HasValue || v > max)
+                {
+                    max = v;
+                }
+            }
+
+            return max.Value;
         }
     }
 

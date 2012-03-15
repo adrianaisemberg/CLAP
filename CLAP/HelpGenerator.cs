@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Text;
 
 #if !FW2
 using System.Linq;
-using System;
 #endif
 
 namespace CLAP
@@ -48,7 +48,7 @@ namespace CLAP
             {
                 var parser = helpInfo.Parsers[i];
 
-                foreach (var verb in parser.Verbs.OrderByDescending(v => v.IsDefault).ThenBy(v => v.Names.First()))
+                foreach (var verb in parser.Verbs.OrderByDescending(v => v.IsDefault))
                 {
                     sb.AppendLine();
                     sb.Append(verbsLead);

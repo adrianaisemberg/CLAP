@@ -16,8 +16,8 @@ namespace ConsoleTest
             //Debugger.Launch();
 
             //Parser.RunConsole<TheApp>(args);
-            //Parser.RunConsole<ClapApp, SomeApp, TheApp>(args);
-            Parser.Run<SomeApp, ClapApp>(args);
+            Parser.RunConsole<ClapApp, SomeApp, TheApp>(args);
+            //Parser.Run<SomeApp, ClapApp>(args);
         }
     }
 
