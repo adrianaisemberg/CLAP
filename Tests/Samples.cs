@@ -1324,4 +1324,19 @@ namespace Tests
         {
         }
     }
+
+    public class Sample_64
+    {
+        public bool Handled { get; set; }
+
+        [Error]
+        void Error(ExceptionContext c)
+        {
+            Handled = true;
+        }
+    }
+
+    public class Sample_65
+    {
+    }
 }

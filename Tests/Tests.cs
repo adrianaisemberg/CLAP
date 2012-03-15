@@ -2369,5 +2369,32 @@ namespace Tests
                 "foo"
             });
         }
+
+        [Test]
+        public void HandlePreMatureError_DefinedHandler()
+        {
+            var s = new Sample_64();
+
+            Assert.IsFalse(s.Handled);
+
+            Parser.Run(new[] { "." }, s);
+
+            Assert.IsTrue(s.Handled);
+        }
+
+        [Test]
+        public void HandlePreMatureError_RegisteredHandler()
+        {
+            var s = new Sample_65();
+            var p = new Parser<Sample_65>();
+
+            var handled = false;
+
+            p.Register.ErrorHandler(c => handled = true);
+
+            p.RunTargets(new[] { "." }, s);
+
+            Assert.IsTrue(handled);
+        }
     }
 }

@@ -143,7 +143,7 @@ namespace CLAP
             {
                 var parts = verb.Split(s_delimiters, StringSplitOptions.RemoveEmptyEntries);
 
-                if (parts.Length > 2)
+                if (parts.Length != 2)
                 {
                     throw new InvalidVerbException();
                 }
@@ -185,17 +185,17 @@ namespace CLAP
         {
             ParserRunner parser = null;
 
+            // no args
+            //
+            if (args.None() || args.All(a => string.IsNullOrEmpty(a)))
+            {
+                HandleEmptyArguments(targets);
+
+                return;
+            }
+
             try
             {
-                // no args
-                //
-                if (args.None() || args.All(a => string.IsNullOrEmpty(a)))
-                {
-                    HandleEmptyArguments(targets);
-
-                    return;
-                }
-
                 if (m_types.Length == 1)
                 {
                     parser = GetSingleTypeParser(args, targets, Register);
