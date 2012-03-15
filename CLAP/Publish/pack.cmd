@@ -1,6 +1,6 @@
 @echo off
 set PACKPATH=%~dp0_nuget_pack
-rd /q /s %PACKPATH%
+if exist %PACKPATH% rd /q /s %PACKPATH%
 
 set TEMP_LIB=%PACKPATH%\_lib\net20
 set LIB=%PACKPATH%\lib\net20
