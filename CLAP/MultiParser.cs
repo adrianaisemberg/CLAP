@@ -57,12 +57,12 @@ namespace CLAP
         {
             Debug.Assert(m_types.Any());
 
+            Register = new ParserRegistration(m_types, GetHelpString, ValuesFactory.GetValueForParameter);
+
             foreach (var type in m_types)
             {
-                ParserRunner.Validate(type);
+                ParserRunner.Validate(type, Register);
             }
-
-            Register = new ParserRegistration(m_types, GetHelpString, ValuesFactory.GetValueForParameter);
         }
 
         private void HandleEmptyArguments(object[] targets)
@@ -183,26 +183,42 @@ namespace CLAP
         /// <param name="targets">The instances of the verb classes</param>
         public void RunTargets(string[] args, params object[] targets)
         {
-            // no args
-            //
-            if (args.None() || args.All(a => string.IsNullOrEmpty(a)))
-            {
-                HandleEmptyArguments(targets);
+            ParserRunner parser = null;
 
-                return;
+            try
+            {
+                // no args
+                //
+                if (args.None() || args.All(a => string.IsNullOrEmpty(a)))
+                {
+                    HandleEmptyArguments(targets);
+
+                    return;
+                }
+
+                if (m_types.Length == 1)
+                {
+                    parser = GetSingleTypeParser(args, targets, Register);
+                }
+                else
+                {
+                    Debug.Assert(m_types.Length > 1);
+
+                    parser = GetMultiTypesParser(args, targets, Register);
+                }
             }
-
-            ParserRunner parser;
-
-            if (m_types.Length == 1)
+            catch (Exception ex)
             {
-                parser = GetSingleTypeParser(args, targets, Register);
-            }
-            else
-            {
-                Debug.Assert(m_types.Length > 1);
-
-                parser = GetMultiTypesParser(args, targets, Register);
+                // handle error using the first available error handler
+                //
+                if (TryHandlePrematureError(ex, targets))
+                {
+                    return;
+                }
+                else
+                {
+                    throw;
+                }
             }
 
             Debug.Assert(parser != null);
@@ -214,6 +230,36 @@ namespace CLAP
             var target = targets.None() ? null : targets[index];
 
             parser.Run(args, target);
+        }
+
+        private bool TryHandlePrematureError(Exception ex, object[] targets)
+        {
+            if (Register.RegisteredErrorHandler != null)
+            {
+                Register.RegisteredErrorHandler(new ExceptionContext(ex));
+
+                return true;
+            }
+            else
+            {
+                for (int i = 0; i < m_types.Length; i++)
+                {
+                    var type = m_types[i];
+
+                    var errorHandler = ParserRunner.GetDefinedErrorHandlers(type).FirstOrDefault();
+
+                    if (errorHandler != null)
+                    {
+                        var target = targets == null ? null : targets[i];
+
+                        errorHandler.Invoke(target, new[] { new ExceptionContext(ex) });
+
+                        return true;
+                    }
+                }
+            }
+
+            return false;
         }
 
         /// <summary>

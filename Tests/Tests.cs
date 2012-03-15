@@ -774,7 +774,7 @@ namespace Tests
         [Test]
         public void _Help_WithEverything_Coverage()
         {
-            var p = new Parser<Sample_10>();
+            var p = new Parser<Sample_10, Sample_10_x>();
 
             p.Register.ParameterHandler("param", delegate { }, "description");
 
@@ -2334,6 +2334,40 @@ namespace Tests
             var t = new ParameterWithDefaults_3();
 
             Parser.Run(new string[] { "foo" }, t);
+        }
+
+        [Test]
+        public void Parameters_WithAutoPrefixes()
+        {
+            var s = new Sample_62();
+            Parser.Run(new[]
+            {
+                "foo","-c=5","-n=bar"
+            }, s);
+
+            Assert.AreEqual(5, s.Count);
+            Assert.AreEqual("bar", s.Name);
+        }
+
+        [Test]
+        [ExpectedException(typeof(UnhandledParametersException))]
+        public void Parameters_WithoutAutoPrefixes()
+        {
+            var s = new Sample_62();
+            Parser.Run(new[]
+            {
+                "bar","-c=5","-n=bar"
+            }, s);
+        }
+
+        [Test]
+        [ExpectedException(typeof(DuplicateGlobalHandlerException))]
+        public void DuplicateGlobalName_Exception()
+        {
+            Parser.Run<Sample_63>(new[]
+            {
+                "foo"
+            });
         }
     }
 }

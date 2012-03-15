@@ -12,7 +12,7 @@ namespace CLAP
     {
         internal Type Type { get; set; }
         internal List<VerbHelpInfo> Verbs { get; set; }
-        internal List<ParameterHelpInfo> Globals { get; set; }
+        internal List<GlobalParameterHelpInfo> Globals { get; set; }
     }
 
     internal class VerbHelpInfo
@@ -32,6 +32,13 @@ namespace CLAP
         internal Type Type { get; set; }
         internal object Default { get; set; }
         internal string Description { get; set; }
-        internal bool IsGlobal { get; set; }
+    }
+
+    internal class GlobalParameterHelpInfo
+    {
+        internal List<string> Names { get; set; }
+        internal List<string> Validations { get; set; }
+        internal Type Type { get; set; }
+        internal string Description { get; set; }
     }
 }

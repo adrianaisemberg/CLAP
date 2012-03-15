@@ -13,7 +13,11 @@ namespace ConsoleTest
     {
         static void Main(string[] args)
         {
-            Parser.RunConsole<ClapApp, SomeApp, TheApp>(args);
+            //Debugger.Launch();
+
+            //Parser.RunConsole<TheApp>(args);
+            //Parser.RunConsole<ClapApp, SomeApp, TheApp>(args);
+            Parser.Run<SomeApp, ClapApp>(args);
         }
     }
 
@@ -63,6 +67,16 @@ namespace ConsoleTest
 
     class ClapApp
     {
+        [Error]
+        static void err(ExceptionContext c)
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+
+            Console.WriteLine(c.Exception.Message);
+
+            Console.ResetColor();
+        }
+
         [Verb]
         public static void Foo(string bar, int count)
         {
@@ -83,15 +97,15 @@ namespace ConsoleTest
         [Validate("num1 + num2 >= num3")]
         public static void Zoo(
             int num1,
-            [MoreThan(10)] int num2,
+            [MoreThan(10)] int thenum2,
             [LessOrEqualTo(100)]
-            [Parameter(Default = 55, Description = "a number")] int num3,
+            [Parameter(Default = 55, Description = "a number")] int anum3,
             BindingFlags bf,
 
             [Parameter(Required = true)]
             bool rsw,
             [Parameter(DefaultProvider = typeof(MyDefaultProvider1))] bool sw1,
-            [Parameter(DefaultProvider = typeof(MyDefaultProvider2))] bool sw2,
+            [Parameter(DefaultProvider = typeof(MyDefaultProvider2))] bool hsw2,
             ClapApp clap)
         {
         }
@@ -138,7 +152,7 @@ namespace ConsoleTest
         }
 
         [Global(Aliases = "d", Description = "attach a debugger")]
-        public static void Debug()
+        public static void Debug1()
         {
             Debugger.Launch();
         }
@@ -178,7 +192,7 @@ namespace ConsoleTest
         }
     }
 
-    class TheApp : BaseApp
+    class TheApp
     {
         [Verb(IsDefault = true, Description = "Prints 'Hello' and a name")]
         public static void Hello(

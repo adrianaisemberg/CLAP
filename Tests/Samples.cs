@@ -365,6 +365,89 @@ namespace Tests
         public void WithARequiredSwitch(string str, [Parameter(Required = true)] bool sw)
         {
         }
+
+        [Verb]
+        public void WIthDefaultProvider([Parameter(DefaultProvider = typeof(MyDefaultProvider))] string blah)
+        {
+        }
+
+        public class MyDefaultProvider : DefaultProvider
+        {
+            public override object GetDefault(VerbExecutionContext context)
+            {
+                throw new NotImplementedException();
+            }
+        }
+    }
+
+    public class Sample_10_x : BaseSample
+    {
+        [Verb(IsDefault = true, Description = "prints")]
+        public void Print()
+        {
+        }
+
+        [Verb]
+        [Validate("str like 'foo*'")]
+        public void Print2([Parameter(Required = true, Description = "string!")]string str)
+        {
+        }
+
+        [Global]
+        [Validate("x not like 'foo*'")]
+        public void Foo(string x)
+        {
+            Printer.Print(x);
+        }
+
+        [Global]
+        public void Bar()
+        {
+            Printer.Print("zoo");
+        }
+
+        [Global(Aliases = "m")]
+        public void Mish([LessThan(10)] int count)
+        {
+            for (int i = 0; i < count; i++)
+            {
+                Printer.Print("mesh");
+            }
+        }
+
+        [Global]
+        public void Abra(BindingFlags f)
+        {
+        }
+
+        [Help]
+        public void ShowHelp(string help)
+        {
+            Printer.Print("help");
+        }
+
+        [Global(Description = "cat!")]
+        public void Cat(Dictionary<string, Sample_10> x)
+        {
+        }
+
+        [Verb]
+        public void WithARequiredSwitch(string str, [Parameter(Required = true)] bool sw)
+        {
+        }
+
+        [Verb]
+        public void WIthDefaultProvider([Parameter(DefaultProvider = typeof(MyDefaultProvider))] string blah)
+        {
+        }
+
+        public class MyDefaultProvider : DefaultProvider
+        {
+            public override object GetDefault(VerbExecutionContext context)
+            {
+                throw new NotImplementedException();
+            }
+        }
     }
 
     public class Sample_11 : BaseSample
@@ -1198,6 +1281,46 @@ namespace Tests
         [Verb]
         public void Foo(
             [Parameter(DefaultProvider = typeof(System.Text.StringBuilder))] string p1)
+        {
+        }
+    }
+
+    public class Sample_62
+    {
+        public int Count { get; set; }
+        public string Name { get; set; }
+        public int Number { get; set; }
+
+        [Verb]
+        public void Foo(int count, string name)
+        {
+            Count = count;
+            Name = name;
+        }
+
+        [Verb]
+        public void Bar(int count, string name, int number)
+        {
+            Count = count;
+            Name = name;
+            Number = number;
+        }
+    }
+
+    public class Sample_63
+    {
+        [Verb]
+        public static void Foo(int count, string name)
+        {
+        }
+
+        [Global]
+        public static void Global1()
+        {
+        }
+
+        [Global("Global1")]
+        public static void Global2()
         {
         }
     }

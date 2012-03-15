@@ -3,6 +3,7 @@ using System.Text;
 
 #if !FW2
 using System.Linq;
+using System;
 #endif
 
 namespace CLAP
@@ -47,7 +48,7 @@ namespace CLAP
             {
                 var parser = helpInfo.Parsers[i];
 
-                foreach (var verb in parser.Verbs.OrderBy(v => v.Names.First()))
+                foreach (var verb in parser.Verbs.OrderByDescending(v => v.IsDefault).ThenBy(v => v.Names.First()))
                 {
                     sb.AppendLine();
                     sb.Append(verbsLead);
@@ -57,25 +58,37 @@ namespace CLAP
                         sb.AppendFormat("{0}.", parser.Type.Name.ToLowerInvariant());
                     }
 
-                    sb.AppendLine(verb.Names.StringJoin("|").ToLowerInvariant());
+                    sb.Append(verb.Names.StringJoin("|").ToLowerInvariant());
+
+                    if (verb.IsDefault)
+                    {
+                        sb.Append(" (Default)");
+                    }
+
+                    if (!string.IsNullOrEmpty(verb.Description))
+                    {
+                        sb.AppendFormat(": {0}", verb.Description);
+                    }
+
+                    sb.AppendLine();
 
                     if (verb.Parameters.Any())
                     {
-                        var longestParameter = verb.Parameters.Max(p => p.Names.StringJoin("|").Length);
+                        var longestParameter = verb.Parameters.Max(p => p.Names.StringJoin(" /").Length);
                         var longestType = verb.Parameters.Max(p => p.Type.GetGenericTypeName().Length);
 
                         foreach (var p in verb.Parameters.OrderBy(p => p.Names.First()))
                         {
                             sb.Append(parametersLead);
                             sb.AppendFormat("/{0} : ",
-                                p.Names.StringJoin("|").ToLowerInvariant().PadRight(longestParameter, ' '));
-
-                            sb.AppendFormat("<{0}> ", p.Type.GetGenericTypeName());
+                                p.Names.StringJoin(" /").ToLowerInvariant().PadRight(longestParameter, ' '));
 
                             if (!string.IsNullOrEmpty(p.Description))
                             {
                                 sb.AppendFormat("{0} ", p.Description);
                             }
+
+                            sb.AppendFormat("({0}) ", GetTypeName(p.Type));
 
                             if (p.Required)
                             {
@@ -114,31 +127,23 @@ namespace CLAP
                 if (parser.Globals.Any())
                 {
                     sb.AppendLine();
+                    sb.Append(verbsLead);
+                    sb.AppendLine("Global Parameters:");
 
                     var longestGlobal = parser.Globals.Max(p => p.Names.StringJoin("|").Length);
 
                     foreach (var g in parser.Globals.OrderBy(g => g.Names.First()))
                     {
-                        sb.Append(verbsLead);
+                        sb.Append(parametersLead);
                         sb.AppendFormat("/{0} : ",
                             g.Names.StringJoin("|").ToLowerInvariant().PadRight(longestGlobal, ' '));
-
-                        sb.AppendFormat("<{0}> ", g.Type.GetGenericTypeName());
 
                         if (!string.IsNullOrEmpty(g.Description))
                         {
                             sb.AppendFormat("{0} ", g.Description);
                         }
 
-                        if (g.Required)
-                        {
-                            sb.Append("(Required) ");
-                        }
-
-                        if (g.Default != null)
-                        {
-                            sb.AppendFormat("(Default = {0}) ", g.Default);
-                        }
+                        sb.AppendFormat("({0}) ", GetTypeName(g.Type));
 
                         if (g.Validations.Any())
                         {
@@ -160,6 +165,16 @@ namespace CLAP
             return sb.ToString();
         }
 
+        private static string GetTypeName(Type type)
+        {
+            if (type.IsEnum)
+            {
+                return string.Format("{0} ({1})", type.Name, string.Join("/", Enum.GetNames(type)));
+            }
+
+            return type.GetGenericTypeName();
+        }
+
         private static ParserHelpInfo GetParserHelp(ParserRunner parser)
         {
             return new ParserHelpInfo
@@ -167,7 +182,7 @@ namespace CLAP
                 Type = parser.Type,
                 Verbs = parser.GetVerbs().Select(verb => new VerbHelpInfo
                 {
-                    Names = verb.Names.OrderBy(n => n.Length).ToList(),
+                    Names = verb.Names.OrderByDescending(n => n.Length).ToList(),
                     Description = verb.Description,
                     IsDefault = verb.IsDefault,
                     Validations = verb.MethodInfo.GetInterfaceAttributes<ICollectionValidation>().Select(v => v.Description).ToList(),
@@ -187,17 +202,15 @@ namespace CLAP
                     var att = g.GetAttribute<GlobalAttribute>();
                     var parameter = ParserRunner.GetParameters(g).FirstOrDefault();
 
-                    return new ParameterHelpInfo
+                    return new GlobalParameterHelpInfo
                     {
-                        IsGlobal = true,
                         Names = att.Aliases.CommaSplit().Union(new[] { att.Name ?? g.Name }).OrderBy(n => n.Length).ToList(),
                         Type = parameter != null ? parameter.ParameterInfo.ParameterType : typeof(bool),
                         Description = att.Description,
                         Validations = g.GetInterfaceAttributes<ICollectionValidation>().Select(v => v.Description).ToList(),
                     };
-                }).Union(parser.Register.RegisteredGlobalHandlers.Values.Select(handler => new ParameterHelpInfo
+                }).Union(parser.Register.RegisteredGlobalHandlers.Values.Select(handler => new GlobalParameterHelpInfo
                 {
-                    IsGlobal = true,
                     Names = handler.Names.OrderBy(n => n.Length).ToList(),
                     Type = handler.Type,
                     Description = handler.Desription,

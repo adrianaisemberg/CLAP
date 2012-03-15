@@ -382,7 +382,7 @@ namespace CLAP
     public class AmbiguousParameterDefaultException : CommandLineParserException
     {
         /// <summary>
-        /// The method that is defined as help
+        /// The parameter that has both a Default and a DefaultProvider
         /// </summary>
         public ParameterInfo Parameter { get; private set; }
 
@@ -402,7 +402,7 @@ namespace CLAP
     public class InvalidParameterDefaultProviderException : CommandLineParserException
     {
         /// <summary>
-        /// The method that is defined as help
+        /// The parameter that has an invalid DefaultProvider
         /// </summary>
         public ParameterInfo Parameter { get; private set; }
 
@@ -413,6 +413,26 @@ namespace CLAP
         }
 
         protected InvalidParameterDefaultProviderException(
+            System.Runtime.Serialization.SerializationInfo info,
+            System.Runtime.Serialization.StreamingContext context)
+            : base(info, context) { }
+    }
+
+    [Serializable]
+    public class DuplicateGlobalHandlerException : CommandLineParserException
+    {
+        /// <summary>
+        /// The global handler name
+        /// </summary>
+        public string Name { get; private set; }
+
+        public DuplicateGlobalHandlerException(string name)
+            : base("Global parameter '{0}' is defined more than once".FormatWith(name))
+        {
+            Name = name;
+        }
+
+        protected DuplicateGlobalHandlerException(
             System.Runtime.Serialization.SerializationInfo info,
             System.Runtime.Serialization.StreamingContext context)
             : base(info, context) { }

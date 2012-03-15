@@ -51,7 +51,7 @@ namespace CLAP
 
             if (!selected.Any())
             {
-                throw new ValidationException(string.Format("Expression failed validation: '{0}' for arguments: [{1}]",
+                throw new ValidationException("Expression failed validation: '{0}' for arguments: [{1}]".FormatWith(
                     Expression,
                     parameters.Select(
                         p => "{0}={1}".FormatWith(

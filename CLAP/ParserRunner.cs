@@ -44,7 +44,7 @@ namespace CLAP
 
             m_registration = parserRegistration;
 
-            Validate(type);
+            Validate(type, m_registration);
         }
 
         #endregion Constructors
@@ -331,7 +331,7 @@ namespace CLAP
             }
         }
 
-        internal static void Validate(Type type)
+        internal static void Validate(Type type, ParserRegistration registration)
         {
             // no more than one default verb
             //
@@ -361,6 +361,37 @@ namespace CLAP
             // parameters can't have both Default and DefaultProvider
             //
             ValidateParameterDefaults(verbMethods);
+
+            // no duplicate globals
+            //
+            ValidateDuplicateGlobals(type, registration);
+        }
+
+        private static void ValidateDuplicateGlobals(Type type, ParserRegistration registration)
+        {
+            var definedGlobals = type.
+                GetMethodsWith<GlobalAttribute>().
+                SelectMany(m =>
+                {
+                    var att = m.GetAttribute<GlobalAttribute>();
+                    var name = att.Name ?? m.Name;
+
+                    return att.Aliases.CommaSplit().Union(new[] { name }).Select(s => s.ToLowerInvariant());
+                }).
+                ToList();
+
+            var globals = registration.RegisteredGlobalHandlers.Keys.Select(k => k.ToLowerInvariant()).ToList();
+
+            globals.AddRange(definedGlobals);
+
+            var counts = globals.Distinct().ToDictionary(g => g, g => globals.Count(name => name == g));
+
+            var duplicate = counts.Where(c => c.Value > 1);
+
+            if (duplicate.Any())
+            {
+                throw new DuplicateGlobalHandlerException(duplicate.First().Key);
+            }
         }
 
         private static void ValidateParameterDefaults(IEnumerable<Method> verbs)
@@ -500,7 +531,7 @@ namespace CLAP
         /// </summary>
         internal static IEnumerable<Parameter> GetParameters(MethodInfo method)
         {
-            var parameters = method.GetParameters().Select(p => new Parameter(p));
+            var parameters = method.GetParameters().Select(p => new Parameter(p)).ToList();
 
             // detect duplicates
             //
@@ -516,6 +547,26 @@ namespace CLAP
                         duplicates.Distinct().StringJoin(", ")));
             }
 
+            // try to find short aliases
+            //
+            var paramsToFirstCharDict = parameters.ToDictionary(p => p, p => p.ParameterInfo.Name.ToLowerInvariant()[0].ToString());
+
+            // if there are no duplicate first-chars
+            //
+            if (paramsToFirstCharDict.Values.Distinct().Count() == parameters.Count())
+            {
+                foreach (var p in parameters)
+                {
+                    var c = paramsToFirstCharDict[p];
+
+                    if (!p.Names.Contains(c))
+                    {
+                        p.Names.Add(c);
+                    }
+                }
+            }
+
+
             return parameters;
         }
 
@@ -524,8 +575,23 @@ namespace CLAP
         /// </summary>
         internal IEnumerable<Method> GetVerbs()
         {
-            var verbMethods = Type.GetMethodsWith<VerbAttribute>().
-                Select(m => new Method(m));
+            var verbMethods = Type.
+                GetMethodsWith<VerbAttribute>().
+                Select(m => new Method(m)).
+                ToList();
+
+            if (verbMethods.Select(v => v.MethodInfo.Name[0]).Distinct().Count() == verbMethods.Count())
+            {
+                foreach (var v in verbMethods)
+                {
+                    var c = v.MethodInfo.Name[0].ToString().ToLowerInvariant();
+
+                    if (!v.Names.Contains(c))
+                    {
+                        v.Names.Add(c);
+                    }
+                }
+            }
 
             var defaultVerbs = verbMethods.Where(m => m.IsDefault);
 
@@ -580,7 +646,7 @@ namespace CLAP
             return globals;
         }
 
-        private static IEnumerable<MethodInfo> GetDefinedErrorHandlers(Type type)
+        internal static IEnumerable<MethodInfo> GetDefinedErrorHandlers(Type type)
         {
             var errorHandlers = type.GetMethodsWith<ErrorAttribute>();
 
