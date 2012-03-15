@@ -53,6 +53,7 @@
                 <a href="#what" class="menu_item selected">INTRO</a>
                 <a href="#using" class="menu_item">GETTING STARTED</a>
                 <a href="#download" class="menu_item"><strong>DOWNLOAD</strong></a>
+                <a href="http://github.com/adrianaisemberg/CLAP" target="_blank" class="menu_item">SOURCE CODE</a>
                 <a href="#history" class="menu_item last_menu_item">HISTORY</a>
                 <a href="#attributes" class="menu_item">ATTRIBUTES</a>
                 <div class="sub_menu" menu_id="#attributes">
@@ -97,7 +98,8 @@
                     <a href="#expressions_preverbinterceptor" class="sub_menu_item">Pre-Verb Interceptors</a>
                     <a href="#expressions_postverbinterceptor" class="sub_menu_item">Post-Verb Interceptors</a>
                 </div>
-                <a href="#multi_parsers" class="menu_item last_menu_item">MULTI PARSERS</a>
+                <a href="#multi_parsers" class="menu_item">MULTI PARSERS</a>
+                <a href="#short_names" class="menu_item last_menu_item">SHORT NAMES</a>
                 <a href="#consolewinforms" class="menu_item">CONSOLE/WINFORMS</a>
                 <a href="#examples" class="menu_item last_menu_item">EXAMPLES</a>
                 <a href="#license" class="menu_item">LICENSE</a>
@@ -1631,6 +1633,46 @@ CLAP.ValidationException: Not all arrays have the same length.
                                 </li>
                             </ul>
                         </div>
+                    </div>
+                </div>
+                <div sectionid="#short_names" class="content">
+                    <h3>Short Names</h3>
+                    <p>
+                        When possible, CLAP will create additional aliases for verbs and parameters 
+                        using only the first character of their names.
+                    </p>
+                    <p>
+                        This happens automatically when the first letter is distinct between all
+                        parameters of a verb, or between all verbs in a class.
+                    </p>
+                    <div class="attribute_samples">
+                        <h3>Example:</h3>
+                        <pre class="brush: csharp, highlight: 3">
+                            class App
+                            {
+                                [Verb]
+                                static void Foo(string name, int count)
+                                {
+                                }
+
+                                [Verb]
+                                static void Bar(string name, int number)
+                                {
+                                }
+                            }
+                        </pre>
+                        <p>
+                            <code>Foo</code> and <code>Bar</code> have distinct first characters, 
+                            so Foo will have an additional alias of "f" and Bar will have "b".
+                        </p>
+                        <p>
+                            The same goes for <code>name</code> and <code>count</code> parameters of <code>Foo</code>,
+                            so <code>name</code> will have also "n" and <code>count</code> will have "c".
+                        </p>
+                        <p>
+                            The parameters of <code>Bar</code> don't have a distinct first character so unless having
+                            explicit aliases (using <code>[Parameter(Aliases=...)]</code>, they will not have any additional alias.
+                        </p>
                     </div>
                 </div>
                 <div sectionid="#consolewinforms" class="content">
