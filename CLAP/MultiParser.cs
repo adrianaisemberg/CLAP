@@ -17,6 +17,9 @@ namespace CLAP
         private static readonly string[] s_delimiters = new[] { ".", "/" };
         private readonly Type[] m_types;
 
+        internal const int ErrorCode = 1;
+        internal const int SuccessCode = 0;
+
         #endregion Fields
 
         #region Properties
@@ -171,9 +174,9 @@ namespace CLAP
         /// Run a parser of static verbs
         /// </summary>
         /// <param name="args">The user arguments</param>
-        public void RunStatic(string[] args)
+        public int RunStatic(string[] args)
         {
-            RunTargets(args, null);
+            return RunTargets(args, null);
         }
 
         /// <summary>
@@ -181,7 +184,7 @@ namespace CLAP
         /// </summary>
         /// <param name="args">The user arguments</param>
         /// <param name="targets">The instances of the verb classes</param>
-        public void RunTargets(string[] args, params object[] targets)
+        public int RunTargets(string[] args, params object[] targets)
         {
             ParserRunner parser = null;
 
@@ -191,7 +194,7 @@ namespace CLAP
             {
                 HandleEmptyArguments(targets);
 
-                return;
+                return SuccessCode;
             }
 
             try
@@ -213,7 +216,7 @@ namespace CLAP
                 //
                 if (TryHandlePrematureError(ex, targets))
                 {
-                    return;
+                    return ErrorCode;
                 }
                 else
                 {
@@ -229,7 +232,7 @@ namespace CLAP
 
             var target = targets.None() ? null : targets[index];
 
-            parser.Run(args, target);
+            return parser.Run(args, target);
         }
 
         private bool TryHandlePrematureError(Exception ex, object[] targets)

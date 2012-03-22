@@ -51,20 +51,20 @@ namespace CLAP
 
         #region Public Methods
 
-        public void Run(string[] args, object obj)
+        public int Run(string[] args, object obj)
         {
-            TryRunInternal(args, obj);
+            return TryRunInternal(args, obj);
         }
 
         #endregion Public Methods
 
         #region Private Methods
 
-        private void TryRunInternal(string[] args, object obj)
+        private int TryRunInternal(string[] args, object obj)
         {
             try
             {
-                RunInternal(args, obj);
+                return RunInternal(args, obj);
             }
             catch (Exception ex)
             {
@@ -74,10 +74,12 @@ namespace CLAP
                 {
                     throw;
                 }
+
+                return MultiParser.ErrorCode;
             }
         }
 
-        private void RunInternal(string[] args, object obj)
+        private int RunInternal(string[] args, object obj)
         {
             //
             // *** empty args are handled by the multi-parser
@@ -92,7 +94,7 @@ namespace CLAP
 
             if (HandleHelp(firstArg, obj))
             {
-                return;
+                return MultiParser.ErrorCode;
             }
 
             var verb = firstArg;
@@ -155,10 +157,10 @@ namespace CLAP
                 throw new UnhandledParametersException(inputArgs);
             }
 
-            Execute(obj, method, parameterValues);
+            return Execute(obj, method, parameterValues);
         }
 
-        private void Execute(
+        private int Execute(
             object target,
             Method method,
             ParameterAndValue[] parameters)
@@ -207,6 +209,8 @@ namespace CLAP
                     }
                 }
             }
+
+            return verbException == null ? MultiParser.SuccessCode : MultiParser.ErrorCode;
         }
 
         private void PostInterception(

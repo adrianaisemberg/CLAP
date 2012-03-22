@@ -11,12 +11,12 @@ namespace ConsoleTest
 {
     class Program
     {
-        static void Main(string[] args)
+        static int Main(string[] args)
         {
             //Debugger.Launch();
 
             //Parser.RunConsole<TheApp>(args);
-            Parser.RunConsole<ClapApp, SomeApp, TheApp>(args);
+            return Parser.RunConsole<ClapApp, SomeApp, TheApp>(args);
             //Parser.Run<SomeApp, ClapApp>(args);
         }
     }
