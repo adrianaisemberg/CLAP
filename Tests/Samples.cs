@@ -1339,4 +1339,34 @@ namespace Tests
     public class Sample_65
     {
     }
+
+
+
+    public class Sample_66
+    {
+        public Person Person { get; set; }
+
+        [Verb]
+        public void Foo(Person p)
+        {
+            Person = p;
+        }
+    }
+
+    public class Person
+    {
+        public int Age { get; set; }
+        public string Name { get; set; }
+        public string Email { get; set; }
+        public List<PhoneNumber> PhoneNumbers { get; set; }
+    }
+
+    public class PhoneNumber
+    {
+        public string Type { get; set; }
+        public string Number { get; set; }
+
+        [MoreThan(10)]
+        public int SomeNumber { get; set; }
+    }
 }

@@ -2396,5 +2396,59 @@ namespace Tests
 
             Assert.IsTrue(handled);
         }
+
+        [Test]
+        [ExpectedException(typeof(ValidationException))]
+        public void DeserializeComplexTypeWithCollection_Json_ValidationError()
+        {
+            var s = new Sample_66();
+
+            var json = "{Age: 34,Name: 'Adrian',Email: 'adrianaisemberg@gmail.com',PhoneNumbers:[{Type:'Home',Number:'001-2232322'},{Type:'Mobile',Number:'002-7787787'},{Type: 'Office',Number: '003-4463565'}]}";
+
+            Parser.Run(new[] { "foo", "-p=" + json }, s);
+
+            Assert.AreEqual("Adrian", s.Person.Name);
+            Assert.AreEqual(3, s.Person.PhoneNumbers.Count);
+        }
+
+        [Test]
+        [ExpectedException(typeof(ValidationException))]
+        public void DeserializeComplexTypeWithCollection_Xml_ValidationError()
+        {
+            var s = new Sample_66();
+
+            var xml = "<Person><Age>34</Age><Name>Adrian</Name><Email>adrianaisemberg@gmail.com</Email><PhoneNumbers><PhoneNumber><Type>Home</Type><Number>001-2232322</Number></PhoneNumber><PhoneNumber><Type>Mobile</Type><Number>002-7787787</Number></PhoneNumber><PhoneNumber><Type>Office</Type><Number>003-4463565</Number></PhoneNumber></PhoneNumbers></Person>";
+
+            Parser.Run(new[] { "foo", "-p=" + xml }, s);
+
+            Assert.AreEqual("Adrian", s.Person.Name);
+            Assert.AreEqual(3, s.Person.PhoneNumbers.Count);
+        }
+
+        [Test]
+        public void DeserializeComplexTypeWithCollection_Json()
+        {
+            var s = new Sample_66();
+
+            var json = "{Age: 34,Name: 'Adrian',Email: 'adrianaisemberg@gmail.com',PhoneNumbers:[{Type:'Home',Number:'001-2232322',SomeNumber:20},{Type:'Mobile',Number:'002-7787787',SomeNumber:21},{Type: 'Office',Number: '003-4463565',SomeNumber:30}]}";
+
+            Parser.Run(new[] { "foo", "-p=" + json }, s);
+
+            Assert.AreEqual("Adrian", s.Person.Name);
+            Assert.AreEqual(3, s.Person.PhoneNumbers.Count);
+        }
+
+        [Test]
+        public void DeserializeComplexTypeWithCollection_Xml()
+        {
+            var s = new Sample_66();
+
+            var xml = "<Person><Age>34</Age><Name>Adrian</Name><Email>adrianaisemberg@gmail.com</Email><PhoneNumbers><PhoneNumber><Type>Home</Type><Number>001-2232322</Number><SomeNumber>20</SomeNumber></PhoneNumber><PhoneNumber><Type>Mobile</Type><Number>002-7787787</Number><SomeNumber>21</SomeNumber></PhoneNumber><PhoneNumber><Type>Office</Type><Number>003-4463565</Number><SomeNumber>30</SomeNumber></PhoneNumber></PhoneNumbers></Person>";
+
+            Parser.Run(new[] { "foo", "-p=" + xml }, s);
+
+            Assert.AreEqual("Adrian", s.Person.Name);
+            Assert.AreEqual(3, s.Person.PhoneNumbers.Count);
+        }
     }
 }

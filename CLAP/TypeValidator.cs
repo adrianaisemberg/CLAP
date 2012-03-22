@@ -31,6 +31,7 @@ namespace CLAP
             var properties = type.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
 
             var propsAndValues = properties.
+                Where(p => p.GetIndexParameters().None()).
                 Select(p => new ValueInfo(p.Name, p.PropertyType, p.GetValue(obj, null))).
                 ToArray();
 
@@ -76,6 +77,7 @@ namespace CLAP
                         {
                             var propertyPropsAndValues = value.GetType().
                                 GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).
+                                Where(p => p.GetIndexParameters().None()).
                                 Select(p => new ValueInfo(p.Name, p.PropertyType, p.GetValue(value, null))).
                                 ToArray();
 
