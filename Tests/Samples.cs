@@ -1369,4 +1369,14 @@ namespace Tests
         [MoreThan(10)]
         public int SomeNumber { get; set; }
     }
+
+    public class Sample_67
+    {
+        [Verb]
+        public static void Foo(
+            [Parameter(Required = true)] string x,
+            [Parameter(Required = true)] string y)
+        {
+        }
+    }
 }

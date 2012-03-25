@@ -2450,5 +2450,11 @@ namespace Tests
             Assert.AreEqual("Adrian", s.Person.Name);
             Assert.AreEqual(3, s.Person.PhoneNumbers.Count);
         }
+
+        [Test]
+        public void ParametersWithSameAttributes_NoError()
+        {
+            Parser.Run<Sample_67>(new[] { "foo", "-x=a", "-y=b" });
+        }
     }
 }

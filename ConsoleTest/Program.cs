@@ -16,7 +16,8 @@ namespace ConsoleTest
             //Debugger.Launch();
 
             //Parser.RunConsole<TheApp>(args);
-            return Parser.RunConsole<ClapApp, SomeApp, TheApp>(args);
+            //Parser.RunConsole<ClapApp, SomeApp, TheApp>(args);
+            return Parser.RunConsole<SomeApp>(args);
             //Parser.Run<SomeApp, ClapApp>(args);
         }
     }
@@ -38,7 +39,9 @@ namespace ConsoleTest
     class SomeApp
     {
         [Verb(IsDefault = true)]
-        static void Foo(string x)
+        static void Foo(
+            [Parameter(Required = true, Default = "aaa")] string x,
+            [Parameter(Required = true)] string y)
         {
             Console.WriteLine(x);
         }

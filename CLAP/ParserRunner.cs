@@ -400,30 +400,31 @@ namespace CLAP
 
         private static void ValidateParameterDefaults(IEnumerable<Method> verbs)
         {
-            var parameters = verbs.SelectMany(v => v.MethodInfo.GetParameters());
+            var parameters = verbs.SelectMany(v => v.MethodInfo.GetParameters()).ToList();
+
             var dict = parameters.
                 Where(p => p.HasAttribute<ParameterAttribute>()).
-                ToDictionary(p => p.GetAttribute<ParameterAttribute>(), p => p);
+                ToDictionary(p => p, p => p.GetAttribute<ParameterAttribute>());
 
             // find one with both a Default and a DefaultProvider
             //
-            var bad = dict.Where(kvp => kvp.Key.DefaultProvider != null && kvp.Key.Default != null);
+            var bad = dict.Where(kvp => kvp.Value.DefaultProvider != null && kvp.Value.Default != null);
 
             if (bad.Any())
             {
-                throw new AmbiguousParameterDefaultException(bad.First().Value);
+                throw new AmbiguousParameterDefaultException(bad.First().Key);
             }
 
 
             // make sure all default providers are DefaultProvider
             //
             bad = dict.Where(kvp =>
-                kvp.Key.DefaultProvider != null &&
-                !typeof(DefaultProvider).IsAssignableFrom(kvp.Key.DefaultProvider));
+                kvp.Value.DefaultProvider != null &&
+                !typeof(DefaultProvider).IsAssignableFrom(kvp.Value.DefaultProvider));
 
             if (bad.Any())
             {
-                throw new InvalidParameterDefaultProviderException(bad.First().Value);
+                throw new InvalidParameterDefaultProviderException(bad.First().Key);
             }
         }
 
