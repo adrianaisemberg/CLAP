@@ -25,7 +25,7 @@ namespace ConsoleTest
     class DefaultApp
     {
         [Verb(IsDefault = true)]
-        public static void Foo([Parameter(Default = "zoo")]string bar)
+        public static void Foo([DefaultValue("zoo")]string bar)
         {
             Console.WriteLine("bar = {0}", bar);
 
@@ -40,8 +40,8 @@ namespace ConsoleTest
     {
         [Verb(IsDefault = true)]
         static void Foo(
-            [Parameter(Required = true, Default = "aaa")] string x,
-            [Parameter(Required = true)] string y)
+            [Required, DefaultValue("aaa")] string x,
+            [Required] string y)
         {
             Console.WriteLine(x);
         }
@@ -88,7 +88,13 @@ namespace ConsoleTest
 
         [Verb(Description = "bar somthing", Aliases = "b,barbar")]
         [SameLength]
-        public static void Bar(int[] numbers, [Parameter(Aliases = "n,nms", Required = true, Description = "some names")]string[] names)
+        public static void Bar(
+            int[] numbers,
+
+            [Aliases("n,nms")]
+            [Required]
+            [Description("some names")]
+            string[] names)
         {
             for (int i = 0; i < numbers.Length; i++)
             {
@@ -102,13 +108,14 @@ namespace ConsoleTest
             int num1,
             [MoreThan(10)] int thenum2,
             [LessOrEqualTo(100)]
-            [Parameter(Default = 55, Description = "a number")] int anum3,
+            [DefaultValue(55), Description("a number")] int anum3,
             BindingFlags bf,
 
-            [Parameter(Required = true)]
+            [Required]
             bool rsw,
-            [Parameter(DefaultProvider = typeof(MyDefaultProvider1))] bool sw1,
-            [Parameter(DefaultProvider = typeof(MyDefaultProvider2))] bool hsw2,
+
+            [DefaultProvider(typeof(MyDefaultProvider1))] bool sw1,
+            [DefaultProvider(typeof(MyDefaultProvider2))] bool hsw2,
             ClapApp clap)
         {
         }
@@ -200,17 +207,15 @@ namespace ConsoleTest
         [Verb(IsDefault = true, Description = "Prints 'Hello' and a name")]
         public static void Hello(
 
-            [Parameter(
-                Aliases = "n",
-                Required = true,
-                Description = "The name")]
+            [Aliases("n")]
+            [Required]
+            [Description("The name")]
             string name,
 
             [LessOrEqualTo(30)]
-            [Parameter(
-                Aliases = "c",
-                Default = 10,
-                Description = "The number of lines to print")]
+            [Aliases("c")]
+            [DefaultValue(10)]
+            [Description("The number of lines to print")]
             int count)
         {
             for (int i = 0; i < count; i++)
@@ -223,8 +228,8 @@ namespace ConsoleTest
         public static void Count(
             [LessOrEqualTo(50), MoreOrEqualTo(0)] int start,
             [LessOrEqualTo(100), MoreThan(50)] int end,
-            [Parameter(Aliases = "p,pause", Default = 1.5)] double pauseSeconds,
-            [Parameter(Aliases = "align")] Alignment alignment)
+            [Aliases("p,pause"), DefaultValue(1.5)] double pauseSeconds,
+            [Aliases("align")] Alignment alignment)
         {
             var sign = alignment == Alignment.Left ? "-" : "";
 
@@ -328,27 +333,27 @@ namespace ConsoleTest
 
         [Verb(Aliases = "f,fo,fooo")]
         public static void Foo(
-            [Parameter(Aliases = "t", Description = "A string parameter with an additional alias")]
+            [Aliases("t"), Description("A string parameter with an additional alias")]
             string text,
 
-            [Parameter(Default = 5, Description = "An int parameter with a default")]
+            [DefaultValue(5), Description("An int parameter with a default")]
             int number,
 
-            [Parameter(Default = "http://www.com")]
+            [DefaultValue("http://www.com")]
             Uri address,
 
             [MoreThan(10)]
             [LessThan(100)]
-            [Parameter(Default = 42.3, Description = "A double parameter with validation and a default value")]
+            [DefaultValue(42.3), Description("A double parameter with validation and a default value")]
             double percent,
 
-            [Parameter(Description = "A bool parameter, which can be used as a switch")]
+            [Description("A bool parameter, which can be used as a switch")]
             bool verbose,
 
-            [Parameter(Description = "An enum parameter")]
+            [Description("An enum parameter")]
             OptionEnum option,
 
-            [Parameter(Description = "An array of strings")]
+            [Description("An array of strings")]
             string[] array)
         {
             Console.WriteLine("text = {0}", text);

@@ -98,4 +98,16 @@ namespace CLAP
             Description = description;
         }
     }
+
+    [Serializable]
+    [AttributeUsage(AttributeTargets.Parameter)]
+    public sealed class SeparatorAttribute : Attribute
+    {
+        public string Separator { get; private set; }
+
+        public SeparatorAttribute(string separator)
+        {
+            Separator = separator;
+        }
+    }
 }
