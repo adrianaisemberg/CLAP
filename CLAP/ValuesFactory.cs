@@ -12,7 +12,11 @@ namespace CLAP
 {
     internal static class ValuesFactory
     {
-        internal static object GetValueForParameter(Type parameterType, string inputKey, string stringValue)
+        internal static object GetValueForParameter(
+            ParameterInfo parameter,
+            Type parameterType,
+            string inputKey,
+            string stringValue)
         {
             // a string doesn't need convertion
             //
@@ -45,7 +49,7 @@ namespace CLAP
                     {
                         // if can't deserialize - try converting it
                         //
-                        return ConvertParameterValue(inputKey, stringValue, parameterType);
+                        return ConvertParameterValue(inputKey, stringValue, parameter, parameterType, null);
                     }
                 }
                 catch (ValidationException)
@@ -58,21 +62,17 @@ namespace CLAP
                 {
                     // tried deserialize but failed - try converting
                     //
-                    return ConvertParameterValue(inputKey, stringValue, parameterType, ex);
+                    return ConvertParameterValue(inputKey, stringValue, parameter, parameterType, ex);
                 }
             }
 
             throw new MissingArgumentValueException(inputKey);
         }
 
-        private static object ConvertParameterValue(string inputKey, string stringValue, Type parameterType)
-        {
-            return ConvertParameterValue(inputKey, stringValue, parameterType, null);
-        }
-
         private static object ConvertParameterValue(
             string inputKey,
             string stringValue,
+            ParameterInfo parameter,
             Type parameterType,
             Exception deserializationException)
         {
@@ -81,7 +81,14 @@ namespace CLAP
                 // if array
                 if (parameterType.IsArray)
                 {
-                    var stringValues = stringValue.CommaSplit();
+                    var separator = ",";
+
+                    if (parameter != null && parameter.HasAttribute<SeparatorAttribute>())
+                    {
+                        separator = parameter.GetAttribute<SeparatorAttribute>().Separator;
+                    }
+
+                    var stringValues = stringValue.SplitBy(separator);
 
                     // The type of the array element
                     //
@@ -210,7 +217,7 @@ namespace CLAP
                     //
                     if (value is string && !(parameterInfo.ParameterType == typeof(string)))
                     {
-                        value = GetValueForParameter(parameterInfo.ParameterType, "{DEFAULT}", (string)value);
+                        value = GetValueForParameter(parameterInfo, parameterInfo.ParameterType, "{DEFAULT}", (string)value);
                     }
                 }
                 else
@@ -224,7 +231,7 @@ namespace CLAP
 
                 if (value == null && inputKey != null)
                 {
-                    value = GetValueForParameter(parameterInfo.ParameterType, inputKey, stringValue);
+                    value = GetValueForParameter(parameterInfo, parameterInfo.ParameterType, inputKey, stringValue);
                 }
 
                 // validate each parameter

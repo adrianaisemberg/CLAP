@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using CLAP.Interception;
+using System.Reflection;
 
 namespace CLAP
 {
@@ -26,13 +26,16 @@ namespace CLAP
         internal Action<PostVerbExecutionContext> RegisteredPostVerbInterceptor { get; private set; }
 
         internal Func<string> HelpGetter { get; private set; }
-        internal Func<Type, string, string, object> ParameterValueGetter { get; private set; }
+        internal Func<ParameterInfo, Type, string, string, object> ParameterValueGetter { get; private set; }
 
         #endregion Properties
 
         #region Constructors
 
-        internal ParserRegistration(Type[] types, Func<string> helpGetter, Func<Type, string, string, object> parameterValueGetter)
+        internal ParserRegistration(
+            Type[] types,
+            Func<string> helpGetter,
+            Func<ParameterInfo, Type, string, string, object> parameterValueGetter)
         {
             m_types = types;
 
@@ -249,7 +252,7 @@ namespace CLAP
                 }
                 else
                 {
-                    v = ParameterValueGetter(typeof(TParameter), string.Empty, str);
+                    v = ParameterValueGetter(null, typeof(TParameter), string.Empty, str);
                 }
 
                 action((TParameter)v);

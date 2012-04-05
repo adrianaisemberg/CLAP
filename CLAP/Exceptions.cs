@@ -437,4 +437,49 @@ namespace CLAP
             System.Runtime.Serialization.StreamingContext context)
             : base(info, context) { }
     }
+
+    [Serializable]
+    public class NonArrayParameterWithSeparatorException : CommandLineParserException
+    {
+        /// <summary>
+        /// The parameter
+        /// </summary>
+        public ParameterInfo Parameter { get; private set; }
+
+        public NonArrayParameterWithSeparatorException(ParameterInfo parameter)
+            : base("Parameter '{0}' of '{1}' is marked with [{2}] but it is not an array".FormatWith(
+                parameter.Name,
+                parameter.Member.Name,
+                typeof(SeparatorAttribute).Name))
+        {
+            Parameter = parameter;
+        }
+
+        protected NonArrayParameterWithSeparatorException(
+            System.Runtime.Serialization.SerializationInfo info,
+            System.Runtime.Serialization.StreamingContext context)
+            : base(info, context) { }
+    }
+
+    [Serializable]
+    public class InvalidSeparatorException : CommandLineParserException
+    {
+        /// <summary>
+        /// The parameter
+        /// </summary>
+        public ParameterInfo Parameter { get; private set; }
+
+        public InvalidSeparatorException(ParameterInfo parameter)
+            : base("Parameter '{0}' of '{1}' has an invalid separator. A separator cannot be empty or contain spaces.".FormatWith(
+                parameter.Name,
+                parameter.Member.Name))
+        {
+            Parameter = parameter;
+        }
+
+        protected InvalidSeparatorException(
+            System.Runtime.Serialization.SerializationInfo info,
+            System.Runtime.Serialization.StreamingContext context)
+            : base(info, context) { }
+    }
 }

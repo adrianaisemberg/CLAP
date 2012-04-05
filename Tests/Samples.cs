@@ -10,6 +10,7 @@ namespace Tests
     public interface IPrinter
     {
         void Print(String text);
+        void Reset();
     }
 
     public class Printer : IPrinter
@@ -19,6 +20,11 @@ namespace Tests
         public void Print(String text)
         {
             PrintedTexts.Add(text);
+        }
+
+        public void Reset()
+        {
+            PrintedTexts.Clear();
         }
     }
 
@@ -1379,6 +1385,77 @@ namespace Tests
         public static void Foo(
             [Required] string x,
             [Required] string y)
+        {
+        }
+    }
+
+    public class Sample_68
+    {
+        [Verb]
+        public static void Foo([Separator("|")] string x)
+        {
+        }
+    }
+
+    public class Sample_69 : BaseSample
+    {
+        [Verb]
+        public void Print([Separator("|")] String[] messages, String prefix)
+        {
+            if (messages == null)
+            {
+                return;
+            }
+
+            foreach (var msg in messages)
+            {
+                Printer.Print(prefix + msg);
+            }
+        }
+
+        [Verb]
+        public void PrintNumbers([Separator("-")] Int32[] numbers, String prefix)
+        {
+            if (numbers == null)
+            {
+                return;
+            }
+
+            foreach (var msg in numbers)
+            {
+                Printer.Print(prefix + msg);
+            }
+        }
+    }
+
+    public class Sample_70
+    {
+        [Verb]
+        public void Foo([Separator(" ")] Case[] enums)
+        {
+        }
+    }
+
+    public class Sample_71
+    {
+        [Verb]
+        public void Foo([Separator("a b")] Case[] enums)
+        {
+        }
+    }
+
+    public class Sample_72
+    {
+        [Verb]
+        public void Foo([Separator("")] Case[] enums)
+        {
+        }
+    }
+
+    public class Sample_73
+    {
+        [Verb]
+        public void Foo([Separator(null)] Case[] enums)
         {
         }
     }

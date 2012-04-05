@@ -381,6 +381,41 @@ namespace Tests
         }
 
         [Test]
+        public void Array_Strings_WithSeparator()
+        {
+            var printer = new Printer();
+            var sample = new Sample_69 { Printer = printer };
+
+            // array
+            //
+            Parser.Run(new[]
+            {
+                "print",
+                "/messages:a|b|c",
+                "/prefix:test_",
+            }, sample);
+
+            Assert.AreEqual(3, printer.PrintedTexts.Count);
+            Assert.AreEqual("test_a", printer.PrintedTexts[0]);
+            Assert.AreEqual("test_b", printer.PrintedTexts[1]);
+            Assert.AreEqual("test_c", printer.PrintedTexts[2]);
+
+            sample.Printer.Reset();
+
+            Parser.Run(new[]
+            {
+                "printnumbers",
+                "/numbers:1-78-100",
+                "/prefix:test_",
+            }, sample);
+
+            Assert.AreEqual(3, printer.PrintedTexts.Count);
+            Assert.AreEqual("test_1", printer.PrintedTexts[0]);
+            Assert.AreEqual("test_78", printer.PrintedTexts[1]);
+            Assert.AreEqual("test_100", printer.PrintedTexts[2]);
+        }
+
+        [Test]
         public void Array_Strings_NoInput()
         {
             var printer = new Printer();
@@ -2455,6 +2490,41 @@ namespace Tests
         public void ParametersWithSameAttributes_NoError()
         {
             Parser.Run<Sample_67>(new[] { "foo", "-x=a", "-y=b" });
+        }
+
+        [Test]
+        [ExpectedException(typeof(NonArrayParameterWithSeparatorException))]
+        public void NonArrayWithSeparator_Exception()
+        {
+            Parser.Run<Sample_68>(new[] { "foo", "-x=aaa" });
+        }
+
+        [Test]
+        [ExpectedException(typeof(InvalidSeparatorException))]
+        public void NonArrayWithInvalidSeparator_Exception_1()
+        {
+            Parser.Run<Sample_70>(new[] { "foo", "-enums=aaa bbb ccc" });
+        }
+
+        [Test]
+        [ExpectedException(typeof(InvalidSeparatorException))]
+        public void NonArrayWithInvalidSeparator_Exception_2()
+        {
+            Parser.Run<Sample_71>(new[] { "foo", "-enums=aaa bbb ccc" });
+        }
+
+        [Test]
+        [ExpectedException(typeof(InvalidSeparatorException))]
+        public void NonArrayWithInvalidSeparator_Exception_3()
+        {
+            Parser.Run<Sample_72>(new[] { "foo", "-enums=aaa bbb ccc" });
+        }
+
+        [Test]
+        [ExpectedException(typeof(InvalidSeparatorException))]
+        public void NonArrayWithInvalidSeparator_Exception_4()
+        {
+            Parser.Run<Sample_73>(new[] { "foo", "-enums=aaa bbb ccc" });
         }
     }
 }

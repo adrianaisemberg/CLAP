@@ -366,6 +366,10 @@ namespace CLAP
             //
             ValidateParameterDefaults(verbMethods);
 
+            // [Separator] can be applied only to array parameters
+            //
+            ValidateSeparators(verbMethods);
+
             // no duplicate globals
             //
             ValidateDuplicateGlobals(type, registration);
@@ -423,6 +427,30 @@ namespace CLAP
             if (hasInvalidDefaultProvider.Any())
             {
                 throw new InvalidParameterDefaultProviderException(hasInvalidDefaultProvider.First());
+            }
+        }
+
+        private static void ValidateSeparators(IEnumerable<Method> verbs)
+        {
+            var parameters = verbs.SelectMany(v => v.MethodInfo.GetParameters()).ToList();
+
+            var nonArrayWithSeparator = parameters.Where(p => !p.ParameterType.IsArray && p.HasAttribute<SeparatorAttribute>());
+
+            if (nonArrayWithSeparator.Any())
+            {
+                throw new NonArrayParameterWithSeparatorException(nonArrayWithSeparator.First());
+            }
+
+            var separators = parameters.
+                Where(p => p.HasAttribute<SeparatorAttribute>()).
+                Select(p => Pair.Create(p, p.GetAttribute<SeparatorAttribute>().Separator));
+
+            var invalidSeparator = separators.
+                FirstOrDefault(pair => string.IsNullOrEmpty(pair.Second) || pair.Second.Contains(" "));
+
+            if (invalidSeparator != null)
+            {
+                throw new InvalidSeparatorException(invalidSeparator.First);
             }
         }
 
@@ -691,7 +719,7 @@ namespace CLAP
                         {
                             var p = parameters.First();
 
-                            var value = ValuesFactory.GetValueForParameter(p.ParameterType, key, stringValue);
+                            var value = ValuesFactory.GetValueForParameter(p, p.ParameterType, key, stringValue);
 
                             // validation
                             //

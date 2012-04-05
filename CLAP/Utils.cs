@@ -109,9 +109,14 @@ namespace CLAP
             return string.Join(separator, strings.ToArray());
         }
 
+        public static IEnumerable<string> SplitBy(this string str, string separator)
+        {
+            return str.Split(new[] { separator }, StringSplitOptions.RemoveEmptyEntries);
+        }
+
         public static IEnumerable<string> CommaSplit(this string str)
         {
-            return str.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+            return SplitBy(str, ",");
         }
 
         public static void Each<T>(this IEnumerable<T> collection, Action<T, int> action)
