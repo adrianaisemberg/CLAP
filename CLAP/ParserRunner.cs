@@ -402,29 +402,27 @@ namespace CLAP
         {
             var parameters = verbs.SelectMany(v => v.MethodInfo.GetParameters()).ToList();
 
-            var dict = parameters.
-                Where(p => p.HasAttribute<ParameterAttribute>()).
-                ToDictionary(p => p, p => p.GetAttribute<ParameterAttribute>());
-
             // find one with both a Default and a DefaultProvider
             //
-            var bad = dict.Where(kvp => kvp.Value.DefaultProvider != null && kvp.Value.Default != null);
+            var hasBothDefaults = parameters.Where(p =>
+                p.HasAttribute<DefaultValueAttribute>() &&
+                p.HasAttribute<DefaultProviderAttribute>());
 
-            if (bad.Any())
+            if (hasBothDefaults.Any())
             {
-                throw new AmbiguousParameterDefaultException(bad.First().Key);
+                throw new AmbiguousParameterDefaultException(hasBothDefaults.First());
             }
 
 
             // make sure all default providers are DefaultProvider
             //
-            bad = dict.Where(kvp =>
-                kvp.Value.DefaultProvider != null &&
-                !typeof(DefaultProvider).IsAssignableFrom(kvp.Value.DefaultProvider));
+            var hasInvalidDefaultProvider = parameters.Where(p =>
+                p.HasAttribute<DefaultProviderAttribute>() &&
+                !typeof(DefaultProvider).IsAssignableFrom(p.GetAttribute<DefaultProviderAttribute>().DefaultProviderType));
 
-            if (bad.Any())
+            if (hasInvalidDefaultProvider.Any())
             {
-                throw new InvalidParameterDefaultProviderException(bad.First().Key);
+                throw new InvalidParameterDefaultProviderException(hasInvalidDefaultProvider.First());
             }
         }
 

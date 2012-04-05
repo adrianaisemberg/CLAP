@@ -60,28 +60,27 @@ namespace CLAP
 
             ParameterInfo = parameter;
 
+            Required = parameter.HasAttribute<RequiredAttribute>();
 
-            var parameterAttribute = parameter.GetAttribute<ParameterAttribute>();
-
-            // a parameter doesn't have to be marked with [ParameterAttribute]
-            //
-            if (parameterAttribute != null)
+            if (parameter.HasAttribute<DefaultValueAttribute>())
             {
-                Default = parameterAttribute.Default;
+                Default = parameter.GetAttribute<DefaultValueAttribute>().DefaultValue;
+            }
 
-                if (parameterAttribute.DefaultProvider != null)
-                {
-                    DefaultProvider = (DefaultProvider)Activator.CreateInstance(parameterAttribute.DefaultProvider);
-                }
+            if (parameter.HasAttribute<DefaultProviderAttribute>())
+            {
+                DefaultProvider = (DefaultProvider)Activator.CreateInstance(
+                    parameter.GetAttribute<DefaultProviderAttribute>().DefaultProviderType);
+            }
 
-                Required = parameterAttribute.Required;
-                Description = parameterAttribute.Description;
+            if (parameter.HasAttribute<DescriptionAttribute>())
+            {
+                Description = parameter.GetAttribute<DescriptionAttribute>().Description;
+            }
 
-                if (parameterAttribute.Aliases != null)
-                {
-                    Names.AddRange(
-                        parameterAttribute.Aliases.ToLowerInvariant().CommaSplit());
-                }
+            if (parameter.HasAttribute<AliasesAttribute>())
+            {
+                Names.AddRange(parameter.GetAttribute<AliasesAttribute>().Aliases.ToLowerInvariant().CommaSplit());
             }
         }
 

@@ -32,15 +32,17 @@ namespace Tests
         [Verb(IsDefault = true, Aliases = "p", Description = "Prints a message")]
         public void Print(
 
-            [Parameter(Aliases = "c")]
+            [Aliases("c")]
             Int32 count,
 
-            [Parameter(Aliases = "m,msg", Default = "hello")]
+            [Aliases("m,msg")]
+            [DefaultValue("hello")]
             String message,
 
             String prefix,
 
-            [Parameter(Aliases = "u", Default = false)]
+            [Aliases("u")]
+            [DefaultValue(false)]
             Boolean upper)
         {
             for (var i = 0; i < count; i++)
@@ -55,7 +57,7 @@ namespace Tests
     public class Sample_02_Default : BaseSample
     {
         [Verb(IsDefault = true)]
-        public void Print([Parameter(Default = "bar")]string foo)
+        public void Print([DefaultValue("bar")]string foo)
         {
             Printer.Print(foo);
         }
@@ -111,12 +113,12 @@ namespace Tests
         [Verb(Aliases = "p", Description = "Prints a message")]
         public void Print(
 
-            [Parameter(Aliases = "c")]
+            [Aliases("c")]
             [MoreThan(5)]
             [LessOrEqualTo(10)]
             Int32 count,
 
-            [Parameter(Aliases = "m.msg", Default = "hello")]
+            [Aliases("m.msg"), DefaultValue("hello")]
             String message,
 
             String prefix)
@@ -135,7 +137,8 @@ namespace Tests
 
             Int32 count,
 
-            [Parameter(Aliases = "m,msg", Default = "hello")]
+            [Aliases("m,msg")]
+            [DefaultValue("hello")]
             String message,
 
             String prefix,
@@ -169,12 +172,12 @@ namespace Tests
         [Verb(IsDefault = true, Aliases = "p", Description = "Prints a message")]
         public void Print(
 
-            [Parameter(Aliases = "c")]
+            [Aliases("c")]
             int count,
             String c,
             String x,
 
-            [Parameter(Aliases = "X")]
+            [Aliases("X")]
             int number,
             String y)
         {
@@ -188,12 +191,13 @@ namespace Tests
 
             Int32 count,
 
-            [Parameter(Aliases = "m,msg", Default = "hello")]
+            [Aliases("m,msg")]
+            [DefaultValue("hello")]
             String message,
 
-            String prefix,
+           String prefix,
 
-            [Parameter(Default = Case.Lower)]
+           [DefaultValue(Case.Lower)]
             Case c)
         {
             for (var i = 0; i < count; i++)
@@ -223,13 +227,12 @@ namespace Tests
         [Verb]
         public void Print(
 
-            [Parameter(Default = 1)]
+            [DefaultValue(1)]
             Int32 count,
 
-            [Parameter(Required = false)]
             String message,
 
-            [Parameter(Required = true)]
+            [Required]
             String prefix,
 
             Case c)
@@ -319,7 +322,7 @@ namespace Tests
 
         [Verb]
         [Validate("str like 'foo*'")]
-        public void Print2([Parameter(Required = true, Description = "string!")]string str)
+        public void Print2([Required, Description("string!")]string str)
         {
         }
 
@@ -362,12 +365,12 @@ namespace Tests
         }
 
         [Verb]
-        public void WithARequiredSwitch(string str, [Parameter(Required = true)] bool sw)
+        public void WithARequiredSwitch(string str, [Required] bool sw)
         {
         }
 
         [Verb]
-        public void WIthDefaultProvider([Parameter(DefaultProvider = typeof(MyDefaultProvider))] string blah)
+        public void WIthDefaultProvider([DefaultProvider(typeof(MyDefaultProvider))] string blah)
         {
         }
 
@@ -389,7 +392,7 @@ namespace Tests
 
         [Verb]
         [Validate("str like 'foo*'")]
-        public void Print2([Parameter(Required = true, Description = "string!")]string str)
+        public void Print2([Required, Description("string!")]string str)
         {
         }
 
@@ -432,12 +435,12 @@ namespace Tests
         }
 
         [Verb]
-        public void WithARequiredSwitch(string str, [Parameter(Required = true)] bool sw)
+        public void WithARequiredSwitch(string str, [Required] bool sw)
         {
         }
 
         [Verb]
-        public void WIthDefaultProvider([Parameter(DefaultProvider = typeof(MyDefaultProvider))] string blah)
+        public void WIthDefaultProvider([DefaultProvider(typeof(MyDefaultProvider))] string blah)
         {
         }
 
@@ -617,7 +620,7 @@ namespace Tests
         }
 
         [Verb]
-        public void Zoo([Parameter(Default = "5")] int n)
+        public void Zoo([DefaultValue("5")] int n)
         {
             Printer.Print(n.ToString());
         }
@@ -625,7 +628,7 @@ namespace Tests
         [Verb]
         public void Bar(
             string x,
-            [Parameter(Default = "{2FBBAAAA-02AF-4F40-BADE-957F566B221E}")]
+            [DefaultValue("{2FBBAAAA-02AF-4F40-BADE-957F566B221E}")]
             Guid g)
         {
             Printer.Print(x + g);
@@ -649,7 +652,7 @@ namespace Tests
         [Verb]
         public void Bar(
             string x,
-            [Parameter(Default = "http://www.com")]
+            [DefaultValue("http://www.com")]
             Uri u)
         {
             Printer.Print(x + u);
@@ -1164,7 +1167,7 @@ namespace Tests
     public class Sample_60
     {
         [Verb]
-        static void Foo([Parameter(Aliases = "c")]int c)
+        static void Foo([Aliases("c")]int c)
         {
         }
     }
@@ -1180,10 +1183,10 @@ namespace Tests
         [Verb]
         void Bar(
             int? p1,
-            [Parameter(Default = 5)] int? p2,
-            [Parameter(Default = "5")] int? p3,
-            [Parameter(Default = "")] int? p4,
-            [Parameter(Default = null)] int? p5)
+            [DefaultValue(5)] int? p2,
+            [DefaultValue("5")] int? p3,
+            [DefaultValue("")] int? p4,
+            [DefaultValue(null)] int? p5)
         {
             P1 = p1;
             P2 = p2;
@@ -1243,8 +1246,8 @@ namespace Tests
 
         [Verb]
         public void Foo(
-            [Parameter(Default = "def1")] string p1,
-            [Parameter(DefaultProvider = typeof(MyDefault))] string p2)
+            [DefaultValue("def1")] string p1,
+            [DefaultProvider(typeof(MyDefault))] string p2)
         {
             P1 = p1;
             P2 = p2;
@@ -1263,7 +1266,7 @@ namespace Tests
     {
         [Verb]
         public void Foo(
-            [Parameter(Default = "def1", DefaultProvider = typeof(MyDefault))] string p1)
+            [DefaultValue("def1"), DefaultProvider(typeof(MyDefault))] string p1)
         {
         }
 
@@ -1280,7 +1283,7 @@ namespace Tests
     {
         [Verb]
         public void Foo(
-            [Parameter(DefaultProvider = typeof(System.Text.StringBuilder))] string p1)
+            [DefaultProvider(typeof(System.Text.StringBuilder))] string p1)
         {
         }
     }
@@ -1374,8 +1377,8 @@ namespace Tests
     {
         [Verb]
         public static void Foo(
-            [Parameter(Required = true)] string x,
-            [Parameter(Required = true)] string y)
+            [Required] string x,
+            [Required] string y)
         {
         }
     }
