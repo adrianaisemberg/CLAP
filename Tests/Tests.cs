@@ -629,7 +629,7 @@ namespace Tests
 
             var p = new Parser<Sample_10>();
 
-            p.Run("print -abra:cadabra".Split(' '), sample);
+            p.Run("print -abra1:cadabra".Split(' '), sample);
         }
 
         [Test]
@@ -2232,7 +2232,7 @@ namespace Tests
         {
             var p = new Parser<Sample_02>();
 
-            p.Register.ParameterHandler<string>("p", null, "description");
+            p.Register.ParameterHandler<string>("p", null, new ParameterOptions { Description = "description" });
         }
 
         [Test]

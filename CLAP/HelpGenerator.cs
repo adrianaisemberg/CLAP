@@ -95,6 +95,11 @@ namespace CLAP
                                 sb.Append("(Required) ");
                             }
 
+                            if (p.Separator != null && p.Separator != SeparatorAttribute.DefaultSeparator)
+                            {
+                                sb.AppendFormat("(Separator = {0}) ", p.Separator);
+                            }
+
                             if (p.Default != null)
                             {
                                 sb.AppendFormat("(Default = {0}) ", p.Default);
@@ -144,6 +149,11 @@ namespace CLAP
                         }
 
                         sb.AppendFormat("({0}) ", GetTypeName(g.Type));
+
+                        if (g.Separator != null && g.Separator != SeparatorAttribute.DefaultSeparator)
+                        {
+                            sb.AppendFormat("(Separator = {0}) ", g.Separator);
+                        }
 
                         if (g.Validations.Any())
                         {
@@ -195,6 +205,8 @@ namespace CLAP
                             Default = p.DefaultProvider != null ? p.DefaultProvider.Description : p.Default,
                             Description = p.Description,
                             Validations = p.ParameterInfo.GetAttributes<ValidationAttribute>().Select(v => v.Description).ToList(),
+                            Separator = p.ParameterInfo.ParameterType.IsArray ?
+                                p.Separator ?? SeparatorAttribute.DefaultSeparator : null,
                         }).ToList(),
                 }).ToList(),
                 Globals = parser.GetDefinedGlobals().Select(g =>
@@ -208,6 +220,10 @@ namespace CLAP
                         Type = parameter != null ? parameter.ParameterInfo.ParameterType : typeof(bool),
                         Description = att.Description,
                         Validations = g.GetInterfaceAttributes<ICollectionValidation>().Select(v => v.Description).ToList(),
+                        Separator = parameter != null ?
+                            parameter.ParameterInfo.ParameterType.IsArray ?
+                                parameter.Separator ?? SeparatorAttribute.DefaultSeparator :
+                                    null : null,
                     };
                 }).Union(parser.Register.RegisteredGlobalHandlers.Values.Select(handler => new GlobalParameterHelpInfo
                 {

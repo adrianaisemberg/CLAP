@@ -32,6 +32,7 @@ namespace CLAP
         internal Type Type { get; set; }
         internal object Default { get; set; }
         internal string Description { get; set; }
+        internal string Separator { get; set; }
     }
 
     internal class GlobalParameterHelpInfo
@@ -40,5 +41,6 @@ namespace CLAP
         internal List<string> Validations { get; set; }
         internal Type Type { get; set; }
         internal string Description { get; set; }
+        internal string Separator { get; set; }
     }
 }

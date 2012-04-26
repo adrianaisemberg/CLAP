@@ -175,7 +175,7 @@ namespace CLAP
             ParameterHandler(
                 names,
                 new Action<bool>(delegate { action(); }),
-                null);
+                new ParameterOptions());
         }
 
         /// <summary>
@@ -194,7 +194,10 @@ namespace CLAP
             ParameterHandler(
                 names,
                 new Action<bool>(delegate { action(); }),
-                description);
+                new ParameterOptions
+                {
+                    Description = description,
+                });
         }
 
         /// <summary>
@@ -213,7 +216,7 @@ namespace CLAP
             ParameterHandler(
                 names,
                 action,
-                null);
+                new ParameterOptions());
         }
 
         /// <summary>
@@ -223,6 +226,7 @@ namespace CLAP
         /// <param name="names">The names (CSV) to be registered as parameters</param>
         /// <param name="action">The action to execute</param>
         /// <param name="description">The parameter description (for help generation)</param>
+        [Obsolete("Use ParameterOptions")]
         public void ParameterHandler<TParameter>(string names, Action<TParameter> action, string description)
         {
             if (action == null)
@@ -233,14 +237,30 @@ namespace CLAP
             RegisterParameterHandlerInternal(
                 names,
                 action,
-                description);
+                new ParameterOptions
+                {
+                    Description = description,
+                });
+        }
+
+        public void ParameterHandler<TParameter>(string names, Action<TParameter> action, ParameterOptions options)
+        {
+            if (action == null)
+            {
+                throw new ArgumentNullException("action");
+            }
+
+            RegisterParameterHandlerInternal(
+                names,
+                action,
+                options);
         }
 
         #endregion Public Methods
 
         #region Private Methods
 
-        private void RegisterParameterHandlerInternal<TParameter>(string names, Action<TParameter> action, string description)
+        private void RegisterParameterHandlerInternal<TParameter>(string names, Action<TParameter> action, ParameterOptions options)
         {
             var objectAction = new Action<string>(str =>
             {
@@ -264,7 +284,8 @@ namespace CLAP
                 {
                     Names = names.CommaSplit(),
                     Handler = objectAction,
-                    Desription = description,
+                    Desription = options.Description,
+                    Separator = options.Separator,
                     Type = typeof(TParameter),
                 });
         }
@@ -294,11 +315,26 @@ namespace CLAP
         #endregion Private Methods
     }
 
+    public sealed class ParameterOptions
+    {
+        /// <summary>
+        /// The parameter description
+        /// </summary>
+        public string Description { get; set; }
+
+        /// <summary>
+        /// In case of an array type - the values separator.
+        /// Unless specified, the default is a comma (",")
+        /// </summary>
+        public string Separator { get; set; }
+    }
+
     internal class GlobalParameterHandler
     {
         internal IEnumerable<string> Names { get; set; }
         internal Action<string> Handler { get; set; }
         internal string Desription { get; set; }
+        internal string Separator { get; set; }
         internal Type Type { get; set; }
     }
 }

@@ -368,7 +368,7 @@ namespace CLAP
 
             // [Separator] can be applied only to array parameters
             //
-            ValidateSeparators(verbMethods);
+            ValidateSeparators(verbMethods, registration);
 
             // no duplicate globals
             //
@@ -430,8 +430,10 @@ namespace CLAP
             }
         }
 
-        private static void ValidateSeparators(IEnumerable<Method> verbs)
+        private static void ValidateSeparators(IEnumerable<Method> verbs, ParserRegistration registration)
         {
+            // check non-arrays
+            //
             var parameters = verbs.SelectMany(v => v.MethodInfo.GetParameters()).ToList();
 
             var nonArrayWithSeparator = parameters.Where(p => !p.ParameterType.IsArray && p.HasAttribute<SeparatorAttribute>());
@@ -441,6 +443,8 @@ namespace CLAP
                 throw new NonArrayParameterWithSeparatorException(nonArrayWithSeparator.First());
             }
 
+            // check invalid separators
+            //
             var separators = parameters.
                 Where(p => p.HasAttribute<SeparatorAttribute>()).
                 Select(p => Pair.Create(p, p.GetAttribute<SeparatorAttribute>().Separator));
@@ -452,6 +456,12 @@ namespace CLAP
             {
                 throw new InvalidSeparatorException(invalidSeparator.First);
             }
+
+
+            var invalidRegisteredHandlers = registration.RegisteredGlobalHandlers.
+                FirstOrDefault(a =>
+                    a.Value.Type.IsArray &&
+                    (string.IsNullOrEmpty(a.Value.Separator) || a.Value.Separator.Contains(" ")));
         }
 
         private static void ValidateDefinedEmptyHandlers(Type type)

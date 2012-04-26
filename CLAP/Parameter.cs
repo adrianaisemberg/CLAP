@@ -39,6 +39,11 @@ namespace CLAP
         public string Description { get; private set; }
 
         /// <summary>
+        /// The parameter array separator
+        /// </summary>
+        public string Separator { get; private set; }
+
+        /// <summary>
         /// The <see cref="ParameterInfo"/> this parameter describes
         /// </summary>
         public ParameterInfo ParameterInfo { get; private set; }
@@ -81,6 +86,11 @@ namespace CLAP
             if (parameter.HasAttribute<AliasesAttribute>())
             {
                 Names.AddRange(parameter.GetAttribute<AliasesAttribute>().Aliases.ToLowerInvariant().CommaSplit());
+            }
+
+            if (parameter.HasAttribute<SeparatorAttribute>())
+            {
+                Separator = parameter.GetAttribute<SeparatorAttribute>().Separator;
             }
         }
 

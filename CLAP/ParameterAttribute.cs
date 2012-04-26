@@ -45,6 +45,9 @@ namespace CLAP
         public string Description { get; set; }
     }
 
+    /// <summary>
+    /// Sets a default value for a parameter
+    /// </summary>
     [Serializable]
     [AttributeUsage(AttributeTargets.Parameter)]
     public sealed class DefaultValueAttribute : Attribute
@@ -57,6 +60,10 @@ namespace CLAP
         }
     }
 
+    /// <summary>
+    /// Sets a default value provider type for a parameter.
+    /// The type must derive from DefaultProvider
+    /// </summary>
     [Serializable]
     [AttributeUsage(AttributeTargets.Parameter)]
     public sealed class DefaultProviderAttribute : Attribute
@@ -69,12 +76,18 @@ namespace CLAP
         }
     }
 
+    /// <summary>
+    /// Marks a parameter to be required
+    /// </summary>
     [Serializable]
     [AttributeUsage(AttributeTargets.Parameter)]
     public sealed class RequiredAttribute : Attribute
     {
     }
 
+    /// <summary>
+    /// Sets additional names to a parameter
+    /// </summary>
     [Serializable]
     [AttributeUsage(AttributeTargets.Parameter)]
     public sealed class AliasesAttribute : Attribute
@@ -87,6 +100,9 @@ namespace CLAP
         }
     }
 
+    /// <summary>
+    /// Sets a description to a parameter
+    /// </summary>
     [Serializable]
     [AttributeUsage(AttributeTargets.Parameter)]
     public sealed class DescriptionAttribute : Attribute
@@ -99,12 +115,22 @@ namespace CLAP
         }
     }
 
+    /// <summary>
+    /// Sets an array parameter separator
+    /// </summary>
     [Serializable]
     [AttributeUsage(AttributeTargets.Parameter)]
     public sealed class SeparatorAttribute : Attribute
     {
         public string Separator { get; private set; }
 
+        public const string DefaultSeparator = ",";
+
+        /// <summary>
+        /// The separator to use.
+        /// The default is a comma (",")
+        /// </summary>
+        /// <param name="separator"></param>
         public SeparatorAttribute(string separator)
         {
             Separator = separator;

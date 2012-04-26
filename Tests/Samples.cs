@@ -355,7 +355,17 @@ namespace Tests
         }
 
         [Global]
-        public void Abra(BindingFlags f)
+        public void Abra1(BindingFlags f)
+        {
+        }
+
+        [Global]
+        public void Abra2(int[] nums)
+        {
+        }
+
+        [Global]
+        public void Abra3([Separator("-")] string[] strs)
         {
         }
 
@@ -371,7 +381,7 @@ namespace Tests
         }
 
         [Verb]
-        public void WithARequiredSwitch(string str, [Required] bool sw)
+        public void WithARequiredSwitch(string str, [Required] bool sw, int[] nums, [Separator("-")] string[] strs)
         {
         }
 

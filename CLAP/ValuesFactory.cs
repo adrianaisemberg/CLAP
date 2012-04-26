@@ -81,7 +81,7 @@ namespace CLAP
                 // if array
                 if (parameterType.IsArray)
                 {
-                    var separator = ",";
+                    var separator = SeparatorAttribute.DefaultSeparator;
 
                     if (parameter != null && parameter.HasAttribute<SeparatorAttribute>())
                     {

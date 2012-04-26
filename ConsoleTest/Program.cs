@@ -51,6 +51,17 @@ namespace ConsoleTest
         {
             Console.WriteLine(h);
         }
+
+        [Global]
+        static void Sum([Separator("+")] int[] nums)
+        {
+            Console.WriteLine(nums.Sum());
+        }
+
+        [Verb]
+        static void Bring(string[] arr1, [Separator("-")] int[] arr2)
+        {
+        }
     }
 
     class EmptyApp
