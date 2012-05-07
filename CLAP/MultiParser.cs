@@ -188,17 +188,17 @@ namespace CLAP
         {
             ParserRunner parser = null;
 
-            // no args
-            //
-            if (args.None() || args.All(a => string.IsNullOrEmpty(a)))
-            {
-                HandleEmptyArguments(targets);
-
-                return SuccessCode;
-            }
-
             try
             {
+                // no args
+                //
+                if (args.None() || args.All(a => string.IsNullOrEmpty(a)))
+                {
+                    HandleEmptyArguments(targets);
+
+                    return SuccessCode;
+                }
+
                 if (m_types.Length == 1)
                 {
                     parser = GetSingleTypeParser(args, targets, Register);

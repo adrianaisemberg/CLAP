@@ -88,7 +88,12 @@ namespace CLAP
                                 sb.AppendFormat("{0} ", p.Description);
                             }
 
-                            sb.AppendFormat("({0}) ", GetTypeName(p.Type));
+                            var typeName = GetTypeName(p.Type);
+
+                            if (!string.IsNullOrEmpty(typeName))
+                            {
+                                sb.AppendFormat("({0}) ", typeName);
+                            }
 
                             if (p.Required)
                             {
@@ -148,14 +153,19 @@ namespace CLAP
                             sb.AppendFormat("{0} ", g.Description);
                         }
 
-                        sb.AppendFormat("({0}) ", GetTypeName(g.Type));
+                        var typeName = GetTypeName(g.Type);
+
+                        if (!string.IsNullOrEmpty(typeName))
+                        {
+                            sb.AppendFormat("({0}) ", typeName);
+                        }
 
                         if (g.Separator != null && g.Separator != SeparatorAttribute.DefaultSeparator)
                         {
                             sb.AppendFormat("(Separator = {0}) ", g.Separator);
                         }
 
-                        if (g.Validations.Any())
+                        if (g.Validations != null && g.Validations.Any())
                         {
                             sb.AppendFormat("({0}) ", g.Validations.StringJoin(", "));
                         }
@@ -163,6 +173,7 @@ namespace CLAP
                         sb.AppendLine();
                     } // foreach (var g in parser.Globals
                 }
+
 
                 if (multi && i < count - 1)
                 {
@@ -180,6 +191,11 @@ namespace CLAP
             if (type.IsEnum)
             {
                 return string.Format("{0} ({1})", type.Name, string.Join("/", Enum.GetNames(type)));
+            }
+
+            if (type == typeof(bool))
+            {
+                return string.Empty;
             }
 
             return type.GetGenericTypeName();
@@ -229,9 +245,17 @@ namespace CLAP
                 {
                     Names = handler.Names.OrderBy(n => n.Length).ToList(),
                     Type = handler.Type,
-                    Description = handler.Desription,
+                    Description = handler.Description,
                     Validations = new List<string>(),
-                })).ToList(),
+                })).Union(new GlobalParameterHelpInfo[]
+                {
+                    new GlobalParameterHelpInfo
+                    {
+                        Names=parser.Register.RegisteredHelpHandlers.Keys.ToList(),
+                        Type = typeof(bool),
+                        Description = "Help",
+                    }
+                }).ToList(),
             };
         }
     }

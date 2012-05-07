@@ -284,7 +284,7 @@ namespace CLAP
                 {
                     Names = names.CommaSplit(),
                     Handler = objectAction,
-                    Desription = options.Description,
+                    Description = options.Description,
                     Separator = options.Separator,
                     Type = typeof(TParameter),
                 });
@@ -333,7 +333,7 @@ namespace CLAP
     {
         internal IEnumerable<string> Names { get; set; }
         internal Action<string> Handler { get; set; }
-        internal string Desription { get; set; }
+        internal string Description { get; set; }
         internal string Separator { get; set; }
         internal Type Type { get; set; }
     }

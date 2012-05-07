@@ -16,10 +16,11 @@ namespace ConsoleTest
             //Debugger.Launch();
 
             //Parser.RunConsole<TheApp>(args);
-            //Parser.RunConsole<ClapApp, SomeApp, TheApp>(args);
+            return Parser.RunConsole<ClapApp, SomeApp, TheApp>(args);
+            //return Parser.RunConsole<ClapApp>(args);
             //return Parser.RunConsole<SomeApp>(args);
             //Parser.Run<SomeApp, ClapApp>(args);
-            return Parser.Run<DefaultApp>(args);
+            //return Parser.RunConsole<DefaultApp>(args);
         }
     }
 
@@ -156,7 +157,7 @@ namespace ConsoleTest
             }
         }
 
-        [Help, Empty]
+        //[Help, Empty]
         public static void Help(string h)
         {
             Console.WriteLine(h);
