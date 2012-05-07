@@ -214,13 +214,15 @@ namespace CLAP
             {
                 // handle error using the first available error handler
                 //
+                // (if returns true - should rethrow)
+                //
                 if (TryHandlePrematureError(ex, targets))
                 {
-                    return ErrorCode;
+                    throw;
                 }
                 else
                 {
-                    throw;
+                    return ErrorCode;
                 }
             }
 
@@ -237,11 +239,13 @@ namespace CLAP
 
         private bool TryHandlePrematureError(Exception ex, object[] targets)
         {
+            var context = new ExceptionContext(ex);
+
             if (Register.RegisteredErrorHandler != null)
             {
-                Register.RegisteredErrorHandler(new ExceptionContext(ex));
+                Register.RegisteredErrorHandler(context);
 
-                return true;
+                return context.ReThrow;
             }
             else
             {
@@ -255,14 +259,14 @@ namespace CLAP
                     {
                         var target = targets == null ? null : targets[i];
 
-                        errorHandler.Invoke(target, new[] { new ExceptionContext(ex) });
+                        errorHandler.Invoke(target, new[] { context });
 
-                        return true;
+                        return context.ReThrow;
                     }
                 }
             }
 
-            return false;
+            return true;
         }
 
         /// <summary>

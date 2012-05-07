@@ -203,7 +203,7 @@ namespace CLAP
 
         private static ParserHelpInfo GetParserHelp(ParserRunner parser)
         {
-            return new ParserHelpInfo
+            var h = new ParserHelpInfo
             {
                 Type = parser.Type,
                 Verbs = parser.GetVerbs().Select(verb => new VerbHelpInfo
@@ -247,16 +247,20 @@ namespace CLAP
                     Type = handler.Type,
                     Description = handler.Description,
                     Validations = new List<string>(),
-                })).Union(new GlobalParameterHelpInfo[]
-                {
-                    new GlobalParameterHelpInfo
-                    {
-                        Names=parser.Register.RegisteredHelpHandlers.Keys.ToList(),
-                        Type = typeof(bool),
-                        Description = "Help",
-                    }
-                }).ToList(),
+                })).ToList(),
             };
+
+            if (parser.Register.RegisteredHelpHandlers.Any())
+            {
+                h.Globals.Add(new GlobalParameterHelpInfo
+                {
+                    Names = parser.Register.RegisteredHelpHandlers.Keys.ToList(),
+                    Type = typeof(bool),
+                    Description = "Help",
+                });
+            };
+
+            return h;
         }
     }
 }
