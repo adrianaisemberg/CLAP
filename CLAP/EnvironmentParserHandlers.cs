@@ -11,12 +11,7 @@ namespace CLAP
             parser.Register.HelpHandler("help,h,?", help => System.Console.WriteLine(help));
             parser.Register.EmptyHelpHandler(help => System.Console.WriteLine(help));
             parser.Register.ParameterHandler("debug", () => Debugger.Launch());
-            parser.Register.ErrorHandler(c =>
-            {
-                System.Console.ForegroundColor = ConsoleColor.White;
-                System.Console.WriteLine(c.Exception.Message);
-                System.Console.ResetColor();
-            });
+            parser.Register.ErrorHandler(c => System.Console.Error.WriteLine(c.Exception.Message));
 
             return parser;
         }
