@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Text;
 
 #if !FW2
@@ -8,32 +7,9 @@ using System.Linq;
 
 namespace CLAP
 {
-    internal static class HelpGenerator
+    internal class DefaultHelpGenerator : HelpGeneratorBase
     {
-        internal static string GetHelp(MultiParser parser)
-        {
-            var parsers = parser.Types.Select(t => new ParserRunner(t, parser.Register));
-
-            return GetHelp(parsers);
-        }
-
-        internal static string GetHelp(ParserRunner parser)
-        {
-            return GetHelp(new[] { parser });
-        }
-
-        internal static string GetHelp(IEnumerable<ParserRunner> parsers)
-        {
-            var help = new HelpInfo();
-
-            help.Parsers = parsers.Select(p => GetParserHelp(p)).ToList();
-
-            var helpString = GetHelpString(help);
-
-            return helpString;
-        }
-
-        private static string GetHelpString(HelpInfo helpInfo)
+        protected override string GetHelpString(HelpInfo helpInfo)
         {
             const string verbsLead = "   ";
             const string parametersLead = "        ";
@@ -199,68 +175,6 @@ namespace CLAP
             }
 
             return type.GetGenericTypeName();
-        }
-
-        private static ParserHelpInfo GetParserHelp(ParserRunner parser)
-        {
-            var h = new ParserHelpInfo
-            {
-                Type = parser.Type,
-                Verbs = parser.GetVerbs().Select(verb => new VerbHelpInfo
-                {
-                    Names = verb.Names.OrderByDescending(n => n.Length).ToList(),
-                    Description = verb.Description,
-                    IsDefault = verb.IsDefault,
-                    Validations = verb.MethodInfo.GetInterfaceAttributes<ICollectionValidation>().Select(v => v.Description).ToList(),
-                    Parameters = ParserRunner.GetParameters(verb.MethodInfo).
-                        Select(p => new ParameterHelpInfo
-                        {
-                            Required = p.Required,
-                            Names = p.Names.OrderBy(n => n.Length).ToList(),
-                            Type = p.ParameterInfo.ParameterType,
-                            Default = p.DefaultProvider != null ? p.DefaultProvider.Description : p.Default,
-                            Description = p.Description,
-                            Validations = p.ParameterInfo.GetAttributes<ValidationAttribute>().Select(v => v.Description).ToList(),
-                            Separator = p.ParameterInfo.ParameterType.IsArray ?
-                                p.Separator ?? SeparatorAttribute.DefaultSeparator : null,
-                        }).ToList(),
-                }).ToList(),
-                Globals = parser.GetDefinedGlobals().Select(g =>
-                {
-                    var att = g.GetAttribute<GlobalAttribute>();
-                    var parameter = ParserRunner.GetParameters(g).FirstOrDefault();
-
-                    return new GlobalParameterHelpInfo
-                    {
-                        Names = att.Aliases.CommaSplit().Union(new[] { att.Name ?? g.Name }).OrderBy(n => n.Length).ToList(),
-                        Type = parameter != null ? parameter.ParameterInfo.ParameterType : typeof(bool),
-                        Description = att.Description,
-                        Validations = g.GetInterfaceAttributes<ICollectionValidation>().Select(v => v.Description).ToList(),
-                        Separator = parameter != null ?
-                            parameter.ParameterInfo.ParameterType.IsArray ?
-                                parameter.Separator ?? SeparatorAttribute.DefaultSeparator :
-                                    null : null,
-                    };
-                }).Union(parser.Register.RegisteredGlobalHandlers.Values.Select(handler => new GlobalParameterHelpInfo
-                {
-                    Names = handler.Names.OrderBy(n => n.Length).ToList(),
-                    Type = handler.Type,
-                    Description = handler.Description,
-                    Validations = new List<string>(),
-                })).ToList(),
-            };
-
-            if (parser.Register.RegisteredHelpHandlers.Any())
-            {
-                h.Globals.Add(new GlobalParameterHelpInfo
-                {
-                    Names = parser.Register.RegisteredHelpHandlers.Keys.ToList(),
-                    Type = typeof(bool),
-                    Description = "Help",
-                });
-            };
-
-            return h;
         }
     }
 }
