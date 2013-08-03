@@ -2526,5 +2526,53 @@ namespace Tests
         {
             Parser.Run<Sample_73>(new[] { "foo", "-enums=aaa bbb ccc" });
         }
+
+        [Test]
+        public void Run_preferred_method_for_overload_TestForA()
+        {
+            var sut = new Sample_74();
+            Parser.Run(new[] { "foo", "-a:3" }, sut);
+            Assert.That(sut.IsACalled, Is.True);
+        }
+
+        [Test]
+        public void Run_preferred_method_for_overload_TestForB()
+        {
+            var sut = new Sample_74();
+            Parser.Run(new[] { "foo", "-b:3", "-c:2" }, sut);
+            Assert.That(sut.IsBCalled, Is.True);
+        }
+
+        [Test]
+        public void Run_preferred_method_for_overload_TestForA_WithGlobal()
+        {
+            var sut = new Sample_74();
+            Parser.Run(new[]
+                {
+                    "foo", 
+                    "-a:3", 
+                    "-bar:mike"
+                }, sut);
+            Assert.That(sut.IsACalled, Is.True);
+        }
+
+        [Test]
+        public void Run_preferred_method_for_overload_TestForB_WithGlobal()
+        {
+            var sut = new Sample_74();
+            Parser.Run(new[]
+                {
+                    "foo", 
+                    "-b:3", 
+                    "-c:2", 
+                    "-bar:mike"
+                }, sut);
+            Assert.That(sut.IsBCalled, Is.True);            
+        }
     }
+
+    // Todo: add code to handle overloaded verbs
+    // Todo: - better understand globals and global handlers, see HandleGlobals method
+
+    // Todo: add code to handle sub-commands
 }

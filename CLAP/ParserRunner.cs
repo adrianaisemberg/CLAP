@@ -105,9 +105,35 @@ namespace CLAP
 
             // find the method by the given verb
             //
-            var typeVerbs = GetVerbs();
+            var typeVerbs = GetVerbs().ToList();
 
-            var method = typeVerbs.FirstOrDefault(v => v.Names.Contains(verb.ToLowerInvariant()));
+
+            // verb preference lookup rules
+            // - first, find the one that matches the number of arguments
+            //   + there are required arguments
+            //   + arguments with matching names
+            // - then, find matching verb name
+            // - then, find default
+
+            var notVerbs = args.Where(a => a.StartsWith(ArgumentPrefixes)).ToList();
+            var globalsSet = GetDefinedGlobals()
+                .Count(g => notVerbs
+                    .Any(a => a.Substring(1).StartsWith(g.Name.ToLowerInvariant())));
+
+            var n = notVerbs.Count() - globalsSet;
+
+            Method method = (
+                from v in typeVerbs
+                let vn = GetParameters(v.MethodInfo).Count()
+                where vn == n
+                   && v.Names.Contains(verb.ToLowerInvariant())
+                select v).FirstOrDefault();
+
+            // find matching verb by name
+            if (method == null)
+            {
+                method = typeVerbs.FirstOrDefault(v => v.Names.Contains(verb.ToLowerInvariant()));
+            }
 
             // if no method is found - a default must exist
             //

@@ -1469,4 +1469,28 @@ namespace Tests
         {
         }
     }
+
+    public class Sample_74
+    {
+        [Global]
+        public void Bar(string hello)
+        {
+            // hello?
+        }
+
+        [Verb]
+        public void Foo(int a)
+        {
+            IsACalled = true;
+        }
+
+        [Verb]
+        public void Foo(int b, int c)
+        {
+            IsBCalled = true;
+        }
+
+        public bool IsACalled { get; private set; }
+        public bool IsBCalled { get; private set; }
+    }
 }
