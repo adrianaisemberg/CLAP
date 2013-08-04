@@ -2570,9 +2570,4 @@ namespace Tests
             Assert.That(sut.IsBCalled, Is.True);            
         }
     }
-
-    // Todo: add code to handle overloaded verbs
-    // Todo: - better understand globals and global handlers, see HandleGlobals method
-
-    // Todo: add code to handle sub-commands
 }

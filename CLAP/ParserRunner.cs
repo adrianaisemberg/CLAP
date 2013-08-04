@@ -105,38 +105,155 @@ namespace CLAP
 
             // find the method by the given verb
             //
-            var typeVerbs = GetVerbs().ToList();
+            var typeVerbs = GetVerbs()
+                .ToDictionary(v => v, v=>GetParameters(v.MethodInfo).ToList())
+                .ToList();
+            
+            
+            // if arguments do not match parameter quantity, choose the first that matches the name
+
+            var notVerbs = args
+                .Where(a => a.StartsWith(ArgumentPrefixes))
+                .ToList();
+            
+            var globals = GetDefinedGlobals()
+                .Where(g => notVerbs.Any(a => a.Substring(1).StartsWith(g.Name.ToLowerInvariant())))
+                .Select(g => g)
+                .ToList();
+
+            var notVerbsNotGlobals = notVerbs
+                .Where(a => globals.All(g => !a.Substring(1).StartsWith(g.Name.ToLowerInvariant())))
+                .Select(v => v)
+                .ToList();
+
+            var n = notVerbsNotGlobals.Count;
 
 
-            // verb preference lookup rules
-            // - first, find the one that matches the number of arguments
-            //   + there are required arguments
-            //   + arguments with matching names
-            // - then, find matching verb name
-            // - then, find default
-
-            var notVerbs = args.Where(a => a.StartsWith(ArgumentPrefixes)).ToList();
-            var globalsSet = GetDefinedGlobals()
-                .Count(g => notVerbs
-                    .Any(a => a.Substring(1).StartsWith(g.Name.ToLowerInvariant())));
-
-            var n = notVerbs.Count() - globalsSet;
-
-            Method method = (
+            Method method = null;
+            
+            var methods = (
                 from v in typeVerbs
-                let vn = GetParameters(v.MethodInfo).Count()
-                where vn == n
-                   && v.Names.Contains(verb.ToLowerInvariant())
-                select v).FirstOrDefault();
+                where v.Key.Names.Contains(verb.ToLowerInvariant())
+                where v.Value.Count == notVerbs.Count
+                select v
+                ).ToList();
 
-            // find matching verb by name
+            // find the method by name, parameter count and parameter names
+            foreach (var m in methods)
+            {
+                bool methodFound = false;
+
+                foreach (var p in m.Value)
+                {
+                    bool parameterMatches = false;
+                    
+                    foreach (var name in p.Names)
+                    {
+                        if (notVerbs.Any(a => a.Substring(1).Equals(name)))
+                        {
+                            parameterMatches = true;
+                            break;
+                        }
+                    }
+                    if (!parameterMatches)
+                    {
+                        break;
+                    }
+                    methodFound = true;
+                }
+                if (methodFound)
+                {
+                    method = m.Key;
+                    break;
+                }
+            }
+
+            // if arguments do not match parameter names, exclude globals
             if (method == null)
             {
-                method = typeVerbs.FirstOrDefault(v => v.Names.Contains(verb.ToLowerInvariant()));
+                methods = (
+                    from v in typeVerbs
+                    where v.Key.Names.Contains(verb.ToLowerInvariant())
+                    where v.Value.Count == notVerbsNotGlobals.Count
+                    select v
+                    ).ToList();
+
+                foreach (var m in methods)
+                {
+                    bool methodFound = false;
+
+                    foreach (var p in m.Value)
+                    {
+                        bool parameterMatches = false;
+
+                        foreach (var name in p.Names)
+                        {
+                            if (notVerbsNotGlobals.Any(a => a.Substring(1).Equals(name)))
+                            {
+                                parameterMatches = true;
+                                break;
+                            }
+                        }
+                        if (!parameterMatches)
+                        {
+                            break;
+                        }
+                        methodFound = true;
+                    }
+                    if (methodFound)
+                    {
+                        method = m.Key;
+                        break;
+                    }
+                }    
+            }
+
+            // if arguments do not match parameters names, exclude optional parameters
+            if (method == null)
+            {
+                foreach (var m in methods)
+                {
+                    bool methodFound = false;
+
+                    foreach (var p in m.Value.Where(p => p.Default == null))
+                    {
+                        bool parameterMatches = false;
+
+                        foreach (var name in p.Names)
+                        {
+                            if (notVerbsNotGlobals.Any(a => a.Substring(1).Equals(name)))
+                            {
+                                parameterMatches = true;
+                                break;
+                            }
+                        }
+                        if (!parameterMatches)
+                        {
+                            break;
+                        }
+                        methodFound = true;
+                    }
+                    if (methodFound)
+                    {
+                        method = m.Key;
+                        break;
+                    }
+                }                    
+            }
+
+            // if arguments do not match parameter names, test arguments quantity
+            if (method == null)
+            {
+                method = methods.FirstOrDefault().Key;
+            }
+
+            // if nothing matches...
+            if (method == null)
+            {
+                method = typeVerbs.FirstOrDefault(v => v.Key.Names.Contains(verb.ToLowerInvariant())).Key;
             }
 
             // if no method is found - a default must exist
-            //
             if (method == null)
             {
                 // if there is a verb input but no method was found
@@ -148,7 +265,7 @@ namespace CLAP
                     throw new VerbNotFoundException(verb);
                 }
 
-                method = typeVerbs.FirstOrDefault(v => v.IsDefault);
+                method = typeVerbs.FirstOrDefault(v => v.Key.IsDefault).Key;
 
                 // no default - error
                 //
