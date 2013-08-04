@@ -106,8 +106,7 @@ namespace CLAP
             // find the method by the given verb
             //
             var typeVerbs = GetVerbs()
-                .ToDictionary(v => v, v=>GetParameters(v.MethodInfo).ToList())
-                .ToList();
+                .ToDictionary(v => v, v=>GetParameters(v.MethodInfo).ToList());
 
             // arguments
             var notVerbs = args
