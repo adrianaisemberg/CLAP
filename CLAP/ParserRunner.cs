@@ -108,10 +108,8 @@ namespace CLAP
             var typeVerbs = GetVerbs()
                 .ToDictionary(v => v, v=>GetParameters(v.MethodInfo).ToList())
                 .ToList();
-            
-            
-            // if arguments do not match parameter quantity, choose the first that matches the name
 
+            // arguments
             var notVerbs = args
                 .Where(a => a.StartsWith(ArgumentPrefixes))
                 .ToList();
@@ -126,11 +124,7 @@ namespace CLAP
                 .Select(v => v)
                 .ToList();
 
-            var n = notVerbsNotGlobals.Count;
-
-
-            Method method = null;
-            
+            // find the method by name, parameter count and parameter names
             var methods = (
                 from v in typeVerbs
                 where v.Key.Names.Contains(verb.ToLowerInvariant())
@@ -138,110 +132,29 @@ namespace CLAP
                 select v
                 ).ToList();
 
-            // find the method by name, parameter count and parameter names
-            foreach (var m in methods)
-            {
-                bool methodFound = false;
-
-                foreach (var p in m.Value)
-                {
-                    bool parameterMatches = false;
-                    
-                    foreach (var name in p.Names)
-                    {
-                        if (notVerbs.Any(a => a.Substring(1).Equals(name)))
-                        {
-                            parameterMatches = true;
-                            break;
-                        }
-                    }
-                    if (!parameterMatches)
-                    {
-                        break;
-                    }
-                    methodFound = true;
-                }
-                if (methodFound)
-                {
-                    method = m.Key;
-                    break;
-                }
-            }
+            Method method = SelectMethod(methods, notVerbs);
 
             // if arguments do not match parameter names, exclude globals
+            methods = (
+                from v in typeVerbs
+                where v.Key.Names.Contains(verb.ToLowerInvariant())
+                where v.Value.Count == notVerbsNotGlobals.Count
+                select v
+                ).ToList();
+            
             if (method == null)
             {
-                methods = (
-                    from v in typeVerbs
-                    where v.Key.Names.Contains(verb.ToLowerInvariant())
-                    where v.Value.Count == notVerbsNotGlobals.Count
-                    select v
-                    ).ToList();
-
-                foreach (var m in methods)
-                {
-                    bool methodFound = false;
-
-                    foreach (var p in m.Value)
-                    {
-                        bool parameterMatches = false;
-
-                        foreach (var name in p.Names)
-                        {
-                            if (notVerbsNotGlobals.Any(a => a.Substring(1).Equals(name)))
-                            {
-                                parameterMatches = true;
-                                break;
-                            }
-                        }
-                        if (!parameterMatches)
-                        {
-                            break;
-                        }
-                        methodFound = true;
-                    }
-                    if (methodFound)
-                    {
-                        method = m.Key;
-                        break;
-                    }
-                }    
+                method = SelectMethod(methods, notVerbsNotGlobals);
             }
 
             // if arguments do not match parameters names, exclude optional parameters
             if (method == null)
             {
-                foreach (var m in methods)
-                {
-                    bool methodFound = false;
-
-                    foreach (var p in m.Value.Where(p => p.Default == null))
-                    {
-                        bool parameterMatches = false;
-
-                        foreach (var name in p.Names)
-                        {
-                            if (notVerbsNotGlobals.Any(a => a.Substring(1).Equals(name)))
-                            {
-                                parameterMatches = true;
-                                break;
-                            }
-                        }
-                        if (!parameterMatches)
-                        {
-                            break;
-                        }
-                        methodFound = true;
-                    }
-                    if (methodFound)
-                    {
-                        method = m.Key;
-                        break;
-                    }
-                }                    
+                const bool avoidOptionalParameters = false;
+                method = SelectMethod(methods, notVerbsNotGlobals, avoidOptionalParameters);
             }
 
-            // if arguments do not match parameter names, test arguments quantity
+            // if arguments do not match parameter names, use only argument count (without globals)
             if (method == null)
             {
                 method = methods.FirstOrDefault().Key;
@@ -301,6 +214,52 @@ namespace CLAP
             }
 
             return Execute(obj, method, parameterValues);
+        }
+
+        private static Method SelectMethod(List<KeyValuePair<Method, List<Parameter>>> methods, List<string> args, bool allowOptionalParameters = true)
+        {
+            Method method = null;
+
+            foreach (var m in methods)
+            {
+                bool methodFound = false;
+                var parameters = m.Value;
+
+                if (!allowOptionalParameters)
+                {
+                    parameters = m.Value
+                        .Where(p => p.Default != null)
+                        .Select(p => p)
+                        .ToList();
+                }
+
+                foreach (var p in parameters)
+                {
+                    bool parameterMatches = false;
+
+                    foreach (var name in p.Names)
+                    {
+                        if (args.Any(a => a.Substring(1).Equals(name)))
+                        {
+                            parameterMatches = true;
+                            break;
+                        }
+                    }
+                    if (!parameterMatches)
+                    {
+                        break;
+                    }
+                    methodFound = true;
+                }
+
+                if (methodFound)
+                {
+                    method = m.Key;
+                    break;
+                }
+            }
+
+            return method;
         }
 
         private int Execute(
