@@ -68,7 +68,7 @@ namespace CLAP
             }
         }
 
-        private void HandleEmptyArguments(object[] targets)
+        private void HandleEmptyArguments(TargetResolver targetResolver)
         {
             if (Register.RegisteredEmptyHandler != null)
             {
@@ -78,13 +78,13 @@ namespace CLAP
             {
                 var parser = new ParserRunner(m_types.First(), Register);
 
-                var target = targets == null ? null : targets[0];
+                var target = targetResolver == null ? null : targetResolver.Resolve(m_types[0]);
 
                 parser.HandleEmptyArguments(target);
             }
         }
 
-        private ParserRunner GetMultiTypesParser(string[] args, object obj, ParserRegistration registration)
+        private ParserRunner GetMultiTypesParser(string[] args, ParserRegistration registration)
         {
             Debug.Assert(args.Any());
 
@@ -123,7 +123,7 @@ namespace CLAP
             return new ParserRunner(type, registration);
         }
 
-        private ParserRunner GetSingleTypeParser(string[] args, object obj, ParserRegistration registration)
+        private ParserRunner GetSingleTypeParser(string[] args, ParserRegistration registration)
         {
             Debug.Assert(m_types.Length == 1);
 
@@ -176,7 +176,7 @@ namespace CLAP
         /// <param name="args">The user arguments</param>
         public int RunStatic(string[] args)
         {
-            return RunTargets(args, null);
+            return RunTargets(args, null as TargetResolver);
         }
 
         /// <summary>
@@ -186,29 +186,33 @@ namespace CLAP
         /// <param name="targets">The instances of the verb classes</param>
         public int RunTargets(string[] args, params object[] targets)
         {
-            ParserRunner parser = null;
+            var targetResolver = new TargetResolver(targets);
+            return RunTargets(args, targetResolver);
+        }
+
+        public int RunTargets(string[] args, TargetResolver targetResolver)
+        {
+            ParserRunner parser;
 
             try
             {
-                // no args
-                //
                 if (args.None() || args.All(a => string.IsNullOrEmpty(a)))
                 {
-                    HandleEmptyArguments(targets);
-
+                    HandleEmptyArguments(targetResolver);
                     return SuccessCode;
                 }
 
                 if (m_types.Length == 1)
                 {
-                    parser = GetSingleTypeParser(args, targets, Register);
+                    parser = GetSingleTypeParser(args, Register);
                 }
                 else
                 {
                     Debug.Assert(m_types.Length > 1);
-
-                    parser = GetMultiTypesParser(args, targets, Register);
+                    parser = GetMultiTypesParser(args, Register);
                 }
+
+                Debug.Assert(parser != null);
             }
             catch (Exception ex)
             {
@@ -216,7 +220,7 @@ namespace CLAP
                 //
                 // (if returns true - should rethrow)
                 //
-                if (TryHandlePrematureError(ex, targets))
+                if (TryHandlePrematureError(ex, targetResolver))
                 {
                     throw;
                 }
@@ -226,18 +230,12 @@ namespace CLAP
                 }
             }
 
-            Debug.Assert(parser != null);
-
-            var index = m_types.ToList().IndexOf(parser.Type);
-
-            Debug.Assert(index >= 0);
-
-            var target = targets.None() ? null : targets[index];
+            var target = (targetResolver == null || targetResolver.RegisteredTypes.None()) ? null : targetResolver.Resolve(parser.Type);
 
             return parser.Run(args, target);
         }
 
-        private bool TryHandlePrematureError(Exception ex, object[] targets)
+        private bool TryHandlePrematureError(Exception ex, TargetResolver targetResolver)
         {
             var context = new ExceptionContext(ex);
 
@@ -257,7 +255,7 @@ namespace CLAP
 
                     if (errorHandler != null)
                     {
-                        var target = targets == null ? null : targets[i];
+                        var target = targetResolver == null ? null : targetResolver.Resolve(type);
 
                         errorHandler.Invoke(target, new[] { context });
 

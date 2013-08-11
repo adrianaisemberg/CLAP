@@ -21,6 +21,11 @@ namespace CLAP
         {
         }
 
+        public Parser(TargetResolver targetResolver)
+            : base(targetResolver.RegisteredTypes)
+        {
+        }
+
         /// <summary>
         /// Executes a parser of instance-verbs based on the specified targets
         /// </summary>
@@ -34,6 +39,15 @@ namespace CLAP
             var p = new Parser(targets.Select(t => t.GetType()).ToArray());
 
             return ((MultiParser)p).RunTargets(args, targets);
+        }
+
+        public static int Run(string[] args, TargetResolver targetResolver)
+        {
+            Debug.Assert(targetResolver != null);
+
+            var p = new Parser(targetResolver.RegisteredTypes);
+
+            return p.RunTargets(args, targetResolver);
         }
 
         /// <summary>

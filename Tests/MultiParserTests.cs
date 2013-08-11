@@ -86,6 +86,37 @@ namespace Tests
         }
 
         [Test]
+        public void MultiParser_Run_With_TargetResolver()
+        {
+            var resolver = new TargetResolver();
+            resolver.RegisterTargetType(() => new Sample_02());
+            resolver.RegisterTargetType(() => new Sample_03());
+
+            var mock = new MethodInvokerMock();
+
+            var called = false;
+            mock.Action = (method, obj, parameters) =>
+                {
+                    called = true;
+                    Assert.IsTrue(method.Name == "Print");
+                    Assert.IsTrue(obj.GetType().Name == "Sample_03");
+                };
+
+            MethodInvoker.Invoker = mock;
+
+            var p = new Parser(resolver);
+
+            p.RunTargets(new[]
+                {
+                    "sample_03.print",
+                    "-c=8",
+                    "-prefix=xyz"
+                }, resolver);
+
+            Assert.IsTrue(called);
+        }
+
+        [Test]
         public void MultiParser_Run_OneParser()
         {
             var mock = new MethodInvokerMock();
