@@ -104,14 +104,43 @@ namespace Tests
 
             MethodInvoker.Invoker = mock;
 
-            var p = new Parser(resolver);
-
-            p.RunTargets(new[]
+            Parser.Run(new[]
                 {
                     "sample_03.print",
                     "-c=8",
                     "-prefix=xyz"
                 }, resolver);
+
+            Assert.IsTrue(called);
+        }
+
+        [Test]
+        public void MultiParser_Run_With_Target_Alias()
+        {
+            var mock = new MethodInvokerMock();
+
+            var called = false;
+
+            mock.Action = (method, obj, parameters) =>
+            {
+                called = true;
+
+                Assert.IsTrue(method.Name == "Print");
+                Assert.IsTrue(method.DeclaringType == typeof(Sample_03));
+                Assert.IsTrue(parameters.Contains(10));
+                Assert.IsTrue(parameters.Contains("aaa"));
+            };
+
+            MethodInvoker.Invoker = mock;
+
+            var p = new Parser(typeof(Sample_02), typeof(Sample_03));
+
+            p.RunTargets(new[]
+            {
+                "s03.print", //the Sample_03 class has an alias attribute of 's03'
+                "-c=10",
+                "-prefix=aaa",
+            }, new Sample_02(), new Sample_03());
 
             Assert.IsTrue(called);
         }

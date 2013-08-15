@@ -21,11 +21,6 @@ namespace CLAP
         {
         }
 
-        public Parser(TargetResolver targetResolver)
-            : base(targetResolver.RegisteredTypes)
-        {
-        }
-
         /// <summary>
         /// Executes a parser of instance-verbs based on the specified targets
         /// </summary>

@@ -33,6 +33,7 @@ namespace Tests
         public IPrinter Printer { get; set; }
     }
 
+    [TargetAlias("s02")]
     public class Sample_02 : BaseSample
     {
         [Verb(IsDefault = true, Aliases = "p", Description = "Prints a message")]
@@ -114,6 +115,7 @@ namespace Tests
         public void UriPathExists([PathExists] Uri path) { }
     }
 
+    [TargetAlias("s03")]
     public class Sample_03 : BaseSample
     {
         [Verb(Aliases = "p", Description = "Prints a message")]

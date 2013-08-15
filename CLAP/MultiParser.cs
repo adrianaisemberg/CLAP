@@ -109,18 +109,25 @@ namespace CLAP
                 throw new InvalidVerbException();
             }
 
-            var typeName = parts[0];
+            var typeNameOrAlias = parts[0];
 
-            args[0] = args[0].Substring(typeName.Length + 1);
+            args[0] = args[0].Substring(typeNameOrAlias.Length + 1);
 
-            var type = m_types.FirstOrDefault(t => t.Name.Equals(typeName, StringComparison.InvariantCultureIgnoreCase));
+            var type = m_types.FirstOrDefault(t => t.Name.Equals(typeNameOrAlias, StringComparison.InvariantCultureIgnoreCase) ||
+                                                   GetTargetAliasAttributeValue(t).Equals(typeNameOrAlias, StringComparison.InvariantCultureIgnoreCase));
 
             if (type == null)
             {
-                throw new UnknownParserTypeException(typeName);
+                throw new UnknownParserTypeException(typeNameOrAlias);
             }
 
             return new ParserRunner(type, registration);
+        }
+
+        private string GetTargetAliasAttributeValue(Type targetType)
+        {
+            var aliasAttribute = targetType.GetCustomAttributes(typeof (TargetAliasAttribute), false).FirstOrDefault() as TargetAliasAttribute;
+            return (aliasAttribute != null) ? aliasAttribute.Alias : string.Empty;
         }
 
         private ParserRunner GetSingleTypeParser(string[] args, ParserRegistration registration)
