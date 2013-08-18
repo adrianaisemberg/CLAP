@@ -99,6 +99,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MultiParserTests.cs" />
+    <Compile Include="ParserRegistrationTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Samples.cs" />
     <Compile Include="StaticSamples.cs" />

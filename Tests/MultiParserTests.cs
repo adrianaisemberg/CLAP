@@ -145,6 +145,32 @@ namespace Tests
             Assert.IsTrue(called);
         }
 
+        [Test, ExpectedException(typeof(DuplicateTargetAliasException))]
+        public void MultiParser_Run_With_Target_Alias_That_Is_Defined_More_Than_Once()
+        {
+            var mock = new MethodInvokerMock();
+
+            var called = false;
+
+            mock.Action = (method, obj, parameters) =>
+            {
+                called = true;
+            };
+
+            MethodInvoker.Invoker = mock;
+
+            var p = new Parser(typeof(Sample_02), typeof(Sample_02_Default));
+
+            p.RunTargets(new[]
+            {
+                "s02.print", //both of the provided types below have the same alias attribute value.
+                "-c=10",
+                "-prefix=aaa",
+            }, new Sample_02(), new Sample_02_Default());
+
+            Assert.IsFalse(called, "The method should not have been called due to the conflicting aliases.");
+        }
+
         [Test]
         public void MultiParser_Run_OneParser()
         {

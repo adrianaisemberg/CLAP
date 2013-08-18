@@ -60,7 +60,7 @@ namespace CLAP
         {
             Debug.Assert(m_types.Any());
 
-            Register = new ParserRegistration(m_types, GetHelpString, ValuesFactory.GetValueForParameter);
+            Register = new ParserRegistration(m_types, GetHelpString);
 
             foreach (var type in m_types)
             {
@@ -113,22 +113,17 @@ namespace CLAP
 
             args[0] = args[0].Substring(typeNameOrAlias.Length + 1);
 
-            var type = m_types.FirstOrDefault(t => t.Name.Equals(typeNameOrAlias, StringComparison.InvariantCultureIgnoreCase) ||
-                                                   GetTargetAliasAttributeValue(t).Equals(typeNameOrAlias, StringComparison.InvariantCultureIgnoreCase));
+            var matchingType = registration.GetTargetType(typeNameOrAlias);
 
-            if (type == null)
+            if (matchingType == null)
             {
                 throw new UnknownParserTypeException(typeNameOrAlias);
             }
 
-            return new ParserRunner(type, registration);
+            return new ParserRunner(matchingType, registration);
         }
 
-        private string GetTargetAliasAttributeValue(Type targetType)
-        {
-            var aliasAttribute = targetType.GetCustomAttributes(typeof (TargetAliasAttribute), false).FirstOrDefault() as TargetAliasAttribute;
-            return (aliasAttribute != null) ? aliasAttribute.Alias : string.Empty;
-        }
+        
 
         private ParserRunner GetSingleTypeParser(string[] args, ParserRegistration registration)
         {

@@ -61,6 +61,7 @@ namespace Tests
         }
     }
 
+    [TargetAlias("s02")]
     public class Sample_02_Default : BaseSample
     {
         [Verb(IsDefault = true)]

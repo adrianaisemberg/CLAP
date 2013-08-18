@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using CLAP.Interception;
 using System.Reflection;
 
@@ -13,6 +14,7 @@ namespace CLAP
         #region Fields
 
         private readonly Type[] m_types;
+        private IDictionary<string, Type> m_registeredParsersByAlias;
 
         #endregion Fields
 
@@ -28,22 +30,24 @@ namespace CLAP
         internal Func<string> HelpGetter { get; private set; }
         internal Func<ParameterInfo, Type, string, string, object> ParameterValueGetter { get; private set; }
 
+        
+
         #endregion Properties
 
         #region Constructors
 
-        internal ParserRegistration(
+        public ParserRegistration(
             Type[] types,
-            Func<string> helpGetter,
-            Func<ParameterInfo, Type, string, string, object> parameterValueGetter)
+            Func<string> helpGetter)
         {
             m_types = types;
 
+            RegisterParserTypeAliases();
             RegisteredGlobalHandlers = new Dictionary<string, GlobalParameterHandler>();
             RegisteredHelpHandlers = new Dictionary<string, Action<string>>();
 
             HelpGetter = helpGetter;
-            ParameterValueGetter = parameterValueGetter;
+            ParameterValueGetter = ValuesFactory.GetValueForParameter;
         }
 
         #endregion Constructors
@@ -256,9 +260,51 @@ namespace CLAP
                 options);
         }
 
+        /// <summary>
+        /// Attempts to get a registered type by the provided value. The value will first be checked against all of the
+        /// registered type names, and then if no match is found, by the 'TargetAlias' values applied to the types (if any).
+        /// </summary>
+        /// <param name="typeNameOrAlias">The name of the requested type or 'null'</param>
+        /// <returns>The matching type, or 'null' if no match is found.</returns>
+        public Type GetTargetType(string typeNameOrAlias)
+        {
+            var matchByTypeName = m_types.FirstOrDefault(t => t.Name.Equals(typeNameOrAlias, StringComparison.OrdinalIgnoreCase));
+
+            if (matchByTypeName != null)
+                return matchByTypeName;
+
+            return m_registeredParsersByAlias.ContainsKey(typeNameOrAlias)
+                       ? m_registeredParsersByAlias[typeNameOrAlias]
+                       : null;
+        }
+
         #endregion Public Methods
 
         #region Private Methods
+
+        private void RegisterParserTypeAliases()
+        {
+            foreach (var type in m_types)
+            {
+                var parserTypeTargetAlias = GetTargetAliasAttributeValue(type);
+                if (string.IsNullOrEmpty(parserTypeTargetAlias))
+                    continue;
+
+                if (m_registeredParsersByAlias == null)
+                    m_registeredParsersByAlias = new Dictionary<string, Type>(StringComparer.OrdinalIgnoreCase);
+
+                if (m_registeredParsersByAlias.ContainsKey(parserTypeTargetAlias))
+                    throw new DuplicateTargetAliasException(parserTypeTargetAlias);
+
+                m_registeredParsersByAlias.Add(parserTypeTargetAlias, type);
+            }
+        }
+
+        private string GetTargetAliasAttributeValue(Type targetType)
+        {
+            var aliasAttribute = targetType.GetCustomAttributes(typeof(TargetAliasAttribute), false).FirstOrDefault() as TargetAliasAttribute;
+            return (aliasAttribute != null) ? aliasAttribute.Alias : string.Empty;
+        }
 
         private void RegisterParameterHandlerInternal<TParameter>(string names, Action<TParameter> action, ParameterOptions options)
         {
