@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using CLAP;
@@ -8,7 +9,7 @@ using NUnit.Framework;
 namespace Tests
 {
     [TestFixture]
-    public class Tests
+    public class Tests : AssertionHelper
     {
         [Test]
         public void Execute_Verb()
@@ -24,8 +25,8 @@ namespace Tests
                 "/prefix=hello_",
             }, sample);
 
-            Assert.AreEqual(5, printer.PrintedTexts.Count);
-            Assert.IsTrue(printer.PrintedTexts.All(t => t.Equals("hello_test")));
+            Expect(printer.PrintedTexts, Count.EqualTo(5));
+            Expect(printer.PrintedTexts, All.EqualTo("hello_test"));
         }
 
         [Test]
@@ -41,8 +42,8 @@ namespace Tests
                 "/prefix=hello_",
             }, sample);
 
-            Assert.AreEqual(5, printer.PrintedTexts.Count);
-            Assert.IsTrue(printer.PrintedTexts.All(t => t.Equals("hello_test")));
+            Expect(printer.PrintedTexts, Count.EqualTo(5));
+            Expect(printer.PrintedTexts, All.EqualTo("hello_test"));
         }
 
         [Test]
@@ -127,38 +128,31 @@ namespace Tests
         [Test]
         public void Execute_DuplicateParameterNames()
         {
-            try
-            {
-                var printer = new Printer();
-                var sample = new Sample_05 { Printer = printer };
+            var printer = new Printer();
+            var sample = new Sample_05 { Printer = printer };
 
-                Parser.Run(new[]
-                {
-                    "p",
-                }, sample);
-
-                Assert.Fail();
-            }
-            catch (InvalidOperationException ex)
-            {
-                Assert.IsTrue(ex.Message.Contains("Duplicate parameter names found in Print: c, x"));
-            }
+            Expect(() => Parser.Run(new[]
+                                        {
+                                            "p",
+                                        }, sample),
+                    Throws.InstanceOf<InvalidOperationException>()
+                    .With.Message.ContainsSubstring("Duplicate parameter names found in Print: c, x"));
         }
 
         [Test]
-        [ExpectedException(typeof(MissingArgumentValueException))]
         public void Execute_NoParameterValue()
         {
             var printer = new Printer();
             var sample = new Sample_02 { Printer = printer };
 
-            Parser.Run(new[]
-            {
-                "print",
-                "/c=5",
-                "/msg=",
-                "/prefix=hello_",
-            }, sample);
+            Expect(() => Parser.Run(new[]
+                                        {
+                                            "print",
+                                            "/c=5",
+                                            "/msg=",
+                                            "/prefix=hello_",
+                                        }, sample),
+                   Throws.InstanceOf<MissingArgumentValueException>());
         }
 
         [Test]
@@ -171,19 +165,12 @@ namespace Tests
                 "/n=10",
             }, sample);
 
-            try
-            {
-                Parser.Run(new[]
-                {
-                    "morethan5",
-                    "/n=1",
-                }, sample);
-
-                Assert.Fail();
-            }
-            catch (ValidationException)
-            {
-            }
+            Expect(() => Parser.Run(new[]
+                                  {
+                                      "morethan5",
+                                      "/n=1",
+                                  }, sample),
+                   Throws.InstanceOf<ValidationException>());
         }
 
         [Test]
@@ -203,19 +190,12 @@ namespace Tests
                 "/n=11",
             }, sample);
 
-            try
-            {
-                Parser.Run(new[]
-                {
-                    "moreorequalto10",
-                    "/n=9",
-                }, sample);
-
-                Assert.Fail();
-            }
-            catch (ValidationException)
-            {
-            }
+            Expect(() => Parser.Run(new[]
+                                        {
+                                            "moreorequalto10",
+                                            "/n=9",
+                                        }, sample),
+                   Throws.InstanceOf<ValidationException>());
         }
 
         [Test]
@@ -229,19 +209,12 @@ namespace Tests
                 "/n=10",
             }, sample);
 
-            try
-            {
-                Parser.Run(new[]
-                {
-                    "lessthan20",
-                    "/n=20",
-                }, sample);
-
-                Assert.Fail();
-            }
-            catch (ValidationException)
-            {
-            }
+            Expect(() => Parser.Run(new[]
+                                        {
+                                            "lessthan20",
+                                            "/n=20",
+                                        }, sample),
+                   Throws.InstanceOf<ValidationException>());
         }
 
         [Test]
@@ -261,19 +234,12 @@ namespace Tests
                 "/n=30",
             }, sample);
 
-            try
-            {
-                Parser.Run(new[]
-                {
-                    "lessorequalto30",
-                    "/n=40",
-                }, sample);
-
-                Assert.Fail();
-            }
-            catch (ValidationException)
-            {
-            }
+            Expect(() => Parser.Run(new[]
+                                        {
+                                            "lessorequalto30",
+                                            "/n=40",
+                                        }, sample),
+                   Throws.InstanceOf<ValidationException>());
         }
 
         [Test]
@@ -293,19 +259,12 @@ namespace Tests
                 "/text=more@some.email.co.il",
             }, sample);
 
-            try
-            {
-                Parser.Run(new[]
-                {
-                    "regexmatchesemail",
-                    "/text=no_email",
-                }, sample);
-
-                Assert.Fail();
-            }
-            catch (ValidationException)
-            {
-            }
+            Expect(() => Parser.Run(new[]
+                                        {
+                                            "regexmatchesemail",
+                                            "/text=no_email",
+                                        }, sample),
+                   Throws.InstanceOf<ValidationException>());
         }
 
         [Test]
@@ -327,22 +286,15 @@ namespace Tests
         [Test]
         public void Required_Exception()
         {
-            try
-            {
-                var printer = new Printer();
-                var sample = new Sample_07 { Printer = printer };
+            var printer = new Printer();
+            var sample = new Sample_07 { Printer = printer };
 
-                Parser.Run(new[]
-                {
-                    "print",
-                    "/message:world",
-                }, sample);
-
-                Assert.Fail();
-            }
-            catch (CommandLineParserException)
-            {
-            }
+            Expect(() => Parser.Run(new[]
+                                        {
+                                            "print",
+                                            "/message:world",
+                                        }, sample),
+                   Throws.InstanceOf<CommandLineParserException>());
         }
 
         [Test]
@@ -395,10 +347,7 @@ namespace Tests
                 "/prefix:test_",
             }, sample);
 
-            Assert.AreEqual(3, printer.PrintedTexts.Count);
-            Assert.AreEqual("test_a", printer.PrintedTexts[0]);
-            Assert.AreEqual("test_b", printer.PrintedTexts[1]);
-            Assert.AreEqual("test_c", printer.PrintedTexts[2]);
+            Expect(printer.PrintedTexts, Is.EqualTo(new[] {"test_a", "test_b", "test_c"}));
 
             sample.Printer.Reset();
 
@@ -409,10 +358,7 @@ namespace Tests
                 "/prefix:test_",
             }, sample);
 
-            Assert.AreEqual(3, printer.PrintedTexts.Count);
-            Assert.AreEqual("test_1", printer.PrintedTexts[0]);
-            Assert.AreEqual("test_78", printer.PrintedTexts[1]);
-            Assert.AreEqual("test_100", printer.PrintedTexts[2]);
+            Expect(printer.PrintedTexts, Is.EqualTo(new[] { "test_1", "test_78", "test_100" }));
         }
 
         [Test]
@@ -427,7 +373,7 @@ namespace Tests
                 "/prefix:test_",
             }, sample);
 
-            Assert.AreEqual(0, printer.PrintedTexts.Count);
+            Expect(printer.PrintedTexts, Is.Empty);
         }
 
         [Test]
@@ -445,10 +391,7 @@ namespace Tests
                 "/prefix:test_",
             }, sample);
 
-            Assert.AreEqual(3, printer.PrintedTexts.Count);
-            Assert.AreEqual("test_1", printer.PrintedTexts[0]);
-            Assert.AreEqual("test_2", printer.PrintedTexts[1]);
-            Assert.AreEqual("test_3", printer.PrintedTexts[2]);
+            Expect(printer.PrintedTexts, Is.EqualTo(new[] { "test_1", "test_2", "test_3" }));
 
             // JSON
             //
@@ -459,10 +402,7 @@ namespace Tests
                 "/prefix:test_",
             }, sample);
 
-            Assert.AreEqual(6, printer.PrintedTexts.Count);
-            Assert.AreEqual("test_1", printer.PrintedTexts[3]);
-            Assert.AreEqual("test_2", printer.PrintedTexts[4]);
-            Assert.AreEqual("test_3", printer.PrintedTexts[5]);
+            Expect(printer.PrintedTexts, Is.EqualTo(new[] { "test_1", "test_2", "test_3", "test_1", "test_2", "test_3" }));
         }
 
         [Test]
@@ -477,7 +417,7 @@ namespace Tests
                 "/prefix:test_",
             }, sample);
 
-            Assert.AreEqual(0, printer.PrintedTexts.Count);
+            Expect(printer.PrintedTexts, Is.Empty);
         }
 
         [Test]
@@ -495,9 +435,7 @@ namespace Tests
                 "/prefix:test_",
             }, sample);
 
-            Assert.AreEqual(2, printer.PrintedTexts.Count);
-            Assert.AreEqual("test_Upper", printer.PrintedTexts[0]);
-            Assert.AreEqual("test_Lower", printer.PrintedTexts[1]);
+            Expect(printer.PrintedTexts, Is.EqualTo(new[] { "test_Upper", "test_Lower" }));
 
             // using JSON deserialization
             //
@@ -508,9 +446,9 @@ namespace Tests
                 "/prefix:test_",
             }, sample);
 
-            Assert.AreEqual(4, printer.PrintedTexts.Count);
-            Assert.AreEqual("test_Upper", printer.PrintedTexts[2]);
-            Assert.AreEqual("test_Lower", printer.PrintedTexts[3]);
+            Expect(printer.PrintedTexts, Count.EqualTo(4));
+            Expect(printer.PrintedTexts[2], Is.EqualTo("test_Upper"));
+            Expect(printer.PrintedTexts[3], Is.EqualTo("test_Lower"));
         }
 
         [Test]
@@ -525,7 +463,7 @@ namespace Tests
                 "/prefix:test_",
             }, sample);
 
-            Assert.AreEqual(0, printer.PrintedTexts.Count);
+            Expect(printer.PrintedTexts, Is.Empty);
         }
 
         [Test]
@@ -545,12 +483,12 @@ namespace Tests
 
             p.Run("print /c=5 /msg=test /prefix=hello_ /inc".Split(' '), sample);
 
-            Assert.AreEqual(1, x);
+            Expect(x, Is.EqualTo(1));
 
             p.Run("print /c=5 /msg=test /prefix=hello_ /dec".Split(' '), sample);
             p.Run("print /c=5 /msg=test /prefix=hello_ /d".Split(' '), sample);
 
-            Assert.AreEqual(-1, x);
+            Expect(x, Is.EqualTo(-1));
         }
 
         [Test]
@@ -566,7 +504,7 @@ namespace Tests
 
             p.Run("print /c=5 /msg=test /prefix=hello_ /debug=true".Split(' '), sample);
 
-            Assert.AreEqual("true", debug);
+            Expect(debug, Is.EqualTo("true"));
         }
 
         [Test]
@@ -583,7 +521,6 @@ namespace Tests
         }
 
         [Test]
-        [ExpectedException(typeof(NotSupportedException))]
         public void Global_Defined_MoreThanOneParameter_Exception()
         {
             var mock = new Mock<IPrinter>();
@@ -591,7 +528,8 @@ namespace Tests
 
             var p = new Parser<Sample_12>();
 
-            p.Run("print -foo".Split(' '), sample);
+            Expect(() => p.Run("print -foo".Split(' '), sample),
+                   Throws.InstanceOf<NotSupportedException>());
         }
 
         [Test]
@@ -621,7 +559,6 @@ namespace Tests
         }
 
         [Test]
-        [ExpectedException(typeof(TypeConvertionException))]
         public void Global_Defined_BadConvertion()
         {
             var mock = new Mock<IPrinter>();
@@ -629,7 +566,8 @@ namespace Tests
 
             var p = new Parser<Sample_10>();
 
-            p.Run("print -abra1:cadabra".Split(' '), sample);
+            Expect(() => p.Run("print -abra1:cadabra".Split(' '), sample),
+                   Throws.InstanceOf<TypeConvertionException>());
         }
 
         [Test]
@@ -692,15 +630,10 @@ namespace Tests
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentMismatchException))]
         public void EmptyDefined_WithParameters_Exception()
         {
-            var mock = new Mock<IPrinter>();
-            var sample = new Sample_20 { Printer = mock.Object };
-
-            var p = new Parser<Sample_20>();
-
-            p.Run(new string[] { }, sample);
+            Expect(() => new Parser<Sample_20>(),
+                   Throws.InstanceOf<ArgumentMismatchException>());
         }
 
         [Test]
@@ -719,19 +652,13 @@ namespace Tests
         }
 
         [Test]
-        [ExpectedException(typeof(MoreThanOneEmptyHandlerException))]
         public void Empty_MoreThanOne_Exception()
         {
-            var mock = new Mock<IPrinter>();
-            var sample = new Sample_13 { Printer = mock.Object };
-
-            var p = new Parser<Sample_13>();
-
-            p.Run(new string[] { }, sample);
+            Expect(() => new Parser<Sample_13>(),
+                   Throws.InstanceOf<MoreThanOneEmptyHandlerException>());
         }
 
         [Test]
-        [ExpectedException(typeof(ParserExecutionTargetException))]
         public void Empty_Defined_Static_TargetNotNull_Exception()
         {
             var mock = new Mock<IPrinter>();
@@ -739,16 +666,17 @@ namespace Tests
 
             var p = new Parser<Sample_14>();
 
-            p.Run(new string[] { }, sample);
+            Expect(() => p.Run(new string[] {}, sample),
+                   Throws.InstanceOf<ParserExecutionTargetException>());
         }
 
         [Test]
-        [ExpectedException(typeof(ParserExecutionTargetException))]
         public void Empty_Defined_NotStatic_TargetNull_Exception()
         {
             var p = new Parser<Sample_15>();
 
-            p.RunStatic(new string[] { });
+            Expect(() => p.RunStatic(new string[] {}),
+                   Throws.InstanceOf<ParserExecutionTargetException>());
         }
 
         [Test]
@@ -765,27 +693,17 @@ namespace Tests
         }
 
         [Test]
-        [ExpectedException(typeof(InvalidHelpHandlerException))]
         public void EmptyHelp_Defined_IntParameter_Exception()
         {
-            var mock = new Mock<IPrinter>();
-            var sample = new Sample_18 { Printer = mock.Object };
-
-            var p = new Parser<Sample_18>();
-
-            p.Run(new string[] { }, sample);
+            Expect(() => new Parser<Sample_18>(),
+                   Throws.InstanceOf<InvalidHelpHandlerException>());
         }
 
         [Test]
-        [ExpectedException(typeof(InvalidHelpHandlerException))]
         public void EmptyHelp_Defined_TwoParameters_Exception()
         {
-            var mock = new Mock<IPrinter>();
-            var sample = new Sample_19 { Printer = mock.Object };
-
-            var p = new Parser<Sample_19>();
-
-            p.Run(new string[] { }, sample);
+            Expect(() => new Parser<Sample_19>(),
+                   Throws.InstanceOf<InvalidHelpHandlerException>());
         }
 
         [Test]
@@ -865,7 +783,6 @@ namespace Tests
         }
 
         [Test]
-        [ExpectedException(typeof(InvalidHelpHandlerException))]
         public void Help_MoreThanOneParameter_Exception()
         {
             var mock = new Mock<IPrinter>();
@@ -873,11 +790,11 @@ namespace Tests
 
             var p = new Parser<Sample_24>();
 
-            p.Run(new[] { "-?" }, sample);
+            Expect(() => p.Run(new[] {"-?"}, sample),
+                   Throws.InstanceOf<InvalidHelpHandlerException>());
         }
 
         [Test]
-        [ExpectedException(typeof(InvalidHelpHandlerException))]
         public void Help_IntParameter_Exception()
         {
             var mock = new Mock<IPrinter>();
@@ -885,7 +802,8 @@ namespace Tests
 
             var p = new Parser<Sample_25>();
 
-            p.Run(new[] { "-?" }, sample);
+            Expect(() => p.Run(new[] { "-?" }, sample),
+                   Throws.InstanceOf<InvalidHelpHandlerException>());
         }
 
         [Test]
@@ -905,13 +823,12 @@ namespace Tests
         }
 
         [Test]
-        [ExpectedException(typeof(MoreThanOneEmptyHandlerException))]
         public void RegisterHelpHandler_MoreThanOnce_Exception()
         {
             var p = new Parser<Sample_25>();
 
             p.Register.EmptyHandler(delegate { });
-            p.Register.EmptyHandler(delegate { });
+            Expect(() => p.Register.EmptyHandler(delegate { }), Throws.InstanceOf<MoreThanOneEmptyHandlerException>());
         }
 
         [Test]
@@ -923,11 +840,11 @@ namespace Tests
 
             p.Register.EmptyHelpHandler(h => help = h);
 
-            Assert.IsNull(help);
+            Expect(help, Is.Null);
 
             p.RunStatic(new string[] { });
 
-            Assert.IsNotNull(help);
+            Expect(help, Is.Not.Null);
         }
 
         [Test]
@@ -939,50 +856,46 @@ namespace Tests
 
             p.Register.EmptyHelpHandler(h => help = h);
 
-            Assert.IsNull(help);
+            Expect(help, Is.Null);
 
             p.RunStatic(new string[] { });
 
-            Assert.IsNotNull(help);
+            Expect(help, Is.Not.Null);
         }
 
         [Test]
-        [ExpectedException(typeof(MoreThanOneEmptyHandlerException))]
         public void RegisterEmptyHelpHandler_MoreThanOnce_Exception()
         {
             var p = new Parser<Sample_25>();
 
             p.Register.EmptyHelpHandler(delegate { });
-            p.Register.EmptyHelpHandler(delegate { });
+            Expect(() => p.Register.EmptyHelpHandler(delegate { }), Throws.InstanceOf<MoreThanOneEmptyHandlerException>());
         }
 
         [Test]
-        [ExpectedException(typeof(InvalidOperationException))]
         public void RegisterHelpHandler_MoreThanOnce_SameKey_Exception()
         {
             var p = new Parser<Sample_25>();
 
             p.Register.HelpHandler("a", delegate { });
             p.Register.HelpHandler("b", delegate { });
-            p.Register.HelpHandler("a", delegate { });
+            Expect(() => p.Register.HelpHandler("a", delegate { }), Throws.InstanceOf<InvalidOperationException>());
         }
 
         [Test]
-        [ExpectedException(typeof(VerbNotFoundException))]
         public void Run_Verb_NoMatchingMethod_Exception()
         {
             var p = new Parser<Sample_25>();
 
-            p.RunStatic(new[] { "boo!" });
+            Expect(() => p.RunStatic(new[] { "boo!" }), Throws.InstanceOf<VerbNotFoundException>());
         }
 
         [Test]
-        [ExpectedException(typeof(MissingDefaultVerbException))]
         public void Run_NoVerb_NoDefaultVerb_Exception()
         {
             var p = new Parser<Sample_25>();
 
-            p.RunStatic(new string[] { "-x" });
+            Expect(() => p.RunStatic(new[] { "-x" }), Throws.InstanceOf<MissingDefaultVerbException>());
         }
 
         [Test]
@@ -1124,33 +1037,21 @@ namespace Tests
                 @"/path=%WINDIR%\system32\cmd.exe",
             }, sample);
 
-            try
-            {
-                Parser.Run(new[]
-                {
-                    "fileexists",
-                    @"/path=y:\{B2C97314-4C55-4EB9-9049-63BB65AC980A}.{6E8698D0-4CFA-4ACB-8AA3-26476F490228}",
-                }, sample);
+            Expect(() => Parser.Run(new[]
+                                        {
+                                            "fileexists",
+                                            @"/path=y:\{B2C97314-4C55-4EB9-9049-63BB65AC980A}.{6E8698D0-4CFA-4ACB-8AA3-26476F490228}"
+                                            ,
+                                        }, sample),
+                   Throws.InstanceOf<ValidationException>());
 
-                Assert.Fail();
-            }
-            catch (ValidationException)
-            {
-            }
-
-            try
-            {
-                Parser.Run(new[]
-                { 
-                    "urifileexists",
-                    @"/path=y:\{B2C97314-4C55-4EB9-9049-63BB65AC980A}.{6E8698D0-4CFA-4ACB-8AA3-26476F490228}",
-                }, sample);
-
-                Assert.Fail();
-            }
-            catch (ValidationException)
-            {
-            }
+            Expect(() => Parser.Run(new[]
+                                        {
+                                            "urifileexists",
+                                            @"/path=y:\{B2C97314-4C55-4EB9-9049-63BB65AC980A}.{6E8698D0-4CFA-4ACB-8AA3-26476F490228}"
+                                            ,
+                                        }, sample),
+                   Throws.InstanceOf<ValidationException>());
         }
 
         [Test]
@@ -1182,33 +1083,21 @@ namespace Tests
                 @"/path=%WINDIR%\system32",
             }, sample);
 
-            try
-            {
-                Parser.Run(new[]
-                {
-                    "directoryexists",
-                    @"/path=y:\{B2C97314-4C55-4EB9-9049-63BB65AC980A}.{6E8698D0-4CFA-4ACB-8AA3-26476F490228}",
-                }, sample);
+            Expect(() => Parser.Run(new[]
+                                        {
+                                            "directoryexists",
+                                            @"/path=y:\{B2C97314-4C55-4EB9-9049-63BB65AC980A}.{6E8698D0-4CFA-4ACB-8AA3-26476F490228}"
+                                            ,
+                                        }, sample),
+                   Throws.InstanceOf<ValidationException>());
 
-                Assert.Fail();
-            }
-            catch (ValidationException)
-            {
-            }
-
-            try
-            {
-                Parser.Run(new[]
-                {
-                    "uridirectoryexists",
-                    @"/path=y:\{B2C97314-4C55-4EB9-9049-63BB65AC980A}.{6E8698D0-4CFA-4ACB-8AA3-26476F490228}",
-                }, sample);
-
-                Assert.Fail();
-            }
-            catch (ValidationException)
-            {
-            }
+            Expect(() => Parser.Run(new[]
+                                        {
+                                            "uridirectoryexists",
+                                            @"/path=y:\{B2C97314-4C55-4EB9-9049-63BB65AC980A}.{6E8698D0-4CFA-4ACB-8AA3-26476F490228}"
+                                            ,
+                                        }, sample),
+                   Throws.InstanceOf<ValidationException>());
         }
 
         [Test]
@@ -1226,33 +1115,21 @@ namespace Tests
             Parser.Run(new[] { "uripathexists", @"/path=c:\windows\system32" }, sample);
             Parser.Run(new[] { "uripathexists", @"/path=%WINDIR%\system32" }, sample);
 
-            try
-            {
-                Parser.Run(new[]
-                {
-                    "pathexists",
-                    @"/path=y:\{B2C97314-4C55-4EB9-9049-63BB65AC980A}.{6E8698D0-4CFA-4ACB-8AA3-26476F490228}",
-                }, sample);
+            Expect(() => Parser.Run(new[]
+                                        {
+                                            "pathexists",
+                                            @"/path=y:\{B2C97314-4C55-4EB9-9049-63BB65AC980A}.{6E8698D0-4CFA-4ACB-8AA3-26476F490228}"
+                                            ,
+                                        }, sample),
+                   Throws.InstanceOf<ValidationException>());
 
-                Assert.Fail();
-            }
-            catch (ValidationException)
-            {
-            }
-
-            try
-            {
-                Parser.Run(new[]
-                {
-                    "uripathexists",
-                    @"/path=y:\{B2C97314-4C55-4EB9-9049-63BB65AC980A}.{6E8698D0-4CFA-4ACB-8AA3-26476F490228}",
-                }, sample);
-
-                Assert.Fail();
-            }
-            catch (ValidationException)
-            {
-            }
+            Expect(() => Parser.Run(new[]
+                                        {
+                                            "uripathexists",
+                                            @"/path=y:\{B2C97314-4C55-4EB9-9049-63BB65AC980A}.{6E8698D0-4CFA-4ACB-8AA3-26476F490228}"
+                                            ,
+                                        }, sample),
+                   Throws.InstanceOf<ValidationException>());
         }
 
         [Test]
@@ -1263,25 +1140,19 @@ namespace Tests
 
             var p = new Parser<Sample_02>();
 
-            try
-            {
-                p.Run(new[]
-                {
-                    "-count:1",
-                    "-message:a",
-                    "-prefix:p",
-                    "-upper",
-                    "-what:x"
-                }, sample);
-
-                Assert.Fail();
-            }
-            catch (UnhandledParametersException ex)
-            {
-                Assert.AreEqual(1, ex.UnhandledParameters.Count());
-                Assert.AreEqual("what", ex.UnhandledParameters.First().Key);
-                Assert.AreEqual("x", ex.UnhandledParameters.First().Value);
-            }
+            Expect(() => p.Run(new[]
+                                   {
+                                       "-count:1",
+                                       "-message:a",
+                                       "-prefix:p",
+                                       "-upper",
+                                       "-what:x"
+                                   }, sample),
+                   Throws.InstanceOf<UnhandledParametersException>()
+                       .With.Property("UnhandledParameters").EqualTo(new Dictionary<string, string>
+                                                                         {
+                                                                             {"what", "x"}
+                                                                         }));
         }
 
         [Test]
@@ -1292,9 +1163,7 @@ namespace Tests
 
             var p = new Parser<Sample_02>();
 
-            try
-            {
-                p.Run(new[]
+            Expect(() => p.Run(new[]
                 {
                     "-count:1",
                     "-who:me",
@@ -1303,17 +1172,14 @@ namespace Tests
                     "-prefix:p",
                     "-upper",
                     "-what:x"
-                }, sample);
-
-                Assert.Fail();
-            }
-            catch (UnhandledParametersException ex)
-            {
-                Assert.AreEqual(3, ex.UnhandledParameters.Count());
-                Assert.IsTrue(ex.UnhandledParameters.Keys.Contains("who"));
-                Assert.IsTrue(ex.UnhandledParameters.Keys.Contains("foo"));
-                Assert.IsTrue(ex.UnhandledParameters.Keys.Contains("what"));
-            }
+                }, sample),
+                   Throws.InstanceOf<UnhandledParametersException>()
+                       .With.Property("UnhandledParameters").EqualTo(new Dictionary<string, string>
+                                                                         {
+                                                                             { "who", "me" },
+                                                                             { "foo", "bar" },
+                                                                             { "what", "x" },
+                                                                         }));
         }
 
         [Test]
@@ -1351,7 +1217,7 @@ namespace Tests
 
             p.RunStatic(new string[] { });
 
-            Assert.IsTrue(handled);
+            Expect(handled, Is.True);
         }
 
         [Test]
@@ -1367,7 +1233,7 @@ namespace Tests
 
             p.RunStatic(new string[] { });
 
-            Assert.IsTrue(handled);
+            Expect(handled, Is.True);
         }
 
         [Test]
@@ -1383,16 +1249,9 @@ namespace Tests
                 ex.ReThrow = true;
             });
 
-            try
-            {
-                p.RunStatic(new string[] { });
-
-                Assert.Fail();
-            }
-            catch (Exception)
-            {
-                Assert.IsTrue(handled);
-            }
+            Expect(() => p.RunStatic(new string[] {}),
+                   Throws.InstanceOf<Exception>());
+            Expect(handled, Is.True);
         }
 
         [Test]
@@ -1419,7 +1278,7 @@ namespace Tests
                 "-what:x"
             }, sample);
 
-            Assert.IsTrue(handled);
+            Expect(handled, Is.True);
         }
 
         [Test]
@@ -1437,50 +1296,45 @@ namespace Tests
 
             p.Run(new[] { "morethan5", "/n=1" }, sample);
 
-            Assert.IsTrue(handled);
+            Expect(handled, Is.True);
         }
 
         [Test]
-        [ExpectedException(typeof(MoreThanOneErrorHandlerException))]
         public void Error_MoreThanOne_Exception()
         {
-            var mock = new Mock<IPrinter>();
-            var sample = new Sample_32 { Printer = mock.Object };
-
-            var p = new Parser<Sample_32>();
-
-            p.Run(new string[] { }, sample);
+            Expect(() => new Parser<Sample_32>(),
+                   Throws.InstanceOf<MoreThanOneErrorHandlerException>());
         }
 
         [Test]
-        [ExpectedException(typeof(MoreThanOneErrorHandlerException))]
         public void RegisterError_MoreThanOne_Exception()
         {
             var p = new Parser<Sample_02>();
 
             p.Register.ErrorHandler(delegate { });
-            p.Register.ErrorHandler(delegate { });
+            Expect(() => p.Register.ErrorHandler(delegate { }),
+                   Throws.InstanceOf<MoreThanOneErrorHandlerException>());
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentMismatchException))]
         public void Error_DefinedWithInt_Exception()
         {
-            Parser.Run<Sample_35>(null);
+            Expect(() => Parser.Run<Sample_35>(null),
+                   Throws.InstanceOf<ArgumentMismatchException>());
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentMismatchException))]
         public void Error_DefinedWithBadException_Exception()
         {
-            Parser.Run<Sample_36>(null);
+            Expect(() => Parser.Run<Sample_36>(null),
+                   Throws.InstanceOf<ArgumentMismatchException>());
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentMismatchException))]
         public void Error_DefinedWithMoreThanOneParameter_Exception()
         {
-            Parser.Run<Sample_37>(null);
+            Expect(() => Parser.Run<Sample_37>(null),
+                   Throws.InstanceOf<ArgumentMismatchException>());
         }
 
         [Test]
@@ -1488,7 +1342,7 @@ namespace Tests
         {
             var sample = new Sample_33();
 
-            Assert.IsNull(sample.Ex);
+            Expect(sample.Ex, Is.Null);
 
             try
             {
@@ -1498,8 +1352,8 @@ namespace Tests
             }
             catch (Exception ex)
             {
-                Assert.IsNotNull(sample.Ex);
-                Assert.AreEqual(ex, sample.Ex);
+                Expect(sample.Ex, Is.Not.Null);
+                Expect(sample.Ex, Is.EqualTo(ex));
             }
         }
 
@@ -1508,7 +1362,7 @@ namespace Tests
         {
             var sample = new Sample_33();
 
-            Assert.IsNull(sample.Ex);
+            Expect(sample.Ex, Is.Null);
 
             try
             {
@@ -1516,15 +1370,10 @@ namespace Tests
 
                 Assert.Fail();
             }
-            catch (TargetInvocationException tex)
-            {
-                Assert.IsNotNull(sample.Ex);
-                Assert.AreEqual(tex.InnerException, sample.Ex);
-            }
             catch (Exception ex)
             {
-                Assert.IsNotNull(sample.Ex);
-                Assert.AreEqual(ex, sample.Ex);
+                Expect(sample.Ex, Is.Not.Null);
+                Expect(sample.Ex, Is.EqualTo(ex));
             }
         }
 
@@ -1533,18 +1382,11 @@ namespace Tests
         {
             var sample = new Sample_34();
 
-            Assert.IsFalse(sample.Handled);
+            Expect(sample.Handled, Is.False);
 
-            try
-            {
-                Parser.Run(new[] { "foo" }, sample);
+            Expect(() => Parser.Run(new[] {"foo"}, sample), Throws.Exception);
 
-                Assert.Fail();
-            }
-            catch
-            {
-                Assert.IsTrue(sample.Handled);
-            }
+            Expect(sample.Handled, Is.True);
         }
 
         [Test]
@@ -1556,10 +1398,9 @@ namespace Tests
         }
 
         [Test]
-        [ExpectedException(typeof(MoreThanOneDefaultVerbException))]
         public void DefaultVerb_MoreThanOnce_Exception()
         {
-            new Parser<Sample_38>();
+            Expect(() => new Parser<Sample_38>(), Throws.InstanceOf<MoreThanOneDefaultVerbException>());
         }
 
         [Test]
@@ -1574,27 +1415,27 @@ namespace Tests
         }
 
         [Test]
-        [ExpectedException(typeof(ValidationException))]
         public void ValidateExpression_TwoInts_Fail()
         {
-            Parser.Run<Sample_40>(new[]
-            {
-                "foo1",
-                "-p1:1",
-                "-p2:3",
-            });
+            Expect(() => Parser.Run<Sample_40>(new[]
+                                                   {
+                                                       "foo1",
+                                                       "-p1:1",
+                                                       "-p2:3",
+                                                   }),
+                   Throws.InstanceOf<ValidationException>());
         }
 
         [Test]
-        [ExpectedException(typeof(ValidationException))]
         public void ValidateExpression_TwoInts_TwoValidators_Fail()
         {
-            Parser.Run<Sample_40>(new[]
-            {
-                "foo2",
-                "-p1:8",
-                "-p2:3",
-            });
+            Expect(() => Parser.Run<Sample_40>(new[]
+                                                   {
+                                                       "foo2",
+                                                       "-p1:8",
+                                                       "-p2:3",
+                                                   }),
+                   Throws.InstanceOf<ValidationException>());
         }
 
         [Test]
@@ -1629,25 +1470,25 @@ namespace Tests
         }
 
         [Test]
-        [ExpectedException(typeof(ValidationException))]
         public void ValidateExpression_String_DifferentCase_Fail()
         {
-            Parser.Run<Sample_40>(new[]
-            {
-                "foo5",
-                "-str:DEF",
-            });
+            Expect(() => Parser.Run<Sample_40>(new[]
+                                                   {
+                                                       "foo5",
+                                                       "-str:DEF",
+                                                   }),
+                   Throws.InstanceOf<ValidationException>());
         }
 
         [Test]
-        [ExpectedException(typeof(ValidationException))]
         public void ValidateExpression_String_Like_Fail()
         {
-            Parser.Run<Sample_40>(new[]
-            {
-                "foo4",
-                "-str:blah",
-            });
+            Expect(() => Parser.Run<Sample_40>(new[]
+                                                   {
+                                                       "foo4",
+                                                       "-str:blah",
+                                                   }),
+                   Throws.InstanceOf<ValidationException>());
         }
 
         [Test]
@@ -1671,14 +1512,14 @@ namespace Tests
         }
 
         [Test]
-        [ExpectedException(typeof(ValidationException))]
         public void ValidateExpression_Global_Fail()
         {
-            Parser.Run<Sample_40>(new[]
-            {
-                "dummy",
-                "-boing:5",
-            });
+            Expect(() => Parser.Run<Sample_40>(new[]
+                                                   {
+                                                       "dummy",
+                                                       "-boing:5",
+                                                   }),
+                   Throws.InstanceOf<ValidationException>());
         }
 
         [Test]
@@ -1849,16 +1690,9 @@ namespace Tests
             var arr1 = s.Array[1];
             var arr2 = s.Array[2];
 
-            Assert.AreEqual(1, arr0[0]);
-            Assert.AreEqual(2, arr0[1]);
-            Assert.AreEqual(3, arr0[2]);
-
-            Assert.AreEqual(4, arr1[0]);
-            Assert.AreEqual(5, arr1[1]);
-            Assert.AreEqual(6, arr1[2]);
-
-            Assert.AreEqual(7, arr2[0]);
-            Assert.AreEqual(8, arr2[1]);
+            Expect(arr0, Is.EqualTo(new[] {1, 2, 3}));
+            Expect(arr1, Is.EqualTo(new[] {4, 5, 6}));
+            Expect(arr2, Is.EqualTo(new[] {7, 8}));
         }
 
         [Test]
@@ -1875,29 +1709,16 @@ namespace Tests
         }
 
         [Test]
-        [ExpectedException(typeof(ValidationException))]
-        public void ArrayOfComplexType_WithTypeValidation_Fail_1()
+        public void ArrayOfComplexType_WithTypeValidation_Fail([Values("ZooCollection", "ValCollection")] string argument1)
         {
             var s = new Sample_42();
 
-            Parser.Run(new[]
-            {
-                "ZooCollection",
-                "-t:[{Number: 100},{Number: 5}]",
-            }, s);
-        }
-
-        [Test]
-        [ExpectedException(typeof(ValidationException))]
-        public void ArrayOfComplexType_WithTypeValidation_Fail_2()
-        {
-            var s = new Sample_42();
-
-            Parser.Run(new[]
-            {
-                "ValCollection",
-                "-t:[{Number: 100},{Number: 5}]",
-            }, s);
+            Expect(() => Parser.Run(new[]
+                                        {
+                                            argument1,
+                                            "-t:[{Number: 100},{Number: 5}]",
+                                        }, s),
+                   Throws.InstanceOf<ValidationException>());
         }
 
         [Test]
@@ -2164,121 +1985,34 @@ namespace Tests
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void Register_EmptyHandler_Null_Exception()
         {
             var p = new Parser<Sample_02>();
 
-            p.Register.EmptyHandler(null);
+            Expect(() => p.Register.EmptyHandler(null), Throws.InstanceOf<ArgumentNullException>());
+            Expect(() => p.Register.EmptyHelpHandler(null), Throws.InstanceOf<ArgumentNullException>());
+            Expect(() => p.Register.ErrorHandler(null), Throws.InstanceOf<ArgumentNullException>());
+            Expect(() => p.Register.HelpHandler("help", null), Throws.InstanceOf<ArgumentNullException>());
+            Expect(() => p.Register.ParameterHandler("p", null), Throws.InstanceOf<ArgumentNullException>());
+            Expect(() => p.Register.ParameterHandler<int>("p", null), Throws.InstanceOf<ArgumentNullException>());
+            Expect(() => p.Register.ParameterHandler("p", null, "description"), Throws.InstanceOf<ArgumentNullException>());
+            Expect(() => p.Register.ParameterHandler<string>("p", null, new ParameterOptions { Description = "description" }), Throws.InstanceOf<ArgumentNullException>());
+            Expect(() => p.Register.PreVerbInterceptor(null), Throws.InstanceOf<ArgumentNullException>());
+            Expect(() => p.Register.PostVerbInterceptor(null), Throws.InstanceOf<ArgumentNullException>());
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
-        public void Register_EmptyHelpHandler_Null_Exception()
+        public void PreVerbExecution_MismatchArgs_Exception()
         {
-            var p = new Parser<Sample_02>();
-
-            p.Register.EmptyHelpHandler(null);
+            Expect(() => Parser.Run<Sample_56>(new[] {""}), Throws.InstanceOf<ArgumentMismatchException>());
+            Expect(() => Parser.Run<Sample_57>(new[] { "" }), Throws.InstanceOf<ArgumentMismatchException>());
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
-        public void Register_ErrorHandler_Null_Exception()
-        {
-            var p = new Parser<Sample_02>();
-
-            p.Register.ErrorHandler(null);
-        }
-
-        [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
-        public void Register_HelpHandler_Null_Exception()
-        {
-            var p = new Parser<Sample_02>();
-
-            p.Register.HelpHandler("help", null);
-        }
-
-        [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
-        public void Register_ParameterHandler_Null_Exception_1()
-        {
-            var p = new Parser<Sample_02>();
-
-            p.Register.ParameterHandler("p", null);
-        }
-
-        [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
-        public void Register_ParameterHandler_Null_Exception_2()
-        {
-            var p = new Parser<Sample_02>();
-
-            p.Register.ParameterHandler<int>("p", null);
-        }
-
-        [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
-        public void Register_ParameterHandler_Null_Exception_3()
-        {
-            var p = new Parser<Sample_02>();
-
-            p.Register.ParameterHandler("p", null, "description");
-        }
-
-        [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
-        public void Register_ParameterHandler_Null_Exception_4()
-        {
-            var p = new Parser<Sample_02>();
-
-            p.Register.ParameterHandler<string>("p", null, new ParameterOptions { Description = "description" });
-        }
-
-        [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
-        public void Register_PostVerbInterceptor_Null_Exception()
-        {
-            var p = new Parser<Sample_02>();
-
-            p.Register.PostVerbInterceptor(null);
-        }
-
-        [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
-        public void Register_PreVerbInterceptor_Null_Exception()
-        {
-            var p = new Parser<Sample_02>();
-
-            p.Register.PreVerbInterceptor(null);
-        }
-
-        [Test]
-        [ExpectedException(typeof(ArgumentMismatchException))]
-        public void PreVerbExecution_MismatchArgs_Exception_1()
-        {
-            Parser.Run<Sample_56>(new[] { "" });
-        }
-
-        [Test]
-        [ExpectedException(typeof(ArgumentMismatchException))]
-        public void PostVerbExecution_MismatchArgs_Exception_1()
-        {
-            Parser.Run<Sample_57>(new[] { "" });
-        }
-
-        [Test]
-        [ExpectedException(typeof(ArgumentMismatchException))]
         public void PreVerbExecution_MismatchArgs_Exception_2()
         {
-            Parser.Run<Sample_58>(new[] { "" });
-        }
-
-        [Test]
-        [ExpectedException(typeof(ArgumentMismatchException))]
-        public void PostVerbExecution_MismatchArgs_Exception_2()
-        {
-            Parser.Run<Sample_59>(new[] { "" });
+            Expect(() => Parser.Run<Sample_58>(new[] { "" }), Throws.InstanceOf<ArgumentMismatchException>());
+            Expect(() => Parser.Run<Sample_59>(new[] { "" }), Throws.InstanceOf<ArgumentMismatchException>());
         }
 
         //[Test, Ignore]
@@ -2354,21 +2088,19 @@ namespace Tests
         }
 
         [Test]
-        [ExpectedException(typeof(AmbiguousParameterDefaultException))]
         public void Parameter_WithDefault_AmbiguousDefaults()
         {
             var t = new ParameterWithDefaults_2();
 
-            Parser.Run(new string[] { "foo" }, t);
+            Expect(() => Parser.Run(new[] {"foo"}, t), Throws.InstanceOf<AmbiguousParameterDefaultException>());
         }
 
         [Test]
-        [ExpectedException(typeof(InvalidParameterDefaultProviderException))]
         public void Parameter_WithDefault_BadDefaultProvider()
         {
             var t = new ParameterWithDefaults_3();
 
-            Parser.Run(new string[] { "foo" }, t);
+            Expect(() => Parser.Run(new[] { "foo" }, t), Throws.InstanceOf<InvalidParameterDefaultProviderException>());
         }
 
         [Test]
@@ -2380,29 +2112,30 @@ namespace Tests
                 "foo","-c=5","-n=bar"
             }, s);
 
-            Assert.AreEqual(5, s.Count);
-            Assert.AreEqual("bar", s.Name);
+            Expect(s.Count, Is.EqualTo(5));
+            Expect(s.Name, Is.EqualTo("bar"));
         }
 
         [Test]
-        [ExpectedException(typeof(UnhandledParametersException))]
         public void Parameters_WithoutAutoPrefixes()
         {
             var s = new Sample_62();
-            Parser.Run(new[]
-            {
-                "bar","-c=5","-n=bar"
-            }, s);
+
+            Expect(() => Parser.Run(new[]
+                                        {
+                                            "bar", "-c=5", "-n=bar"
+                                        }, s),
+                   Throws.InstanceOf<UnhandledParametersException>());
         }
 
         [Test]
-        [ExpectedException(typeof(DuplicateGlobalHandlerException))]
         public void DuplicateGlobalName_Exception()
         {
-            Parser.Run<Sample_63>(new[]
-            {
-                "foo"
-            });
+            Expect(() => Parser.Run<Sample_63>(new[]
+                                                   {
+                                                       "foo"
+                                                   }),
+                   Throws.InstanceOf<DuplicateGlobalHandlerException>());
         }
 
         [Test]
@@ -2410,11 +2143,11 @@ namespace Tests
         {
             var s = new Sample_64();
 
-            Assert.IsFalse(s.Handled);
+            Expect(s.Handled, Is.False);
 
             Parser.Run(new[] { "." }, s);
 
-            Assert.IsTrue(s.Handled);
+            Expect(s.Handled, Is.True);
         }
 
         [Test]
@@ -2433,31 +2166,25 @@ namespace Tests
         }
 
         [Test]
-        [ExpectedException(typeof(ValidationException))]
         public void DeserializeComplexTypeWithCollection_Json_ValidationError()
         {
             var s = new Sample_66();
 
             var json = "{Age: 34,Name: 'Adrian',Email: 'adrianaisemberg@gmail.com',PhoneNumbers:[{Type:'Home',Number:'001-2232322'},{Type:'Mobile',Number:'002-7787787'},{Type: 'Office',Number: '003-4463565'}]}";
 
-            Parser.Run(new[] { "foo", "-p=" + json }, s);
-
-            Assert.AreEqual("Adrian", s.Person.Name);
-            Assert.AreEqual(3, s.Person.PhoneNumbers.Count);
+            Expect(() => Parser.Run(new[] {"foo", "-p=" + json}, s),
+                   Throws.InstanceOf<ValidationException>());
         }
 
         [Test]
-        [ExpectedException(typeof(ValidationException))]
         public void DeserializeComplexTypeWithCollection_Xml_ValidationError()
         {
             var s = new Sample_66();
 
             var xml = "<Person><Age>34</Age><Name>Adrian</Name><Email>adrianaisemberg@gmail.com</Email><PhoneNumbers><PhoneNumber><Type>Home</Type><Number>001-2232322</Number></PhoneNumber><PhoneNumber><Type>Mobile</Type><Number>002-7787787</Number></PhoneNumber><PhoneNumber><Type>Office</Type><Number>003-4463565</Number></PhoneNumber></PhoneNumbers></Person>";
 
-            Parser.Run(new[] { "foo", "-p=" + xml }, s);
-
-            Assert.AreEqual("Adrian", s.Person.Name);
-            Assert.AreEqual(3, s.Person.PhoneNumbers.Count);
+            Expect(() => Parser.Run(new[] { "foo", "-p=" + xml }, s),
+                   Throws.InstanceOf<ValidationException>());
         }
 
         [Test]
@@ -2469,8 +2196,8 @@ namespace Tests
 
             Parser.Run(new[] { "foo", "-p=" + json }, s);
 
-            Assert.AreEqual("Adrian", s.Person.Name);
-            Assert.AreEqual(3, s.Person.PhoneNumbers.Count);
+            Expect(s.Person.Name, Is.EqualTo("Adrian"));
+            Expect(s.Person.PhoneNumbers, Count.EqualTo(3));
         }
 
         [Test]
@@ -2482,8 +2209,8 @@ namespace Tests
 
             Parser.Run(new[] { "foo", "-p=" + xml }, s);
 
-            Assert.AreEqual("Adrian", s.Person.Name);
-            Assert.AreEqual(3, s.Person.PhoneNumbers.Count);
+            Expect(s.Person.Name, Is.EqualTo("Adrian"));
+            Expect(s.Person.PhoneNumbers, Count.EqualTo(3));
         }
 
         [Test]
@@ -2493,38 +2220,26 @@ namespace Tests
         }
 
         [Test]
-        [ExpectedException(typeof(NonArrayParameterWithSeparatorException))]
         public void NonArrayWithSeparator_Exception()
         {
-            Parser.Run<Sample_68>(new[] { "foo", "-x=aaa" });
+            Expect(() => Parser.Run<Sample_68>(new[] {"foo", "-x=aaa"}),
+                   Throws.InstanceOf<NonArrayParameterWithSeparatorException>());
         }
 
         [Test]
-        [ExpectedException(typeof(InvalidSeparatorException))]
-        public void NonArrayWithInvalidSeparator_Exception_1()
+        public void NonArrayWithInvalidSeparator_Exception()
         {
-            Parser.Run<Sample_70>(new[] { "foo", "-enums=aaa bbb ccc" });
-        }
+            Expect(() => Parser.Run<Sample_70>(new[] {"foo", "-enums=aaa bbb ccc"}),
+                   Throws.InstanceOf<InvalidSeparatorException>());
 
-        [Test]
-        [ExpectedException(typeof(InvalidSeparatorException))]
-        public void NonArrayWithInvalidSeparator_Exception_2()
-        {
-            Parser.Run<Sample_71>(new[] { "foo", "-enums=aaa bbb ccc" });
-        }
+            Expect(() => Parser.Run<Sample_71>(new[] { "foo", "-enums=aaa bbb ccc" }),
+                   Throws.InstanceOf<InvalidSeparatorException>());
 
-        [Test]
-        [ExpectedException(typeof(InvalidSeparatorException))]
-        public void NonArrayWithInvalidSeparator_Exception_3()
-        {
-            Parser.Run<Sample_72>(new[] { "foo", "-enums=aaa bbb ccc" });
-        }
+            Expect(() => Parser.Run<Sample_72>(new[] { "foo", "-enums=aaa bbb ccc" }),
+                   Throws.InstanceOf<InvalidSeparatorException>());
 
-        [Test]
-        [ExpectedException(typeof(InvalidSeparatorException))]
-        public void NonArrayWithInvalidSeparator_Exception_4()
-        {
-            Parser.Run<Sample_73>(new[] { "foo", "-enums=aaa bbb ccc" });
+            Expect(() => Parser.Run<Sample_73>(new[] { "foo", "-enums=aaa bbb ccc" }),
+                   Throws.InstanceOf<InvalidSeparatorException>());
         }
     }
 }
