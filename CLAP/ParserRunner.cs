@@ -20,6 +20,7 @@ namespace CLAP
         private readonly static string s_fileInputSuffix = "@";
 
         private readonly ParserRegistration m_registration;
+        private readonly HelpGeneratorBase m_helpGenerator;
 
         #endregion Fields
 
@@ -36,7 +37,7 @@ namespace CLAP
 
         #region Constructors
 
-        internal ParserRunner(Type type, ParserRegistration parserRegistration)
+        internal ParserRunner(Type type, ParserRegistration parserRegistration, HelpGeneratorBase helpGenerator)
         {
             Debug.Assert(type != null);
 
@@ -45,6 +46,8 @@ namespace CLAP
             m_registration = parserRegistration;
 
             Validate(type, m_registration);
+
+            m_helpGenerator = helpGenerator;
         }
 
         #endregion Constructors
@@ -785,7 +788,7 @@ namespace CLAP
 
             if (helpHandler != null)
             {
-                helpHandler(HelpGenerator.GetHelp(this));
+                helpHandler(m_helpGenerator.GetHelp(this));
 
                 return true;
             }
@@ -807,7 +810,7 @@ namespace CLAP
 
                         var obj = method.IsStatic ? null : target;
 
-                        MethodInvoker.Invoke(method, obj, new[] { HelpGenerator.GetHelp(this) });
+                        MethodInvoker.Invoke(method, obj, new[] { m_helpGenerator.GetHelp(this) });
 
                         return true;
                     }
@@ -848,7 +851,7 @@ namespace CLAP
                 //
                 if (method.HasAttribute<HelpAttribute>())
                 {
-                    var help = HelpGenerator.GetHelp(this);
+                    var help = m_helpGenerator.GetHelp(this);
 
                     // method should execute because it was already passed validation
                     //

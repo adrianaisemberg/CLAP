@@ -84,6 +84,7 @@
   <ItemGroup>
     <Compile Include="CollectionValidationAttribute.cs" />
     <Compile Include="DefaultProvider.cs" />
+    <Compile Include="HelpGeneratorBase.cs" />
     <Compile Include="HelpInfo.cs" />
     <Compile Include="Interception\UserVerbExecutionContext.cs" />
     <Compile Include="Pair.cs" />
@@ -98,7 +99,7 @@
     <Compile Include="EmptyAttribute.cs" />
     <Compile Include="Exceptions.cs" />
     <Compile Include="GlobalAttribute.cs" />
-    <Compile Include="HelpGenerator.cs" />
+    <Compile Include="DefaultHelpGenerator.cs" />
     <Compile Include="Interception\IVerbInterceptor.cs" />
     <Compile Include="Interception\PostVerbExecutionAttribute.cs" />
     <Compile Include="Interception\PostVerbExecutionContext.cs" />

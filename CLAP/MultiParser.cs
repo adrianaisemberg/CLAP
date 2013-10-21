@@ -16,6 +16,7 @@ namespace CLAP
 
         private static readonly string[] s_delimiters = new[] { ".", "/" };
         private readonly Type[] m_types;
+        public HelpGeneratorBase HelpGenerator = new DefaultHelpGenerator();
 
         internal const int ErrorCode = 1;
         internal const int SuccessCode = 0;
@@ -76,7 +77,7 @@ namespace CLAP
             }
             else if (m_types.Length == 1)
             {
-                var parser = new ParserRunner(m_types.First(), Register);
+                var parser = new ParserRunner(m_types.First(), Register, HelpGenerator);
 
                 var target = targets == null ? null : targets[0];
 
@@ -120,7 +121,7 @@ namespace CLAP
                 throw new UnknownParserTypeException(typeName);
             }
 
-            return new ParserRunner(type, registration);
+            return new ParserRunner(type, registration, HelpGenerator);
         }
 
         private ParserRunner GetSingleTypeParser(string[] args, object obj, ParserRegistration registration)
@@ -131,7 +132,7 @@ namespace CLAP
 
             var verb = args[0];
 
-            var parser = new ParserRunner(type, registration);
+            var parser = new ParserRunner(type, registration, HelpGenerator);
 
             // if there is no verb - leave all the args as is
             //
@@ -274,7 +275,7 @@ namespace CLAP
         /// </summary>
         public string GetHelpString()
         {
-            return HelpGenerator.GetHelp(this);
+            return HelpGenerator.GetHelp(Types.Select(t => new ParserRunner(t, Register, HelpGenerator)));
         }
 
         #endregion Public Methods
