@@ -109,21 +109,19 @@ namespace CLAP
             // find the method by the given verb
             //
             var typeVerbs = GetVerbs()
-                .ToDictionary(v => v, v=>GetParameters(v.MethodInfo).ToList());
+                .ToDictionary(v => v, v => GetParameters(v.MethodInfo).ToList());
 
             // arguments
             var notVerbs = args
                 .Where(a => a.StartsWith(ArgumentPrefixes))
                 .ToList();
-            
+
             var globals = GetDefinedGlobals()
                 .Where(g => notVerbs.Any(a => a.Substring(1).StartsWith(g.Name.ToLowerInvariant())))
-                .Select(g => g)
                 .ToList();
 
             var notVerbsNotGlobals = notVerbs
                 .Where(a => globals.All(g => !a.Substring(1).StartsWith(g.Name.ToLowerInvariant())))
-                .Select(v => v)
                 .ToList();
 
             // find the method by name, parameter count and parameter names
@@ -143,7 +141,7 @@ namespace CLAP
                 where v.Value.Count == notVerbsNotGlobals.Count
                 select v
                 ).ToList();
-            
+
             if (method == null)
             {
                 method = SelectMethod(methods, notVerbsNotGlobals);
@@ -231,7 +229,6 @@ namespace CLAP
                 {
                     parameters = m.Value
                         .Where(p => p.Default != null)
-                        .Select(p => p)
                         .ToList();
                 }
 
