@@ -108,12 +108,67 @@ namespace CLAP
 
             // find the method by the given verb
             //
-            var typeVerbs = GetVerbs();
+            var typeVerbs = GetVerbs()
+                .ToDictionary(v => v, v=>GetParameters(v.MethodInfo).ToList());
 
-            var method = typeVerbs.FirstOrDefault(v => v.Names.Contains(verb.ToLowerInvariant()));
+            // arguments
+            var notVerbs = args
+                .Where(a => a.StartsWith(ArgumentPrefixes))
+                .ToList();
+            
+            var globals = GetDefinedGlobals()
+                .Where(g => notVerbs.Any(a => a.Substring(1).StartsWith(g.Name.ToLowerInvariant())))
+                .Select(g => g)
+                .ToList();
+
+            var notVerbsNotGlobals = notVerbs
+                .Where(a => globals.All(g => !a.Substring(1).StartsWith(g.Name.ToLowerInvariant())))
+                .Select(v => v)
+                .ToList();
+
+            // find the method by name, parameter count and parameter names
+            var methods = (
+                from v in typeVerbs
+                where v.Key.Names.Contains(verb.ToLowerInvariant())
+                where v.Value.Count == notVerbs.Count
+                select v
+                ).ToList();
+
+            Method method = SelectMethod(methods, notVerbs);
+
+            // if arguments do not match parameter names, exclude globals
+            methods = (
+                from v in typeVerbs
+                where v.Key.Names.Contains(verb.ToLowerInvariant())
+                where v.Value.Count == notVerbsNotGlobals.Count
+                select v
+                ).ToList();
+            
+            if (method == null)
+            {
+                method = SelectMethod(methods, notVerbsNotGlobals);
+            }
+
+            // if arguments do not match parameters names, exclude optional parameters
+            if (method == null)
+            {
+                const bool avoidOptionalParameters = false;
+                method = SelectMethod(methods, notVerbsNotGlobals, avoidOptionalParameters);
+            }
+
+            // if arguments do not match parameter names, use only argument count (without globals)
+            if (method == null)
+            {
+                method = methods.FirstOrDefault().Key;
+            }
+
+            // if nothing matches...
+            if (method == null)
+            {
+                method = typeVerbs.FirstOrDefault(v => v.Key.Names.Contains(verb.ToLowerInvariant())).Key;
+            }
 
             // if no method is found - a default must exist
-            //
             if (method == null)
             {
                 // if there is a verb input but no method was found
@@ -125,7 +180,7 @@ namespace CLAP
                     throw new VerbNotFoundException(verb);
                 }
 
-                method = typeVerbs.FirstOrDefault(v => v.IsDefault);
+                method = typeVerbs.FirstOrDefault(v => v.Key.IsDefault).Key;
 
                 // no default - error
                 //
@@ -161,6 +216,52 @@ namespace CLAP
             }
 
             return Execute(obj, method, parameterValues);
+        }
+
+        private static Method SelectMethod(List<KeyValuePair<Method, List<Parameter>>> methods, List<string> args, bool allowOptionalParameters = true)
+        {
+            Method method = null;
+
+            foreach (var m in methods)
+            {
+                bool methodFound = false;
+                var parameters = m.Value;
+
+                if (!allowOptionalParameters)
+                {
+                    parameters = m.Value
+                        .Where(p => p.Default != null)
+                        .Select(p => p)
+                        .ToList();
+                }
+
+                foreach (var p in parameters)
+                {
+                    bool parameterMatches = false;
+
+                    foreach (var name in p.Names)
+                    {
+                        if (args.Any(a => a.Substring(1).Equals(name)))
+                        {
+                            parameterMatches = true;
+                            break;
+                        }
+                    }
+                    if (!parameterMatches)
+                    {
+                        break;
+                    }
+                    methodFound = true;
+                }
+
+                if (methodFound)
+                {
+                    method = m.Key;
+                    break;
+                }
+            }
+
+            return method;
         }
 
         private int Execute(
