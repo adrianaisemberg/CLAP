@@ -106,6 +106,7 @@
     <Compile Include="Interception\ParameterAndValue.cs" />
     <Compile Include="Interception\PreVerbExecutionAttribute.cs" />
     <Compile Include="Interception\PreVerbExecutionContext.cs" />
+    <Compile Include="TargetResolver.cs" />
     <Compile Include="VerbExecutionContext.cs" />
     <Compile Include="Interception\VerbInterception.cs" />
     <Compile Include="Method.cs" />

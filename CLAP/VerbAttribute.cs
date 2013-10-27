@@ -24,4 +24,16 @@ namespace CLAP
         /// </summary>
         public bool IsDefault { get; set; }
     }
+
+    [Serializable]
+    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
+    public sealed class TargetAliasAttribute : Attribute
+    {
+        public TargetAliasAttribute(string alias)
+        {
+            Alias = alias;
+        }
+
+        public string Alias { get; private set; }
+    }
 }

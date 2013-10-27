@@ -86,6 +86,92 @@ namespace Tests
         }
 
         [Test]
+        public void MultiParser_Run_With_TargetResolver()
+        {
+            var resolver = new TargetResolver();
+            resolver.RegisterTargetType(() => new Sample_02());
+            resolver.RegisterTargetType(() => new Sample_03());
+
+            var mock = new MethodInvokerMock();
+
+            var called = false;
+            mock.Action = (method, obj, parameters) =>
+                {
+                    called = true;
+                    Assert.IsTrue(method.Name == "Print");
+                    Assert.IsTrue(obj.GetType().Name == "Sample_03");
+                };
+
+            MethodInvoker.Invoker = mock;
+
+            Parser.Run(new[]
+                {
+                    "sample_03.print",
+                    "-c=8",
+                    "-prefix=xyz"
+                }, resolver);
+
+            Assert.IsTrue(called);
+        }
+
+        [Test]
+        public void MultiParser_Run_With_Target_Alias()
+        {
+            var mock = new MethodInvokerMock();
+
+            var called = false;
+
+            mock.Action = (method, obj, parameters) =>
+            {
+                called = true;
+
+                Assert.IsTrue(method.Name == "Print");
+                Assert.IsTrue(method.DeclaringType == typeof(Sample_03));
+                Assert.IsTrue(parameters.Contains(10));
+                Assert.IsTrue(parameters.Contains("aaa"));
+            };
+
+            MethodInvoker.Invoker = mock;
+
+            var p = new Parser(typeof(Sample_02), typeof(Sample_03));
+
+            p.RunTargets(new[]
+            {
+                "s03.print", //the Sample_03 class has an alias attribute of 's03'
+                "-c=10",
+                "-prefix=aaa",
+            }, new Sample_02(), new Sample_03());
+
+            Assert.IsTrue(called);
+        }
+
+        [Test, ExpectedException(typeof(DuplicateTargetAliasException))]
+        public void MultiParser_Run_With_Target_Alias_That_Is_Defined_More_Than_Once()
+        {
+            var mock = new MethodInvokerMock();
+
+            var called = false;
+
+            mock.Action = (method, obj, parameters) =>
+            {
+                called = true;
+            };
+
+            MethodInvoker.Invoker = mock;
+
+            var p = new Parser(typeof(Sample_02), typeof(Sample_02_Default));
+
+            p.RunTargets(new[]
+            {
+                "s02.print", //both of the provided types below have the same alias attribute value.
+                "-c=10",
+                "-prefix=aaa",
+            }, new Sample_02(), new Sample_02_Default());
+
+            Assert.IsFalse(called, "The method should not have been called due to the conflicting aliases.");
+        }
+
+        [Test]
         public void MultiParser_Run_OneParser()
         {
             var mock = new MethodInvokerMock();
