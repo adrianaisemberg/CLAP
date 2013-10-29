@@ -36,6 +36,15 @@ namespace CLAP
             return ((MultiParser)p).RunTargets(args, targets);
         }
 
+        public static int Run(string[] args, TargetResolver targetResolver)
+        {
+            Debug.Assert(targetResolver != null);
+
+            var p = new Parser(targetResolver.RegisteredTypes);
+
+            return p.RunTargets(args, targetResolver);
+        }
+
         /// <summary>
         /// Executes a generic static parser of a specified type
         /// </summary>

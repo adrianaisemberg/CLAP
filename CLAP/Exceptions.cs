@@ -354,6 +354,26 @@ namespace CLAP
     }
 
     [Serializable]
+    public class DuplicateTargetAliasException : CommandLineParserException
+    {
+        /// <summary>
+        /// The target alias that was determined to be duplicated.
+        /// </summary>
+        public string DuplicateTargetAlias { get; private set; }
+
+        public DuplicateTargetAliasException(string duplicateTargetAlias)
+            : base("TargetAlias value '{0}' has been specified more than once of the target types provided.".FormatWith(duplicateTargetAlias))
+        {
+            DuplicateTargetAlias = duplicateTargetAlias;
+        }
+
+        protected DuplicateTargetAliasException(
+            System.Runtime.Serialization.SerializationInfo info,
+            System.Runtime.Serialization.StreamingContext context)
+            : base(info, context) { }
+    }
+
+    [Serializable]
     public class InvalidHelpHandlerException : CommandLineParserException
     {
         /// <summary>
