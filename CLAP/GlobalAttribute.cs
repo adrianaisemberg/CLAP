@@ -9,7 +9,7 @@ namespace CLAP
     /// </summary>
     [Serializable]
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
-    public sealed class GlobalAttribute : Attribute
+    public class GlobalAttribute : Attribute
     {
         /// <summary>
         /// The additional aliases (as CSV) of the parameter
@@ -19,7 +19,7 @@ namespace CLAP
         /// <summary>
         /// The description of this parameter
         /// </summary>
-        public string Description { get; set; }
+        public virtual string Description { get; set; }
 
         /// <summary>
         /// The name of this parameter
