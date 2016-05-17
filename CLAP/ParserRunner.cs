@@ -128,7 +128,7 @@ namespace CLAP
             // find the method by name, parameter count and parameter names
             var methods = (
                 from v in typeVerbs
-                where v.Key.Names.Contains(verb.ToLowerInvariant())
+                where v.Key.Names.Contains(verb, StringComparer.InvariantCultureIgnoreCase)
                 where v.Value.Count == notVerbs.Count
                 select v
                 ).ToList();
@@ -138,7 +138,7 @@ namespace CLAP
             // if arguments do not match parameter names, exclude globals
             methods = (
                 from v in typeVerbs
-                where v.Key.Names.Contains(verb.ToLowerInvariant())
+                where v.Key.Names.Contains(verb, StringComparer.InvariantCultureIgnoreCase)
                 where v.Value.Count == notVerbsNotGlobals.Count
                 select v
                 ).ToList();
@@ -164,7 +164,7 @@ namespace CLAP
             // if nothing matches...
             if (method == null)
             {
-                method = typeVerbs.FirstOrDefault(v => v.Key.Names.Contains(verb.ToLowerInvariant())).Key;
+                method = typeVerbs.FirstOrDefault(v => v.Key.Names.Contains(verb, StringComparer.InvariantCultureIgnoreCase)).Key;
             }
 
             // if no method is found - a default must exist
@@ -741,9 +741,9 @@ namespace CLAP
             {
                 foreach (var v in verbMethods)
                 {
-                    var c = v.MethodInfo.Name[0].ToString().ToLowerInvariant();
+                    var c = v.MethodInfo.Name[0].ToString();
 
-                    if (!v.Names.Contains(c))
+                    if (!v.Names.Contains(c, StringComparer.InvariantCultureIgnoreCase))
                     {
                         v.Names.Add(c);
                     }
