@@ -31,10 +31,10 @@ namespace CLAP
 
                     if (multi)
                     {
-                        sb.AppendFormat("{0}.", parser.Type.Name.ToLowerInvariant());
+                        sb.AppendFormat("{0}.", parser.Type.Name);
                     }
 
-                    sb.Append(verb.Names.StringJoin("|").ToLowerInvariant());
+                    sb.Append(verb.Names.StringJoin("|"));
 
                     if (verb.IsDefault)
                     {
@@ -57,7 +57,7 @@ namespace CLAP
                         {
                             sb.Append(parametersLead);
                             sb.AppendFormat("/{0} : ",
-                                p.Names.StringJoin(" /").ToLowerInvariant().PadRight(longestParameter, ' '));
+                                p.Names.StringJoin(" /").PadRight(longestParameter, ' '));
 
                             if (!string.IsNullOrEmpty(p.Description))
                             {
@@ -122,7 +122,7 @@ namespace CLAP
                     {
                         sb.Append(parametersLead);
                         sb.AppendFormat("/{0} : ",
-                            g.Names.StringJoin("|").ToLowerInvariant().PadRight(longestGlobal, ' '));
+                            g.Names.StringJoin("|").PadRight(longestGlobal, ' '));
 
                         if (!string.IsNullOrEmpty(g.Description))
                         {

@@ -45,7 +45,7 @@ namespace CLAP
             // Names are stored as lower-case.
             // The first available name is the method's original name.
             //
-            Names.Add(method.Name.ToLowerInvariant());
+            Names.Add(method.Name);
 
             MethodInfo = method;
 
@@ -56,7 +56,7 @@ namespace CLAP
 
             if (verbAttribute.Aliases != null)
             {
-                Names.AddRange(verbAttribute.Aliases.ToLowerInvariant().CommaSplit());
+                Names.AddRange(verbAttribute.Aliases.CommaSplit());
             }
         }
 
