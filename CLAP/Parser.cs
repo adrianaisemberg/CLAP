@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 
-#if !FW2
+#if !NET20
 using System.Linq;
 #endif
 

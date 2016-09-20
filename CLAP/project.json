@@ -1,0 +1,34 @@
+{
+  "version": "1.0.0-*",
+  "buildOptions": {
+    "emitEntryPoint": false
+  },
+  "dependencies": {
+    "Newtonsoft.Json": "9.0.1"
+  },
+  "frameworks": {
+    "net20": {
+      "frameworkAssemblies": {
+        "System.Windows.Forms": "",
+        "System.Data": "",
+        "System.Xml": ""
+      }
+    },
+    "net452": {
+      "frameworkAssemblies": {
+        "System.Windows.Forms": "",
+        "System.Data": "",
+        "System.Xml": ""
+      }
+    },
+    "netstandard1.6": {
+      "dependencies": {
+        "NETStandard.Library": "1.6.0",
+        "System.Data.Common" : "4.1.0" ,  
+        "System.ComponentModel.TypeConverter" : "4.1.0" ,  
+        "System.Reflection.TypeExtensions": "4.1.0",
+        "System.Globalization.Extensions": "4.0.1"
+      }
+    }
+  }
+}

@@ -1,11 +1,12 @@
 ﻿using System.Data;
 
-#if !FW2
+#if !NET20
 using System.Linq;
 #endif
 
 namespace CLAP
 {
+#if NET20 || NET452
     /// <summary>
     /// Validates a collection of named parameters or properties against a boolean expression
     /// </summary>
@@ -60,4 +61,5 @@ namespace CLAP
             }
         }
     }
+#endif
 }

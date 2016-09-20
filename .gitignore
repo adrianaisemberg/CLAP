@@ -8,3 +8,4 @@ _UpgradeReport_Files/
 *.nupkg
 /_ReSharper.*/
 /Metrics.typemock.*
+project.lock.json

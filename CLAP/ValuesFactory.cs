@@ -4,7 +4,7 @@ using System.ComponentModel;
 using System.Reflection;
 using CLAP.Interception;
 
-#if !FW2
+#if !NET20
 using System.Linq;
 #endif
 
@@ -123,7 +123,7 @@ namespace CLAP
 
         private static object ConvertString(string value, Type type)
         {
-            if (type.IsEnum)
+            if (type.IsEnum())
             {
                 return Enum.Parse(type, value);
             }
@@ -135,7 +135,7 @@ namespace CLAP
             {
                 return string.IsNullOrEmpty(value) ? (object)null : new Uri(Environment.ExpandEnvironmentVariables(value));
             }
-            else if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
+            else if (type.IsGenericType() && type.GetGenericTypeDefinition() == typeof(Nullable<>))
             {
                 if (string.IsNullOrEmpty(value))
                 {

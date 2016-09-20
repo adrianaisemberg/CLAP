@@ -1,7 +1,12 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Globalization;
 
-#if !FW2
+#if NETSTANDARD1_6
+using System.Reflection;
+#endif
+
+#if !NET20
 using System.Linq;
 #endif
 
@@ -48,8 +53,12 @@ namespace CLAP
 
         protected MultiParser()
         {
+            
+#if NETSTANDARD1_6
+            m_types = GetType().GetTypeInfo().GetGenericArguments();
+#else
             m_types = GetType().GetGenericArguments();
-
+#endif
             Init();
         }
 
@@ -157,7 +166,7 @@ return new ParserRunner(matchingType, registration, HelpGenerator);        }
 
                 var typeName = parts[0];
 
-                if (!type.Name.Equals(typeName, StringComparison.InvariantCultureIgnoreCase))
+                if (!type.Name.Equals(typeName, StringComparison.OrdinalIgnoreCase))
                 {
                     throw new UnknownParserTypeException(typeName);
                 }

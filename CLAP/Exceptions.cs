@@ -25,10 +25,12 @@ namespace CLAP
         /// </summary>
         public CommandLineParserException(string message, Exception inner) : base(message, inner) { }
 
+#if !NETSTANDARD1_6
         protected CommandLineParserException(
             System.Runtime.Serialization.SerializationInfo info,
             System.Runtime.Serialization.StreamingContext context)
             : base(info, context) { }
+#endif
     }
 
     [Serializable]
@@ -40,10 +42,12 @@ namespace CLAP
         }
         public MissingDefaultVerbException(string message) : base(message) { }
         public MissingDefaultVerbException(string message, Exception inner) : base(message, inner) { }
+#if !NETSTANDARD1_6
         protected MissingDefaultVerbException(
             System.Runtime.Serialization.SerializationInfo info,
             System.Runtime.Serialization.StreamingContext context)
             : base(info, context) { }
+#endif
     }
 
     [Serializable]
@@ -61,10 +65,12 @@ namespace CLAP
         }
 
         public VerbNotFoundException(string message, Exception inner) : base(message, inner) { }
+#if !NETSTANDARD1_6
         protected VerbNotFoundException(
             System.Runtime.Serialization.SerializationInfo info,
             System.Runtime.Serialization.StreamingContext context)
             : base(info, context) { }
+#endif
     }
 
     [Serializable]
@@ -76,10 +82,12 @@ namespace CLAP
         }
 
         public MissingVerbException(string message, Exception inner) : base(message, inner) { }
+#if !NETSTANDARD1_6
         protected MissingVerbException(
             System.Runtime.Serialization.SerializationInfo info,
             System.Runtime.Serialization.StreamingContext context)
             : base(info, context) { }
+#endif
     }
 
     [Serializable]
@@ -91,10 +99,12 @@ namespace CLAP
         }
 
         public MultiParserMissingClassNameException(string message, Exception inner) : base(message, inner) { }
+#if !NETSTANDARD1_6
         protected MultiParserMissingClassNameException(
             System.Runtime.Serialization.SerializationInfo info,
             System.Runtime.Serialization.StreamingContext context)
             : base(info, context) { }
+#endif
     }
 
     [Serializable]
@@ -106,10 +116,12 @@ namespace CLAP
         }
 
         public InvalidVerbException(string message, Exception inner) : base(message, inner) { }
+#if !NETSTANDARD1_6
         protected InvalidVerbException(
             System.Runtime.Serialization.SerializationInfo info,
             System.Runtime.Serialization.StreamingContext context)
             : base(info, context) { }
+#endif
     }
 
     [Serializable]
@@ -121,10 +133,12 @@ namespace CLAP
         }
 
         public UnknownParserTypeException(string message, Exception inner) : base(message, inner) { }
+#if !NETSTANDARD1_6
         protected UnknownParserTypeException(
             System.Runtime.Serialization.SerializationInfo info,
             System.Runtime.Serialization.StreamingContext context)
             : base(info, context) { }
+#endif
     }
 
     [Serializable]
@@ -148,10 +162,12 @@ namespace CLAP
         }
 
         public MissingRequiredArgumentException(string message, Exception inner) : base(message, inner) { }
+#if !NETSTANDARD1_6
         protected MissingRequiredArgumentException(
             System.Runtime.Serialization.SerializationInfo info,
             System.Runtime.Serialization.StreamingContext context)
             : base(info, context) { }
+#endif
     }
 
     [Serializable]
@@ -169,10 +185,12 @@ namespace CLAP
         }
 
         public MissingArgumentValueException(string message, Exception inner) : base(message, inner) { }
+#if !NETSTANDARD1_6
         protected MissingArgumentValueException(
             System.Runtime.Serialization.SerializationInfo info,
             System.Runtime.Serialization.StreamingContext context)
             : base(info, context) { }
+#endif
     }
 
     [Serializable]
@@ -190,10 +208,12 @@ namespace CLAP
         }
 
         public MissingArgumentPrefixException(string message, Exception inner) : base(message, inner) { }
+#if !NETSTANDARD1_6
         protected MissingArgumentPrefixException(
             System.Runtime.Serialization.SerializationInfo info,
             System.Runtime.Serialization.StreamingContext context)
             : base(info, context) { }
+#endif
     }
 
     [Serializable]
@@ -201,10 +221,12 @@ namespace CLAP
     {
         public ValidationException(string message) : base(message) { }
         public ValidationException(string message, Exception inner) : base(message, inner) { }
+#if !NETSTANDARD1_6
         protected ValidationException(
             System.Runtime.Serialization.SerializationInfo info,
             System.Runtime.Serialization.StreamingContext context)
             : base(info, context) { }
+#endif
     }
 
     [Serializable]
@@ -227,10 +249,12 @@ namespace CLAP
             Type = type;
         }
 
+#if !NETSTANDARD1_6
         protected TypeConvertionException(
             System.Runtime.Serialization.SerializationInfo info,
             System.Runtime.Serialization.StreamingContext context)
             : base(info, context) { }
+#endif
     }
 
     [Serializable]
@@ -241,10 +265,12 @@ namespace CLAP
         {
         }
 
+#if !NETSTANDARD1_6
         protected MoreThanOneEmptyHandlerException(
             System.Runtime.Serialization.SerializationInfo info,
             System.Runtime.Serialization.StreamingContext context)
             : base(info, context) { }
+#endif
     }
 
     [Serializable]
@@ -255,10 +281,12 @@ namespace CLAP
         {
         }
 
+#if !NETSTANDARD1_6
         protected MoreThanOneErrorHandlerException(
             System.Runtime.Serialization.SerializationInfo info,
             System.Runtime.Serialization.StreamingContext context)
             : base(info, context) { }
+#endif
     }
 
     [Serializable]
@@ -269,10 +297,12 @@ namespace CLAP
         {
         }
 
+#if !NETSTANDARD1_6
         protected MoreThanOnePreVerbInterceptorException(
             System.Runtime.Serialization.SerializationInfo info,
             System.Runtime.Serialization.StreamingContext context)
             : base(info, context) { }
+#endif
     }
 
     [Serializable]
@@ -283,10 +313,12 @@ namespace CLAP
         {
         }
 
+#if !NETSTANDARD1_6
         protected MoreThanOnePostVerbInterceptorException(
             System.Runtime.Serialization.SerializationInfo info,
             System.Runtime.Serialization.StreamingContext context)
             : base(info, context) { }
+#endif
     }
 
     [Serializable]
@@ -295,10 +327,12 @@ namespace CLAP
         public ArgumentMismatchException() { }
         public ArgumentMismatchException(string message) : base(message) { }
         public ArgumentMismatchException(string message, Exception inner) : base(message, inner) { }
+#if !NETSTANDARD1_6
         protected ArgumentMismatchException(
             System.Runtime.Serialization.SerializationInfo info,
             System.Runtime.Serialization.StreamingContext context)
             : base(info, context) { }
+#endif
     }
 
     [Serializable]
@@ -307,10 +341,12 @@ namespace CLAP
         public ParserExecutionTargetException() { }
         public ParserExecutionTargetException(string message) : base(message) { }
         public ParserExecutionTargetException(string message, Exception inner) : base(message, inner) { }
+#if !NETSTANDARD1_6
         protected ParserExecutionTargetException(
             System.Runtime.Serialization.SerializationInfo info,
             System.Runtime.Serialization.StreamingContext context)
             : base(info, context) { }
+#endif
     }
 
     [Serializable]
@@ -327,10 +363,12 @@ namespace CLAP
             UnhandledParameters = unhandledParameters;
         }
 
+#if !NETSTANDARD1_6
         protected UnhandledParametersException(
             System.Runtime.Serialization.SerializationInfo info,
             System.Runtime.Serialization.StreamingContext context)
             : base(info, context) { }
+#endif
     }
 
     [Serializable]
@@ -347,10 +385,12 @@ namespace CLAP
             Verbs = verbs;
         }
 
+#if !NETSTANDARD1_6
         protected MoreThanOneDefaultVerbException(
             System.Runtime.Serialization.SerializationInfo info,
             System.Runtime.Serialization.StreamingContext context)
             : base(info, context) { }
+#endif
     }
 
     [Serializable]
@@ -367,10 +407,12 @@ namespace CLAP
             DuplicateTargetAlias = duplicateTargetAlias;
         }
 
+#if !NETSTANDARD1_6
         protected DuplicateTargetAliasException(
             System.Runtime.Serialization.SerializationInfo info,
             System.Runtime.Serialization.StreamingContext context)
             : base(info, context) { }
+#endif
     }
 
     [Serializable]
@@ -392,10 +434,12 @@ namespace CLAP
             Method = method;
         }
 
+#if !NETSTANDARD1_6
         protected InvalidHelpHandlerException(
             System.Runtime.Serialization.SerializationInfo info,
             System.Runtime.Serialization.StreamingContext context)
             : base(info, context) { }
+#endif
     }
 
     [Serializable]
@@ -412,10 +456,12 @@ namespace CLAP
             Parameter = parameter;
         }
 
+#if !NETSTANDARD1_6
         protected AmbiguousParameterDefaultException(
             System.Runtime.Serialization.SerializationInfo info,
             System.Runtime.Serialization.StreamingContext context)
             : base(info, context) { }
+#endif
     }
 
     [Serializable]
@@ -432,10 +478,12 @@ namespace CLAP
             Parameter = parameter;
         }
 
+#if !NETSTANDARD1_6
         protected InvalidParameterDefaultProviderException(
             System.Runtime.Serialization.SerializationInfo info,
             System.Runtime.Serialization.StreamingContext context)
             : base(info, context) { }
+#endif
     }
 
     [Serializable]
@@ -452,10 +500,12 @@ namespace CLAP
             Name = name;
         }
 
+#if !NETSTANDARD1_6
         protected DuplicateGlobalHandlerException(
             System.Runtime.Serialization.SerializationInfo info,
             System.Runtime.Serialization.StreamingContext context)
             : base(info, context) { }
+#endif
     }
 
     [Serializable]
@@ -475,10 +525,12 @@ namespace CLAP
             Parameter = parameter;
         }
 
+#if !NETSTANDARD1_6
         protected NonArrayParameterWithSeparatorException(
             System.Runtime.Serialization.SerializationInfo info,
             System.Runtime.Serialization.StreamingContext context)
             : base(info, context) { }
+#endif
     }
 
     [Serializable]
@@ -497,9 +549,11 @@ namespace CLAP
             Parameter = parameter;
         }
 
+#if !NETSTANDARD1_6
         protected InvalidSeparatorException(
             System.Runtime.Serialization.SerializationInfo info,
             System.Runtime.Serialization.StreamingContext context)
             : base(info, context) { }
+#endif
     }
 }

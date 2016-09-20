@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 
+#if !NET20
+using System.Linq;
+#endif
 namespace CLAP
 {
     public class TargetResolver

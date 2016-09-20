@@ -1,5 +1,7 @@
 ﻿using System.Diagnostics;
+#if !NET20
 using System.Linq;
+#endif
 
 namespace CLAP
 {

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-#if !FW2
+#if !NET20
 using System.Linq;
 #endif
 

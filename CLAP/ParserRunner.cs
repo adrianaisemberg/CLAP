@@ -5,7 +5,7 @@ using System.Reflection;
 using System.Runtime.Serialization;
 using CLAP.Interception;
 
-#if !FW2
+#if !NET20
 using System.Linq;
 #endif
 
@@ -318,6 +318,7 @@ namespace CLAP
 
         static void PreserveStackTrace(Exception e)
         {
+#if NET20 || NET452
             var ctx = new StreamingContext(StreamingContextStates.CrossAppDomain);
             var mgr = new ObjectManager(null, ctx);
             var si = new SerializationInfo(e.GetType(), new FormatterConverter());
@@ -327,6 +328,7 @@ namespace CLAP
             mgr.DoFixups(); // ObjectManager calls SetObjectData
 
             // voila, e is unmodified save for _remoteStackTraceString
+#endif
         }
 
         private void PostInterception(
@@ -694,7 +696,7 @@ namespace CLAP
             //
             var allNames = parameters.SelectMany(p => p.Names);
             var duplicates = allNames.Where(name =>
-                allNames.Count(n => n.Equals(name, StringComparison.InvariantCultureIgnoreCase)) > 1);
+                allNames.Count(n => n.Equals(name, StringComparison.OrdinalIgnoreCase)) > 1);
 
             if (duplicates.Any())
             {
@@ -827,7 +829,7 @@ namespace CLAP
 
                 var key = args.Keys.FirstOrDefault(
                     k => allNames.Any(
-                        n => n.Equals(k, StringComparison.InvariantCultureIgnoreCase)));
+                        n => n.Equals(k, StringComparison.OrdinalIgnoreCase)));
 
                 if (key != null)
                 {
@@ -914,8 +916,8 @@ namespace CLAP
 
                 var name = att.Name ?? method.Name;
 
-                if (name.Equals(arg, StringComparison.InvariantCultureIgnoreCase) ||
-                    att.Aliases.CommaSplit().Any(s => s.Equals(arg, StringComparison.InvariantCultureIgnoreCase)))
+                if (name.Equals(arg, StringComparison.OrdinalIgnoreCase) ||
+                    att.Aliases.CommaSplit().Any(s => s.Equals(arg, StringComparison.OrdinalIgnoreCase)))
                 {
                     try
                     {
