@@ -1,6 +1,7 @@
 {
     "projects": [
-        "CLAP", 
+        "CLAP",
+        "Tests", 
         "ConsoleTest"
     ]
 }
