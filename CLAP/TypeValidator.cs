@@ -42,11 +42,7 @@ namespace CLAP
 
             // no need to validate properties of GAC objects
             //
-#if NETSTANDARD1_6
-            if (!type.IsArray)
-#else
-            if (!type.Assembly.GlobalAssemblyCache && !type.IsArray)
-#endif
+            if (!type.Assembly().GlobalAssemblyCache() && !type.IsArray())
             {
                 // property validators:
                 // validate each property value, in case property is a custom class
@@ -124,18 +120,11 @@ namespace CLAP
                 return false;
             }
 
-#if NETSTANDARD1_6
-            var type = obj.GetType().GetTypeInfo();
-#else
             var type = obj.GetType();
-#endif
 
-            if (type.IsArray ||
-                type.IsEnum 
-#if !NETSTANDARD1_6
-                ||
-                type.Assembly.GlobalAssemblyCache
-#endif
+            if (type.IsArray() ||
+                type.IsEnum()  ||
+                type.Assembly().GlobalAssemblyCache()
             )
             {
                 return true;

@@ -1,8 +1,10 @@
 ﻿using System;
 using System.IO;
-#if !NETSTANDARD1_6
+
+#if NET20 || NET452
 using System.Xml.Serialization;
 #endif
+
 using Newtonsoft.Json;
 
 namespace CLAP
@@ -17,7 +19,7 @@ namespace CLAP
             }
 
 
-#if !NETSTANDARD1_6
+#if NET20 || NET452
             if (str.StartsWith("<"))
             {
                 obj = DeserializeXml(str, type);
@@ -40,7 +42,7 @@ namespace CLAP
             return JsonConvert.DeserializeObject(json, type);
         }
 
-#if !NETSTANDARD1_6
+#if NET20 || NET452
         public static object DeserializeXml(string xml, Type type)
         {
             var serializer = new XmlSerializer(type);

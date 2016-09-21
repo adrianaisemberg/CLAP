@@ -6,6 +6,14 @@ namespace CLAP
 #if NET20 || NET452
     internal static class TypeExtensions 
     {
+        public static Assembly Assembly(this Type type)
+        {
+            return type.Assembly;
+        } 
+        public static bool GlobalAssemblyCache(this Assembly assembly)
+        {
+            return assembly.GlobalAssemblyCache;
+        } 
         public static bool IsEnum(this Type type)
         {
             return type.IsEnum;
@@ -18,11 +26,27 @@ namespace CLAP
         {
             return type.GetCustomAttributes(attributeType, inherit);
         } 
+        public static Type[] GetGenericArguments(this Type type)
+        {
+            return type.GetGenericArguments();
+        } 
+        public static bool IsArray(this Type type)
+        {
+            return type.IsArray;
+        } 
     }
 #else
     using System.Linq;
     internal static class TypeExtensions 
     {
+        public static Assembly Assembly(this Type type)
+        {
+            return type.GetTypeInfo().Assembly;
+        } 
+        public static bool GlobalAssemblyCache(this Assembly assembly)
+        {
+            return false;
+        } 
         public static bool IsEnum(this Type type)
         {
             return type.GetTypeInfo().IsEnum;
@@ -37,6 +61,14 @@ namespace CLAP
                 .Where(i => i.GetType() == attributeType)
                 .Cast<object>()
                 .ToArray();
+        } 
+        public static Type[] GetGenericArguments(this Type type)
+        {
+            return type.GetTypeInfo().GetGenericArguments();
+        } 
+        public static bool IsArray(this Type type)
+        {
+            return type.IsArray;
         } 
     }
 #endif

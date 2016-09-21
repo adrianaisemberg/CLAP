@@ -53,12 +53,7 @@ namespace CLAP
 
         protected MultiParser()
         {
-            
-#if NETSTANDARD1_6
-            m_types = GetType().GetTypeInfo().GetGenericArguments();
-#else
             m_types = GetType().GetGenericArguments();
-#endif
             Init();
         }
 
