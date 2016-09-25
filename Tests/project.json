@@ -1,17 +1,18 @@
+
 {
   "version": "1.0.0-*",
   "buildOptions": {
-    // "debugType": "portable",
+    "debugType": "portable" //,
     // "emitEntryPoint": true
   },
   "dependencies": {
-    "CLAP": "*",
+    "CLAP": { "target": "project" },
     "Moq": "*",
     "NUnit": "*",
     "NUnit.Mocks": "*",
     "pNUnit": "*"
   },
   "frameworks": {
-    "net46": { }
+    "net452": { }
   }
 }

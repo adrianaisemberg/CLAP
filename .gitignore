@@ -9,3 +9,4 @@ _UpgradeReport_Files/
 /_ReSharper.*/
 /Metrics.typemock.*
 project.lock.json
+.vs
