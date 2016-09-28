@@ -1,6 +1,10 @@
 ﻿using System;
 using System.IO;
+
+#if NET20 || NET452
 using System.Xml.Serialization;
+#endif
+
 using Newtonsoft.Json;
 
 namespace CLAP
@@ -14,12 +18,15 @@ namespace CLAP
                 return false;
             }
 
+
+#if NET20 || NET452
             if (str.StartsWith("<"))
             {
                 obj = DeserializeXml(str, type);
 
                 return true;
             }
+#endif
             else if (str.StartsWith(new[] { "{", "[" }))
             {
                 obj = DeserializeJson(str, type);
@@ -35,6 +42,7 @@ namespace CLAP
             return JsonConvert.DeserializeObject(json, type);
         }
 
+#if NET20 || NET452
         public static object DeserializeXml(string xml, Type type)
         {
             var serializer = new XmlSerializer(type);
@@ -46,5 +54,6 @@ namespace CLAP
                 return obj;
             }
         }
+#endif
     }
 }

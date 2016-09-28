@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.Reflection;
 
-#if !FW2
+#if !NET20
 using System.Linq;
 #endif
 
@@ -42,8 +42,7 @@ namespace CLAP
 
             // no need to validate properties of GAC objects
             //
-            if (!type.Assembly.GlobalAssemblyCache &&
-                !type.IsArray)
+            if (!type.Assembly().GlobalAssemblyCache() && !type.IsArray())
             {
                 // property validators:
                 // validate each property value, in case property is a custom class
@@ -123,9 +122,10 @@ namespace CLAP
 
             var type = obj.GetType();
 
-            if (type.IsArray ||
-                type.IsEnum ||
-                type.Assembly.GlobalAssemblyCache)
+            if (type.IsArray() ||
+                type.IsEnum()  ||
+                type.Assembly().GlobalAssemblyCache()
+            )
             {
                 return true;
             }

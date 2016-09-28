@@ -1,4 +1,4 @@
-﻿#if FW2
+﻿#if NET20
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -15,6 +15,7 @@ namespace CLAP
     public delegate TResult Func<T, TResult>(T arg);
     public delegate TResult Func<T1, T2, TResult>(T1 arg1, T2 arg2);
     public delegate TResult Func<T1, T2, T3, TResult>(T1 arg1, T2 arg2, T3 arg3);
+    public delegate TResult Func<T1, T2, T3, T4, TResult>(T1 arg1, T2 arg2, T3 arg3, T4 arg4);
 
     #endregion Delegates
 

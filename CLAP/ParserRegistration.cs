@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using CLAP.Interception;
 using System.Reflection;
+
+#if !NET20
+using System.Linq;
+#endif
 
 namespace CLAP
 {

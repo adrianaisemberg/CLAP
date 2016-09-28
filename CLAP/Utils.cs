@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 
-#if !FW2
+#if !NET20
 using System.Linq;
 #endif
 
@@ -10,6 +10,63 @@ namespace CLAP
 {
     internal static class Utils
     {
+        private static IEnumerable<Attribute> GetCustomAttributes<T>(MethodInfo method) where T : Attribute
+        {
+#if NETSTANDARD1_6
+            return method.GetCustomAttributes<T>();
+#else
+            return Attribute.GetCustomAttributes(method, typeof(T));
+#endif
+        }
+        private static Attribute GetCustomAttribute<T>(MethodInfo method) where T : Attribute
+        {
+#if NETSTANDARD1_6
+            return method.GetCustomAttribute<T>();
+#else
+            return Attribute.GetCustomAttribute(method, typeof(T));
+#endif
+        }
+        private static Attribute GetCustomAttribute<T>(Type type) where T : Attribute
+        {
+#if NETSTANDARD1_6
+            return type.GetTypeInfo().GetCustomAttribute<T>();
+#else
+            return Attribute.GetCustomAttribute(type, typeof(T));
+#endif
+        }
+        private static IEnumerable<Attribute> GetCustomAttributes<T>(Type type) where T : Attribute
+        {
+#if NETSTANDARD1_6
+            return type.GetTypeInfo().GetCustomAttributes<T>();
+#else
+            return Attribute.GetCustomAttributes(type, typeof(T));
+#endif
+        }
+        private static Attribute GetCustomAttribute<T>(ParameterInfo parameter) where T : Attribute 
+        {
+#if NETSTANDARD1_6
+            return parameter.GetCustomAttribute<T>();
+#else
+            return Attribute.GetCustomAttribute(parameter, typeof(T));
+#endif
+        }
+        private static IEnumerable<Attribute> GetCustomAttributes<T>(ParameterInfo parameter) where T : Attribute 
+        {
+#if NETSTANDARD1_6
+            return parameter.GetCustomAttributes<T>();
+#else
+            return Attribute.GetCustomAttributes(parameter, typeof(T));
+#endif
+        }
+        private static IEnumerable<Attribute> GetCustomAttributes<T>(MemberInfo member) where T : Attribute 
+        {
+#if NETSTANDARD1_6
+            return member.GetCustomAttributes<T>();
+#else
+            return Attribute.GetCustomAttributes(member, typeof(T));
+#endif
+        }
+
         public static string FormatWith(this string format, params object[] args)
         {
             return string.Format(format, args);
@@ -17,66 +74,85 @@ namespace CLAP
 
         public static T GetAttribute<T>(this MethodInfo method) where T : Attribute
         {
-            var att = Attribute.GetCustomAttribute(method, typeof(T));
+
+            var att = GetCustomAttribute<T>(method);
 
             return (T)att;
         }
 
         public static T GetAttribute<T>(this Type type) where T : Attribute
         {
-            var att = Attribute.GetCustomAttribute(type, typeof(T));
+            var att = GetCustomAttribute<T>(type);
 
             return (T)att;
         }
 
         public static T GetAttribute<T>(this ParameterInfo parameter) where T : Attribute
         {
-            var att = Attribute.GetCustomAttribute(parameter, typeof(T));
+            var att = GetCustomAttribute<T>(parameter);
 
             return (T)att;
         }
 
         public static IEnumerable<T> GetAttributes<T>(this ParameterInfo parameter) where T : Attribute
         {
-            var atts = Attribute.GetCustomAttributes(parameter, typeof(T)).Cast<T>();
+            var atts = GetCustomAttributes<T>(parameter).Cast<T>();
 
             return atts;
         }
 
         public static IEnumerable<T> GetAttributes<T>(this PropertyInfo property) where T : Attribute
         {
-            var atts = Attribute.GetCustomAttributes(property, typeof(T)).Cast<T>();
+            var atts = GetCustomAttributes<T>(property).Cast<T>();
 
             return atts;
         }
 
         public static IEnumerable<T> GetInterfaceAttributes<T>(this MethodInfo method)
         {
+#if NETSTANDARD1_6
+            return method.GetCustomAttributes(true).
+                Where(a => a.GetType().GetTypeInfo().GetInterfaces().Contains(typeof(T))).
+                Cast<T>();
+#else
             return method.GetCustomAttributes(true).
                 Where(a => a.GetType().GetInterfaces().Contains(typeof(T))).
                 Cast<T>();
+#endif
         }
 
         public static IEnumerable<T> GetAttributes<T>(this Type type) where T : Attribute
         {
-            var atts = Attribute.GetCustomAttributes(type, typeof(T)).Cast<T>();
+            var atts = GetCustomAttributes<T>(type).Cast<T>();
 
             return atts;
         }
 
         public static bool HasAttribute<T>(this MethodInfo method) where T : Attribute
         {
+#if NETSTANDARD1_6
+            return method.IsDefined(typeof(T));
+#else
             return Attribute.IsDefined(method, typeof(T));
+#endif
         }
 
         public static bool HasAttribute<T>(this Type type) where T : Attribute
         {
+#if NETSTANDARD1_6
+            return type.GetTypeInfo().IsDefined(typeof(T));
+#else
             return Attribute.IsDefined(type, typeof(T));
+#endif
         }
 
         public static bool HasAttribute<T>(this ParameterInfo parameter) where T : Attribute
         {
+#if NETSTANDARD1_6
+            return parameter.IsDefined(typeof(T));
+#else
             return Attribute.IsDefined(parameter, typeof(T));
+#endif
         }
 
         public static IEnumerable<MethodInfo> GetMethodsWith<T>(this Type type) where T : Attribute
@@ -89,7 +165,12 @@ namespace CLAP
 
         public static IEnumerable<MethodInfo> GetAllMethods(this Type type)
         {
-            var methods = type.GetMethods(
+#if NETSTANDARD1_6
+            var t = type.GetTypeInfo();
+#else
+            var t = type;
+#endif
+            var methods = t.GetMethods(
                 BindingFlags.Public |
                 BindingFlags.NonPublic |
                 BindingFlags.Instance |
@@ -148,7 +229,12 @@ namespace CLAP
 
         public static string GetGenericTypeName(this Type type)
         {
-            if (!type.IsGenericType)
+#if NETSTANDARD1_6
+            var t = type.GetTypeInfo();
+#else
+            var t = type;
+#endif
+            if (!t.IsGenericType)
             {
                 return type.Name;
             }
@@ -157,7 +243,7 @@ namespace CLAP
 
             genericTypeName = genericTypeName.Remove(genericTypeName.IndexOf('`'));
 
-            var genericArgs = type.GetGenericArguments().
+            var genericArgs = t.GetGenericArguments().
                 Select(a => GetGenericTypeName(a)).
                 StringJoin(",");
 

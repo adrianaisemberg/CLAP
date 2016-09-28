@@ -145,7 +145,7 @@ namespace Tests
             Assert.IsTrue(called);
         }
 
-        [Test, ExpectedException(typeof(DuplicateTargetAliasException))]
+        [Test]
         public void MultiParser_Run_With_Target_Alias_That_Is_Defined_More_Than_Once()
         {
             var mock = new MethodInvokerMock();
@@ -159,14 +159,16 @@ namespace Tests
 
             MethodInvoker.Invoker = mock;
 
-            var p = new Parser(typeof(Sample_02), typeof(Sample_02_Default));
+            Assert.Throws<DuplicateTargetAliasException>(() => {
+                var p = new Parser(typeof(Sample_02), typeof(Sample_02_Default));
+                p.RunTargets(new[]
+                {
+                    "s02.print", //both of the provided types below have the same alias attribute value.
+                    "-c=10",
+                    "-prefix=aaa",
+                }, new Sample_02(), new Sample_02_Default());
+            });
 
-            p.RunTargets(new[]
-            {
-                "s02.print", //both of the provided types below have the same alias attribute value.
-                "-c=10",
-                "-prefix=aaa",
-            }, new Sample_02(), new Sample_02_Default());
 
             Assert.IsFalse(called, "The method should not have been called due to the conflicting aliases.");
         }
@@ -203,104 +205,111 @@ namespace Tests
         }
 
         [Test]
-        [ExpectedException(typeof(MissingVerbException))]
         public void MultiParser_Run_NoVerb_Exception()
         {
             var p = new Parser<Sample_03, Sample_02>();
 
-            p.Run(new[]
-            {
-                "-c=10",
-                "-prefix=aaa",
-            }, new Sample_03(), new Sample_02());
+            Assert.Throws<MissingVerbException>(() => {
+                p.Run(new[]
+                {
+                    "-c=10",
+                    "-prefix=aaa",
+                }, new Sample_03(), new Sample_02());
+            });
         }
 
         [Test]
-        [ExpectedException(typeof(MultiParserMissingClassNameException))]
         public void MultiParser_Run_NoDelimiter_Exception_1()
         {
             var p = new Parser<Sample_03, Sample_02>();
 
-            p.Run(new[]
-            {
-                "sample02print",
-                "-c=10",
-                "-prefix=aaa",
-            }, new Sample_03(), new Sample_02());
+            Assert.Throws<MultiParserMissingClassNameException>(() => {
+                p.Run(new[]
+                {
+                    "sample02print",
+                    "-c=10",
+                    "-prefix=aaa",
+                }, new Sample_03(), new Sample_02());
+            });
         }
 
         [Test]
-        [ExpectedException(typeof(MultiParserMissingClassNameException))]
         public void MultiParser_Run_NoDelimiter_Exception_2()
         {
             var p = new Parser<Sample_03, Sample_02>();
 
-            p.Run(new[]
-            {
-                "print",
-                "-c=10",
-                "-prefix=aaa",
-            }, new Sample_03(), new Sample_02());
+            Assert.Throws<MultiParserMissingClassNameException>(() => {
+                p.Run(new[]
+                {
+                    "print",
+                    "-c=10",
+                    "-prefix=aaa",
+                }, new Sample_03(), new Sample_02());
+            });
         }
 
         [Test]
-        [ExpectedException(typeof(InvalidVerbException))]
         public void MultiParser_Run_TooMuchDelimiters_Exception_1()
         {
             var p = new Parser<Sample_03>();
 
-            p.Run(new[]
-            {
-                "sample_03.print.foo",
-                "-c=10",
-                "-prefix=aaa",
-            }, new Sample_03());
+            Assert.Throws<InvalidVerbException>(() => {
+                p.Run(new[]
+                {
+                    "sample_03.print.foo",
+                    "-c=10",
+                    "-prefix=aaa",
+                }, new Sample_03());
+            });
+            
         }
 
         [Test]
-        [ExpectedException(typeof(InvalidVerbException))]
         public void MultiParser_Run_TooMuchDelimiters_Exception_2()
         {
             var p = new Parser<Sample_03, Sample_02>();
 
-            p.Run(new[]
-            {
-                "sample_03.print.foo",
-                "-c=10",
-                "-prefix=aaa",
-            }, new Sample_03(), new Sample_02());
+            Assert.Throws<InvalidVerbException>(() => {
+                p.Run(new[]
+                {
+                    "sample_03.print.foo",
+                    "-c=10",
+                    "-prefix=aaa",
+                }, new Sample_03(), new Sample_02());
+            });
         }
 
         [Test]
-        [ExpectedException(typeof(UnknownParserTypeException))]
         public void MultiParser_Run_MissingType_Exception_1()
         {
             var p = new Parser<Sample_03>();
 
-            p.Run(new[]
-            {
-                "sample_03foo.print",
-                "-c=10",
-                "-prefix=aaa",
-            }, new Sample_03());
+            Assert.Throws<UnknownParserTypeException>(() => {
+                p.Run(new[]
+                {
+                    "sample_03foo.print",
+                    "-c=10",
+                    "-prefix=aaa",
+                }, new Sample_03());
+            });
         }
 
         [Test]
-        [ExpectedException(typeof(UnknownParserTypeException))]
         public void MultiParser_Run_MissingType_Exception_2()
         {
             var p = new Parser<Sample_03, Sample_02>();
 
-            p.Run(new[]
-            {
-                "sample_03foo.print",
-                "-c=10",
-                "-prefix=aaa",
-            }, new Sample_03(), new Sample_02());
+            Assert.Throws<UnknownParserTypeException>(() => {
+                p.Run(new[]
+                {
+                    "sample_03foo.print",
+                    "-c=10",
+                    "-prefix=aaa",
+                }, new Sample_03(), new Sample_02());
+            });
         }
 
         [Test]
-        [ExpectedException(typeof(MissingRequiredArgumentException))]
         public void MultiParser_Run_MissingRequiredArgument()
         {
             var mock = new MethodInvokerMock();
@@ -318,20 +327,21 @@ namespace Tests
 
             MethodInvoker.Invoker = mock;
 
-            var p = new Parser<Sample_02, Sample_03, Sample_04, Sample_06, Sample_07>();
+            Assert.Throws<MissingRequiredArgumentException>(() => {
+                var p = new Parser<Sample_02, Sample_03, Sample_04, Sample_06, Sample_07>();
+                p.Run(new[]
+                {
+                    "sample_07.print",
+                    "-count=10",
+                },
+                new Sample_02(),
+                new Sample_03(),
+                new Sample_04(),
+                new Sample_06(),
+                new Sample_07());
+            });
 
-            p.Run(new[]
-            {
-                "sample_07.print",
-                "-count=10",
-            },
-            new Sample_02(),
-            new Sample_03(),
-            new Sample_04(),
-            new Sample_06(),
-            new Sample_07());
-
-            Assert.IsTrue(called);
+            Assert.IsTrue(called, "Method not called");
         }
 
         [Test]

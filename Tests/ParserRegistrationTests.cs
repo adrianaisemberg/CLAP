@@ -10,14 +10,18 @@ namespace Tests
     [TestFixture]
     public class ParserRegistrationTests
     {
-        [Test, ExpectedException(typeof(DuplicateTargetAliasException))]
+        [Test]
         public void Construct_with_types_that_have_conflicting_alias_names()
         {
             var types = GetBaselineTestTypes().ToList();
             types.Add(typeof(ParserRegTest02_Dupe));
 
-            var SUT = new ParserRegistration(types.ToArray(), GetHelpTextForTest);
-            var result = SUT.GetTargetType("test02");
+            Type result = null;
+            Assert.Throws<DuplicateTargetAliasException>(() => {
+                var SUT = new ParserRegistration(types.ToArray(), GetHelpTextForTest);
+                result = SUT.GetTargetType("test02");
+            });
+
             Assert.IsNull(result);
         }
 

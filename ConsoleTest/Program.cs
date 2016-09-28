@@ -116,7 +116,7 @@ namespace ConsoleTest
         }
 
         [Verb(IsDefault = true)]
-        [Validate("num1 + num2 >= num3")]
+        // [Validate("num1 + num2 >= num3")]
         public static void Zoo(
             int num1,
             [MoreThan(10)] int thenum2,
@@ -169,7 +169,7 @@ namespace ConsoleTest
         }
 
         [Global(Description = "pong pong pong.")]
-        [Validate("num > 100")]
+        // [Validate("num > 100")]
         public static void Pong(int num)
         {
         }
@@ -776,7 +776,7 @@ namespace ConsoleTest
     }
 
     // Validate properties of this class
-    [Validate("Name NOT LIKE 'Banana*'")]
+    // [Validate("Name NOT LIKE 'Banana*'")]
     public class Product
     {
         // Validate the value of this property
@@ -790,7 +790,7 @@ namespace ConsoleTest
         public string Name { get; set; }
 
         // Validate the properties of the value of this property
-        [Validate("Name NOT IN 'Adrian'")]
+        // [Validate("Name NOT IN 'Adrian'")]
         public ProductReview Review { get; set; }
     }
 

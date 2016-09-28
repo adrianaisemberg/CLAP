@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Text;
+using System.Reflection;
 
-#if !FW2
+#if !NET20
 using System.Linq;
 #endif
 
@@ -164,7 +165,13 @@ namespace CLAP
 
         private static string GetTypeName(Type type)
         {
-            if (type.IsEnum)
+#if NETSTANDARD1_6
+            var isEnum = type.GetTypeInfo().IsEnum;
+#else        
+            var isEnum = type.IsEnum;
+#endif
+            
+            if (isEnum)
             {
                 return string.Format("{0} ({1})", type.Name, string.Join("/", Enum.GetNames(type)));
             }

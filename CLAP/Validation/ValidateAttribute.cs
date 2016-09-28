@@ -2,6 +2,7 @@
 
 namespace CLAP.Validation
 {
+#if NET20 || NET452
     /// <summary>
     /// Validates all the parameters against an expression
     /// </summary>
@@ -62,4 +63,5 @@ namespace CLAP.Validation
 
         #endregion Methods
     }
+#endif
 }
