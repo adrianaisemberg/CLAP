@@ -1,5 +1,13 @@
 {
-  "version": "1.0.0-*",
+  "version": "4.2-*",
+  "packOptions": {
+    "authors": [ "Adrian Aisemberg, adrianaisemberg@gmail.com" ],
+    "owners": [ "Adrian Aisemberg, adrianaisemberg@gmail.com" ],
+    "licenseUrl": "http://adrianaisemberg.github.com/CLAP/#license",
+    "projectUrl": "http://adrianaisemberg.github.com/CLAP",
+    "requireLicenseAcceptance": false,
+    "description": "Command-Line Auto Parser"
+  },
   "buildOptions": {
     "emitEntryPoint": false
   },
