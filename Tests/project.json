@@ -1,18 +1,18 @@
-
 {
   "version": "1.0.0-*",
-  "buildOptions": {
-    "debugType": "portable" //,
-    // "emitEntryPoint": true
-  },
+
   "dependencies": {
     "CLAP": { "target": "project" },
     "Moq": "*",
     "NUnit": "*",
     "NUnit.Mocks": "*",
-    "pNUnit": "*"
+    "pNUnit": "*",
+    "dotnet-test-nunit": "3.4.0-beta-2"
   },
+
+  "testRunner": "nunit",
+
   "frameworks": {
-    "net452": { }
+    "net451": { }
   }
 }
