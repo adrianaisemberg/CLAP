@@ -9,6 +9,9 @@ using CLAP.Validation;
 
 namespace ConsoleTest
 {
+    /// <summary>
+    /// Commented simply to drive AppVeyor evaluation.
+    /// </summary>
     class Program
     {
         [HideAll("rem")]
