@@ -10,7 +10,7 @@ using CLAP.Validation;
 namespace ConsoleTest
 {
     /// <summary>
-    /// Commented simply to drive AppVeyor evaluation.
+    /// Commented simply to drive AppVeyor evaluation. Here's more
     /// </summary>
     class Program
     {
