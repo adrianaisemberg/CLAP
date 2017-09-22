@@ -1,3 +1,5 @@
+https://ci.appveyor.com/api/projects/status/sad604b237lus1hl/branch/master?svg=true
+
 CLAP: A Kick-Ass .NET Command-Line Parser
 =========================================
 Full Documentation and Samples
