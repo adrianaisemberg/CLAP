@@ -1,4 +1,4 @@
-https://ci.appveyor.com/api/projects/status/sad604b237lus1hl/branch/master?svg=true
+[![Build status](https://ci.appveyor.com/api/projects/status/sad604b237lus1hl/branch/master?svg=true)](https://ci.appveyor.com/project/Korporal/clap/branch/master)
 
 CLAP: A Kick-Ass .NET Command-Line Parser
 =========================================
