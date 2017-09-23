@@ -14,7 +14,7 @@ namespace ConsoleTest
     /// </summary>
     class Program
     {
-        [HideAll("rem")]
+        [HideAll("rem")]  // THis is new
         static int Main(string[] args)
         {
             //Debugger.Launch();
