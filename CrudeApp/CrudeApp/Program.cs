@@ -10,6 +10,7 @@ namespace CrudeApp
     {
         static void Main(string[] args)
         {
+            ;
         }
     }
 }
