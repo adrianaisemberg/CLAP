@@ -8,6 +8,7 @@ namespace CrudeApp
 {
     class Program
     {
+        // Testing in VSTS CI
         static void Main(string[] args)
         {
             ;
