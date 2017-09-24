@@ -2,7 +2,7 @@
 
 CLAP: A Kick-Ass .NET Command-Line Parser
 =========================================
-Full Documentation and Samples
+Full Documentation and Samples Included
 ----------------------------------------
 http://adrianaisemberg.github.com/CLAP
 
