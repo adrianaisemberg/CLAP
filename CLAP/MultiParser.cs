@@ -168,6 +168,59 @@ return new ParserRunner(matchingType, registration, HelpGenerator);        }
             return parser;
         }
 
+        private bool TryHandlePrematureError(Exception ex, TargetResolver targetResolver)
+        {
+            var context = new ExceptionContext(ex);
+
+            if (Register.RegisteredErrorHandler != null)
+            {
+                Register.RegisteredErrorHandler(context);
+
+                return context.ReThrow;
+            }
+            else
+            {
+                for (int i = 0; i < m_types.Length; i++)
+                {
+                    var type = m_types[i];
+
+                    var errorHandler = ParserRunner.GetDefinedErrorHandlers(type).FirstOrDefault();
+
+                    if (errorHandler != null)
+                    {
+                        var target = targetResolver == null ? null : targetResolver.Resolve(type);
+
+                        errorHandler.Invoke(target, new[] { context });
+
+                        return context.ReThrow;
+                    }
+                }
+            }
+
+            return true;
+        }
+
+        private static string[] ProcessHideAll(string[] args)
+        {
+            StackTrace trace = new StackTrace();
+
+            var m = trace.GetFrames().SelectMany(f => f.GetMethod().GetCustomAttributes(typeof(HideAllAttribute),false)).Cast<HideAllAttribute>();
+
+            if (m.Count() > 1)
+                throw new InvalidOperationException("The attribute '" + nameof(HideAllAttribute) + "' should only appear on the outermost method.");
+
+            if (args.Length == 0)
+                return args;
+
+            if (m.Count() == 0)
+                return args;
+
+            if (m.First().Term != args[0])
+                return args;
+
+            return new string[0]; // effectively 'pretend' that no args are present.
+        }
+
         #endregion Private Methods
 
         #region Public Methods
@@ -198,6 +251,8 @@ return new ParserRunner(matchingType, registration, HelpGenerator);        }
 
             try
             {
+                args = ProcessHideAll(args);
+
                 if (args.None() || args.All(a => string.IsNullOrEmpty(a)))
                 {
                     HandleEmptyArguments(targetResolver);
@@ -235,38 +290,6 @@ return new ParserRunner(matchingType, registration, HelpGenerator);        }
             var target = (targetResolver == null || targetResolver.RegisteredTypes.None()) ? null : targetResolver.Resolve(parser.Type);
 
             return parser.Run(args, target);
-        }
-
-        private bool TryHandlePrematureError(Exception ex, TargetResolver targetResolver)
-        {
-            var context = new ExceptionContext(ex);
-
-            if (Register.RegisteredErrorHandler != null)
-            {
-                Register.RegisteredErrorHandler(context);
-
-                return context.ReThrow;
-            }
-            else
-            {
-                for (int i = 0; i < m_types.Length; i++)
-                {
-                    var type = m_types[i];
-
-                    var errorHandler = ParserRunner.GetDefinedErrorHandlers(type).FirstOrDefault();
-
-                    if (errorHandler != null)
-                    {
-                        var target = targetResolver == null ? null : targetResolver.Resolve(type);
-
-                        errorHandler.Invoke(target, new[] { context });
-
-                        return context.ReThrow;
-                    }
-                }
-            }
-
-            return true;
         }
 
         /// <summary>

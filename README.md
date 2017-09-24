@@ -1,6 +1,8 @@
+[![Build status](https://ci.appveyor.com/api/projects/status/sad604b237lus1hl/branch/master?svg=true&passingText=master%20-%20OK&failingText=master%20-%20Fails)](https://ci.appveyor.com/project/Korporal/clap/branch/master)
+
 CLAP: A Kick-Ass .NET Command-Line Parser
 =========================================
-Full Documentation and Samples
+Full Documentation and Samples Included
 ----------------------------------------
 http://adrianaisemberg.github.com/CLAP
 
