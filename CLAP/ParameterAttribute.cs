@@ -70,9 +70,12 @@ namespace CLAP
     {
         public Type DefaultProviderType { get; private set; }
 
-        public DefaultProviderAttribute(Type defaultProviderType)
+        public string Context { get; private set; }
+
+        public DefaultProviderAttribute(Type defaultProviderType, string context = null)
         {
             DefaultProviderType = defaultProviderType;
+            Context = context;
         }
     }
 

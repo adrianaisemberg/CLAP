@@ -12,5 +12,7 @@ namespace CLAP
                 return GetType().Name;
             }
         }
+
+        public string Context { get; internal set; }
     }
 }
