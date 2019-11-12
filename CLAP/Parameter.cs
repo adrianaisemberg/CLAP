@@ -74,8 +74,9 @@ namespace CLAP
 
             if (parameter.HasAttribute<DefaultProviderAttribute>())
             {
-                DefaultProvider = (DefaultProvider)Activator.CreateInstance(
-                    parameter.GetAttribute<DefaultProviderAttribute>().DefaultProviderType);
+                DefaultProviderAttribute attribute = parameter.GetAttribute<DefaultProviderAttribute>();
+                DefaultProvider = (DefaultProvider)Activator.CreateInstance(attribute.DefaultProviderType);
+                DefaultProvider.Context = attribute.Context;
             }
 
             if (parameter.HasAttribute<DescriptionAttribute>())
